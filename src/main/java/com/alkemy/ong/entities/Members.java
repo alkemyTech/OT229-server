@@ -15,11 +15,23 @@ public class Members {
     @Id
     @GeneratedValue(generator = "UUID")
     private String id;
+
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "facebookUrl")
     private String facebookUrl;
+
+    @Column(name = "instagramUrl")
     private String instagramUrl;
-    private String linkedInUrl;
+
+    @Column(name = "linkedinUrl")
+    private String linkedinUrl;
+
+    @Column(name = "image", nullable = false)
     private String image;
+
+    @Column(name = "description")
     private String description;
 
     @Temporal(TemporalType.TIMESTAMP)
