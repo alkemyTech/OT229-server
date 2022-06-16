@@ -5,11 +5,11 @@ import org.springframework.stereotype.Repository;
 
 import com.alkemy.ong.entities.SlidesEntity;
 
+import java.util.List;
+
 @Repository
 public interface SlideRepository extends JpaRepository<SlidesEntity, String> {
 
-  SlideRepository findBySlideOrder(int order);
-  SlideRepository findTopByOrderSlideBySlideOrderDesc();
-  SlideRepository findByIdSlideRepository(String id);
-
+    public List<SlidesEntity> findByOrganizationId (String organizationId);
+    public List<SlidesEntity> findBySlideOrder(Integer order);
 }

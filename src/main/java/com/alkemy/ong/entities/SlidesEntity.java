@@ -17,7 +17,7 @@ public class SlidesEntity {
 
   @Id
   @GeneratedValue(generator = "UUID")
-  @Column(name = "imageId")
+  @Column(name = "id")
   private String id;
 
   @Column(name="organizationId", nullable = false)
@@ -29,7 +29,7 @@ public class SlidesEntity {
   @Column(name = "text", nullable = false)
   private String text;
 
-  @Column(name = "order")
-  private Integer order;
+  @Column(name = "slide_order")
+  private Integer slideOrder;
 
 }
