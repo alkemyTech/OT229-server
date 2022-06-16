@@ -24,5 +24,5 @@ public class Role {
     private String description;
 
     @CreationTimestamp
-    private Date created;
+    private Date timestamp;
 }
