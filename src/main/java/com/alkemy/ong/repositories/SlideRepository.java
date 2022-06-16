@@ -8,8 +8,8 @@ import com.alkemy.ong.entities.SlidesEntity;
 @Repository
 public interface SlideRepository extends JpaRepository<SlidesEntity, String> {
 
-  SlideRepository findBySlideOrder(Integer slideOrder);
-  SlideRepository findTopByOrderSlideRepositoryBySlideOrderDesc();
+  SlideRepository findBySlideOrder(int order);
+  SlideRepository findTopByOrderSlideBySlideOrderDesc();
   SlideRepository findByIdSlideRepository(String id);
 
 }
