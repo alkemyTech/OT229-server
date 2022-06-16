@@ -1,7 +1,6 @@
 package com.alkemy.ong.entities;
 
-import java.sql.Timestamp;
-import java.util.UUID;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,23 +18,23 @@ import lombok.Setter;
 @Getter
 @Entity
 @Table(name = "activity")
-@SQLDelete(sql = "UPDATE activity SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE activity SET softDelete = true WHERE id = ?")
 @Where(clause = "deleted = false")
 public class ActivityEntity {
 
   @Id
   @GeneratedValue(generator = "UUID")
-  @Column(name="id", updatable = false, nullable = false)
-  private UUID id;
+  @Column(name="id")
+  private String id;
   @Column(name = "name", nullable = false)
   private String name;
   @Column(name = "description", nullable = false)
   private String content;
   @Column(name = "image", nullable = false)
   private String image;
-  @Column(name = "created_at", nullable = false)
-  private Timestamp createdAt;
-  private Boolean deleted = Boolean.FALSE;
+  @Column(name = "timestamps", nullable = false)
+  private Date timeStamps;
+  private Boolean softDelete = Boolean.FALSE;
 
 
 }
