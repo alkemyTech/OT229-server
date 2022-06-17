@@ -34,7 +34,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                         GlobalConstants.Endpoints.LOGIN + "/**"
                                 ).permitAll()
                                 // Requiring authentication and certain roles for any endpoint not specified above
-                                .anyRequest().hasAnyRole("ADMIN", "USER")
+                                .anyRequest().hasAnyAuthority(GlobalConstants.ROLE_USER, GlobalConstants.ROLE_ADMIN)
                 );
 
     }
