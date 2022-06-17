@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 
 @Entity
@@ -26,7 +27,8 @@ import lombok.Setter;
 public class Category {
 
     @Id
-    @GeneratedValue(generator = "uuid")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "uuid")
     private String id;
 
     @Column(name = "name", nullable = false)
