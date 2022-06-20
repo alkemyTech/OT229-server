@@ -10,6 +10,7 @@ public abstract class GlobalConstants {
 
         public static final String LOGIN = "/auth/login";
         public static final String REGISTER = "/auth/register";
+        public static final String ORGANIZATION_PUBLIC_INFO = "/organization/public";
 
     }
 

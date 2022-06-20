@@ -1,6 +1,7 @@
 package com.alkemy.ong.security.configuration;
 
 import com.alkemy.ong.utility.GlobalConstants;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -20,7 +21,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // Disabling csrf, needed for session cookie authentication, since a token-based authentication protocol
                 // is going to be used instead.
                 .csrf().disable()
-                // Setting the state policy as stateless, disabling the use of sessions for security context.
+                // Setting the state policy as stateless, disabling the use of persisting sessions for security context.
                 .sessionManagement(
                         httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -32,6 +33,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                 .antMatchers(
                                         GlobalConstants.Endpoints.REGISTER + "/**",
                                         GlobalConstants.Endpoints.LOGIN + "/**"
+                                ).permitAll()
+                                .antMatchers(
+                                        HttpMethod.GET,
+                                        GlobalConstants.Endpoints.ORGANIZATION_PUBLIC_INFO + "/**"
                                 ).permitAll()
                                 // Requiring authentication and certain roles for any endpoint not specified above
                                 .anyRequest().hasAnyAuthority(GlobalConstants.ROLE_USER, GlobalConstants.ROLE_ADMIN)
