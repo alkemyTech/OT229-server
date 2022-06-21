@@ -37,12 +37,11 @@ public class News {
 
     private Boolean softDelete;
 
-   /*
     @ManyToOne()
-    @JoinColumn(name = "categoryId", nullable = false)
+    @JoinColumn(name = "categoryId")
     private Category category;
 
-   */
+
 
 
 
