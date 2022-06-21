@@ -39,9 +39,17 @@ public class User {
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private Set<Role> roleId = new LinkedHashSet<>();
+    private Set<Role> roles = new LinkedHashSet<>();
 
     @CreationTimestamp
     private Date timeStamps;
     private boolean softDelete;
+
+    public boolean addRole(Role role) {
+        return this.roles.add(role);
+    }
+
+    public boolean removeRole(Role role) {
+        return this.roles.remove(role);
+    }
 }
