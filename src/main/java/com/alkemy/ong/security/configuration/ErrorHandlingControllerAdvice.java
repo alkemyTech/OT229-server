@@ -1,7 +1,9 @@
 package com.alkemy.ong.security.configuration;
 
 
+import com.alkemy.ong.security.payload.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -13,30 +15,51 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ * Defines the responses to be sent when a runtime exception is thrown from a Controller class.
+ */
 @ControllerAdvice
 public class ErrorHandlingControllerAdvice {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    List<String> onConstraintValidationException(ConstraintViolationException e) {
+    ValidationErrorResponse onConstraintValidationException(ConstraintViolationException e) {
 
-        List<String> errorList = new ArrayList<>();
-        for (ConstraintViolation violation : e.getConstraintViolations()) {
-            errorList.add("Error: " + violation.getPropertyPath().toString() + ": " + violation.getMessage());
-        }
-        return errorList;
+        return new ValidationErrorResponse()
+                .setError(
+                        e.getConstraintViolations()
+                                .stream()
+                                .map(ConstraintViolation::getMessage)
+                                .collect(Collectors.toList())
+                );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    List<String> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    ValidationErrorResponse onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 
-        List<String> errorList = new ArrayList<>();
-        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
-            errorList.add("Error: " + fieldError.getField() + ": " + fieldError.getDefaultMessage());
-        }
-        return errorList;
+        return new ValidationErrorResponse()
+                .setError(
+                        e.getBindingResult().getFieldErrors()
+                                .stream()
+                                .map(FieldError::getDefaultMessage)
+                                .collect(Collectors.toList())
+                );
+    }
+
+    @ExceptionHandler(BindException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    ValidationErrorResponse onBindException(BindException e) {
+        return new ValidationErrorResponse()
+                .setError(
+                        e.getBindingResult().getFieldErrors()
+                                .stream()
+                                .map(FieldError::getDefaultMessage)
+                                .collect(Collectors.toList())
+                );
     }
 }
