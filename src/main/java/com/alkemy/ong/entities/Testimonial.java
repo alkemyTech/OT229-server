@@ -2,6 +2,8 @@ package com.alkemy.ong.entities;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
@@ -22,7 +24,7 @@ public class Testimonial {
     @Column(name = "content")
     private String content;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date timeStamp;
     private boolean softDelete;
 
