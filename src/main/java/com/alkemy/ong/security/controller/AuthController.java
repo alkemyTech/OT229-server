@@ -50,8 +50,6 @@ public class AuthController {
 
     @PostMapping(GlobalConstants.Endpoints.LOGIN)
     public ResponseEntity<?> login(@Valid LoginRequest loginForm) {
-
-        System.out.println(loginForm.getUsername() + "  " + loginForm.getPassword());
         try {
             return ResponseEntity.ok(
                     this.authenticationService
@@ -67,6 +65,4 @@ public class AuthController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
-    
-    
 }

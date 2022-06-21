@@ -45,7 +45,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (authentication == null) {
             return Optional.empty();
         }
-        String authUserEmail = (String) authentication.getPrincipal();
+        String authUserEmail = ((org.springframework.security.core.userdetails.User) authentication.getPrincipal())
+                .getUsername();
         User authUser = this.userService.getUserByEmail(authUserEmail)
                 .orElseThrow(() -> new IllegalStateException("A user is authenticated but can't be retrieved from the database."));
         return Optional.of(authUser);
