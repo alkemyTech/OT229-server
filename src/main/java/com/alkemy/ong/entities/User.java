@@ -32,8 +32,9 @@ public class User {
     @Column(name = "photo")
     private String photo;
 
-    //@OneToMany
-    //private Rol roleId; // Descomentar cuando esté la entidad Rol
+    @OneToMany
+    @JoinColumn(name = "role_id")
+    private Role roleId;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamps;
