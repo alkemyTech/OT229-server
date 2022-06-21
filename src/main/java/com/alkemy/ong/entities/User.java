@@ -33,8 +33,10 @@ public class User {
     @Column(name = "photo")
     private String photo;
 
-    @OneToMany
-    @JoinColumn(name = "role_id")
+    @ManyToMany
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Role roleId;
 
     @CreationTimestamp
