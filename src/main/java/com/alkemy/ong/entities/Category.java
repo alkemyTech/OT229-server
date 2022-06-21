@@ -1,18 +1,31 @@
 package com.alkemy.ong.entities;
+
+
+import java.util.Date;
+import java.util.UUID;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
-import java.util.Date;
 
 @Entity
-@Table(name = "members")
-@NoArgsConstructor
+@Table(name = "categories")
 @Getter
 @Setter
-public class Members {
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class Category {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "uuid")
@@ -21,20 +34,11 @@ public class Members {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "facebookUrl")
-    private String facebookUrl;
-
-    @Column(name = "instagramUrl")
-    private String instagramUrl;
-
-    @Column(name = "linkedinUrl")
-    private String linkedinUrl;
-
-    @Column(name = "image", nullable = false)
-    private String image;
-
     @Column(name = "description")
     private String description;
+
+    @Column(name = "image")
+    private String image;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;

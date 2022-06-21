@@ -1,42 +1,29 @@
 package com.alkemy.ong.entities;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import javax.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "members")
-@NoArgsConstructor
 @Getter
 @Setter
-public class Members {
+@Table(name = "testimonials")
+public class Testimonial {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "uuid")
     private String id;
-
     @Column(name = "name", nullable = false)
     private String name;
-
-    @Column(name = "facebookUrl")
-    private String facebookUrl;
-
-    @Column(name = "instagramUrl")
-    private String instagramUrl;
-
-    @Column(name = "linkedinUrl")
-    private String linkedinUrl;
-
-    @Column(name = "image", nullable = false)
+    @Column(name = "image")
     private String image;
-
-    @Column(name = "description")
-    private String description;
+    @Column(name = "content")
+    private String content;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
     private boolean softDelete;
+
 }
