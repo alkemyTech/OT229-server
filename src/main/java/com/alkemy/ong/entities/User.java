@@ -3,9 +3,12 @@ package com.alkemy.ong.entities;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -32,10 +35,13 @@ public class User {
     @Column(name = "photo")
     private String photo;
 
-    //@OneToMany
-    //private Rol roleId; // Descomentar cuando esté la entidad Rol
+    @ManyToMany
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Set<Role> roleId = new LinkedHashSet<>();
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date timeStamps;
     private boolean softDelete;
 }
