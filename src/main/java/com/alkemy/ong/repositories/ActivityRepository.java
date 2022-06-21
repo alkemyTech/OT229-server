@@ -1,4 +1,4 @@
-package com.alkemy.ong.repository;
+package com.alkemy.ong.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
