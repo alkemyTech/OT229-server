@@ -1,4 +1,4 @@
-package com.alkemy.ong.security;
+package com.alkemy.ong.security.configuration;
 
 
 import org.springframework.http.HttpStatus;
