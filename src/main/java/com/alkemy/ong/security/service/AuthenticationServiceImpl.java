@@ -27,12 +27,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationService authenticate(String username, String password) throws AuthenticationException {
-        if (username == null) {
-            throw new BadCredentialsException("Username not provided");
-        }
-        if (password == null) {
-            throw new BadCredentialsException("Password not provided");
-        }
         UsernamePasswordAuthenticationToken springAuthToken = new UsernamePasswordAuthenticationToken(username, password);
         Authentication springAuthentication  = this.authenticationManager.authenticate(springAuthToken);
         SecurityContextHolder.getContext().setAuthentication(springAuthentication);
@@ -45,7 +39,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (authentication == null) {
             return Optional.empty();
         }
-        String authUserEmail = (String) authentication.getPrincipal();
+        String authUserEmail = ((org.springframework.security.core.userdetails.User) authentication.getPrincipal())
+                .getUsername();
         User authUser = this.userService.getUserByEmail(authUserEmail)
                 .orElseThrow(() -> new IllegalStateException("A user is authenticated but can't be retrieved from the database."));
         return Optional.of(authUser);
