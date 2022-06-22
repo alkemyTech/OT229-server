@@ -13,7 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Role {
 
     @Id
@@ -22,6 +22,7 @@ public class Role {
     private String id;
 
     @Column(nullable = false)
+    @EqualsAndHashCode.Include
     private String name;
 
     @Column(nullable = true)
