@@ -20,7 +20,7 @@ public class News {
 
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "uuid")
+    @GenericGenerator(name = "UUID", strategy = "uuid2")
     private String id;
 
     @Column(nullable = false)

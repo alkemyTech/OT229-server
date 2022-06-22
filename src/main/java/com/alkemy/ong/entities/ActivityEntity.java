@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -24,6 +26,7 @@ public class ActivityEntity {
 
   @Id
   @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "uuid2")
   @Column(name="id")
   private String id;
   @Column(name = "name", nullable = false)
@@ -32,6 +35,8 @@ public class ActivityEntity {
   private String content;
   @Column(name = "image", nullable = false)
   private String image;
+
+  @CreationTimestamp
   @Column(name = "timestamps", nullable = false)
   private Date timeStamps;
   private Boolean softDelete = Boolean.FALSE;
