@@ -15,7 +15,7 @@ import java.util.Date;
 public class Testimonial {
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "uuid")
+    @GenericGenerator(name = "UUID", strategy = "uuid2")
     private String id;
     @Column(name = "name", nullable = false)
     private String name;
