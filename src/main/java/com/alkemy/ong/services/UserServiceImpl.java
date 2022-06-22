@@ -6,6 +6,8 @@ import com.alkemy.ong.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserServiceImpl implements UserService{
 
@@ -17,8 +19,10 @@ public class UserServiceImpl implements UserService{
         return userRepo.save(user);
     }
 
-    
-    
-  
-    
+    @Override
+    public Optional<User> getUserByEmail(String email) {
+        return this.userRepo.findByEmail(email);
+    }
+
+
 }
