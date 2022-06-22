@@ -21,12 +21,11 @@ import org.hibernate.annotations.GenericGenerator;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Category {
 
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "uuid")
+    @GenericGenerator(name = "UUID", strategy = "uuid2")
     private String id;
 
     @Column(name = "name", nullable = false)

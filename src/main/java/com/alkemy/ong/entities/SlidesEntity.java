@@ -8,6 +8,7 @@ import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Getter
@@ -17,6 +18,7 @@ public class SlidesEntity {
 
   @Id
   @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "uuid2")
   @Column(name = "id")
   private String id;
 

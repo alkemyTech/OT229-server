@@ -2,6 +2,7 @@ package com.alkemy.ong.entities;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.Date;
 public class Member {
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "uuid")
+    @GenericGenerator(name = "UUID", strategy = "uuid2")
     private String id;
 
     @Column(name = "name", nullable = false)
@@ -36,7 +37,7 @@ public class Member {
     @Column(name = "description")
     private String description;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date timeStamp;
     private boolean softDelete;
 }
