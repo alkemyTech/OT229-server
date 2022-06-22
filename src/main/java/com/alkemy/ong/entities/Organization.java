@@ -11,8 +11,8 @@ import java.util.Date;
 
 @Entity
 @Table(name = "organizations")
-@SQLDelete(sql = "UPDATE organizations SET softDelete = true where id = ?")
-@Where(clause = "deleted = false")
+@SQLDelete(sql = "UPDATE organizations SET soft_delete = true where id = ?")
+@Where(clause = "soft_delete = false")
 @NoArgsConstructor
 @Getter
 @Setter
