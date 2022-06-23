@@ -9,16 +9,11 @@ public interface JwtService {
 
     /**
      * This method return a JWT token with user's info.
-     * - User ID
-     * - User first name
-     * - User last name
-     * - Date creation
+     * - Username's user
      * - Date expiration
      * - User roles
      *
-     * @Param user first name.
-     * @Param user last name.
-     * @Param user roles.
+     * @Param Objet user
      * @return a JWT token with user's info.
      * */
     String createToken(User user);
