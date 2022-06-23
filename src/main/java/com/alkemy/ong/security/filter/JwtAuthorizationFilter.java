@@ -41,16 +41,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                         jwtService.getUsername(authHeader), null, roles);
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
+
+                filterChain.doFilter(request, response);
+                SecurityContextHolder.clearContext();
             } catch (Exception ex) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, ex.getMessage());
                 return;
             }
-        }else{
+        }else {
             SecurityContextHolder.clearContext();
         }
-
-        filterChain.doFilter(request, response);
-        SecurityContextHolder.clearContext();
     }
 }
