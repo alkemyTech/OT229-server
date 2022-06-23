@@ -39,10 +39,11 @@ public class AmazonS3Service implements CloudStorageService {
                 credentialsConfiguration.getSecretKey()
         );
         AWSStaticCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(credentials);
+        Regions region = Regions.valueOf( this.credentialsConfiguration.getRegion() );
         this.s3client = AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(credentialsProvider)
-                .withRegion(Regions.US_EAST_1)
+                .withRegion(region)
                 .build();
     }
 

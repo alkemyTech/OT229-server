@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class AmazonS3CredentialsConfiguration {
 
     private String endpointUrl;
+    private String region;
     private String accessKey;
     private String secretKey;
     private String bucketName;
