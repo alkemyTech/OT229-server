@@ -27,15 +27,17 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public String delete(String id) throws NotFoundException {
+
         boolean userExistis = userRepo.existsById(id);
-        if(!userExistis)throw new NotFoundException("A user with id "+id+" was not found");
+        if (!userExistis) throw new NotFoundException("A user with id " + id + " was not found");
 
-        User u= userRepo.getById(id);
+        User u = userRepo.getById(id);
 
-        if(u.isSoftDelete())throw new NotFoundException("Please enter the id of a user without deleting");
+        if (u.isSoftDelete()) throw new NotFoundException("Please enter the id of a user without deleting");
         u.setSoftDelete(true);
+        userRepo.save(u);
 
-        return "Successfully deleted user with id "+id;
+        return "Successfully deleted user with id " + id;
     }
 
 
