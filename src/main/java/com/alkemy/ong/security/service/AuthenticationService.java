@@ -1,7 +1,6 @@
 package com.alkemy.ong.security.service;
 
-import com.alkemy.ong.dto.UserDTO;
-
+import com.alkemy.ong.security.payload.LoginResponse;
 import org.springframework.security.core.AuthenticationException;
 
 import java.util.Optional;
@@ -28,6 +27,6 @@ public interface AuthenticationService {
      * @throws IllegalStateException if a user is currently authenticated in the security context but its
      *                               corresponding entity can't be retrieved from the database.
      */
-    Optional<UserDTO> getAuthenticatedUser() throws IllegalStateException;
+    Optional<LoginResponse> getAuthenticatedUser() throws IllegalStateException;
 
 }
