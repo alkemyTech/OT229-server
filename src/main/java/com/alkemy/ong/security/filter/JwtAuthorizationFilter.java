@@ -49,6 +49,5 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
         
         filterChain.doFilter(request, response);
-        SecurityContextHolder.clearContext();
     }
 }
