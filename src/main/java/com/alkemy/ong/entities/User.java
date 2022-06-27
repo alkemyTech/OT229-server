@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,6 +15,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "user")
+@SQLDelete(sql = "UPDATE user SET soft_delete = true where id = ?")
+@Where(clause = "soft_delete = false")
 @NoArgsConstructor
 @Getter
 @Setter

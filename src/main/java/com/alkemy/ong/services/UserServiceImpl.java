@@ -3,6 +3,7 @@ package com.alkemy.ong.services;
 
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.repositories.UserRepository;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,5 +25,15 @@ public class UserServiceImpl implements UserService{
         return this.userRepo.findByEmail(email);
     }
 
+    @Override
+    public String delete(String id) throws NotFoundException {
+
+        boolean userExistis = userRepo.existsById(id);
+        if (!userExistis) throw new NotFoundException("A user with id " + id + " was not found");
+
+        userRepo.deleteById(id);
+
+        return "Successfully deleted user with id " + id;
+    }
 
 }
