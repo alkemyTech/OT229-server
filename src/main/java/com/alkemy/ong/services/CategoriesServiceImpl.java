@@ -26,4 +26,13 @@ public class CategoriesServiceImpl implements CategoriesService{
         CategoryDTO dto = categoryMapper.categoryEntity2DTO(entity.get());
         return dto;
     }
+
+
+    public CategoryDTO save(CategoryDTO dto) {
+        Category entity = categoryMapper.categoryDTO2Entity(dto);
+        Category entitySaved = categoryRepository.save(entity);
+        CategoryDTO dtoReturn = categoryMapper.categoryEntity2DTO(entitySaved);
+
+        return dtoReturn;
+    }
 }
