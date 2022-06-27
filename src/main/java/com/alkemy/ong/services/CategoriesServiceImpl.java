@@ -7,7 +7,9 @@ import com.alkemy.ong.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoriesServiceImpl implements CategoriesService{
@@ -25,5 +27,13 @@ public class CategoriesServiceImpl implements CategoriesService{
         }
         CategoryDTO dto = categoryMapper.categoryEntity2DTO(entity.get());
         return dto;
+    }
+
+    @Override
+    public List<String> getAllCategoryNames() {
+        return this.categoryRepository.findAllByOrderByName()
+                .stream()
+                .map(Category::getName)
+                .collect(Collectors.toList());
     }
 }
