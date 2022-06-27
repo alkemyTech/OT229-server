@@ -1,6 +1,5 @@
 package com.alkemy.ong;
 
-import com.alkemy.ong.entities.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
