@@ -31,14 +31,9 @@ public class UserServiceImpl implements UserService{
         boolean userExistis = userRepo.existsById(id);
         if (!userExistis) throw new NotFoundException("A user with id " + id + " was not found");
 
-        User u = userRepo.getById(id);
-
-        if (u.isSoftDelete()) throw new NotFoundException("Please enter the id of a user without deleting");
-        u.setSoftDelete(true);
-        userRepo.save(u);
+        userRepo.deleteById(id);
 
         return "Successfully deleted user with id " + id;
     }
-
 
 }
