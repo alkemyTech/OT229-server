@@ -46,7 +46,7 @@ public class OrganizationServiceImpl implements OrganizationService{
 
         organizationsRepository.save(organization);
 
-        return organizationMapper.organizationDTO2Entity(organization);
+        return organizationMapper.organizationEntity2OrganizationDTO(organization);
     }
 
     private Organization updateInfo(Organization organization, OrganizationDTO organizationDTO){

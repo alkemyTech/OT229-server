@@ -30,7 +30,7 @@ public class OrganizationMapper {
         return dto;
     }
 
-    public OrganizationDTO organizationDTO2Entity(Organization organization){
+    public OrganizationDTO organizationEntity2OrganizationDTO(Organization organization){
         OrganizationDTO organizationDTO = new OrganizationDTO();
 
         organizationDTO.setName(organization.getName());
