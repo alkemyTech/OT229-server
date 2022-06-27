@@ -1,6 +1,7 @@
 package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.dto.CategoryDTO;
+import com.alkemy.ong.dto.CategoryListResponse;
 import com.alkemy.ong.dto.OrganizationDTO;
 import com.alkemy.ong.services.CategoriesService;
 import com.alkemy.ong.utility.GlobalConstants;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(GlobalConstants.Endpoints.CATEGORIES)
@@ -29,5 +32,12 @@ public class CategoriesController {
         }
 
         return ResponseEntity.ok().body(dto);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getCategoryList() {
+        CategoryListResponse responseBody = new CategoryListResponse();
+        responseBody.setCategories(this.categoriesService.getAllCategoryNames());
+        return ResponseEntity.ok(responseBody);
     }
 }
