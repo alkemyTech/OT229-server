@@ -42,7 +42,7 @@ public class OrganizationServiceImpl implements OrganizationService{
     public OrganizationDTO updateOrganization(OrganizationDTO organizationDTO, String organizationName) {
         Organization organization = organizationsRepository.findByName(organizationName).get();
 
-        updateInfo(organization, organizationDTO);
+        organization = updateInfo(organization, organizationDTO);
 
         organizationsRepository.save(organization);
 
