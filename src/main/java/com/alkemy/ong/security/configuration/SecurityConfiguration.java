@@ -1,5 +1,6 @@
 package com.alkemy.ong.security.configuration;
 
+import com.alkemy.ong.security.filter.JwtAuthorizationFilter;
 import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -58,9 +59,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                         HttpMethod.GET,
                                         GlobalConstants.Endpoints.ORGANIZATION_PUBLIC_INFO + "/**"
                                 ).permitAll()
+
                                 // Requiring authentication and certain roles for any endpoint not specified above
                                 .anyRequest().hasAnyAuthority(GlobalConstants.ROLE_USER, GlobalConstants.ROLE_ADMIN)
-                );
+                ).addFilter(jwtAuthorizationFilter());
 
     }
 
@@ -68,5 +70,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception{
+        return new JwtAuthorizationFilter(this.authenticationManager());
     }
 }
