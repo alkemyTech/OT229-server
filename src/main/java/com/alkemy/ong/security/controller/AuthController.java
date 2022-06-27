@@ -3,6 +3,7 @@ package com.alkemy.ong.security.controller;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.security.payload.LoginRequest;
 import com.alkemy.ong.security.service.AuthenticationService;
+import com.alkemy.ong.services.EmailService;
 import com.alkemy.ong.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,8 @@ public class AuthController {
     private AuthenticationService authenticationService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signupRequest) {
@@ -42,6 +45,7 @@ public class AuthController {
           user.setEmail(signupRequest.getEmail());
           user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
           userService.save(user);
+          emailService.sendEmail(signupRequest.getEmail());
           return new ResponseEntity(user, HttpStatus.CREATED);
       } catch (Exception e) {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
