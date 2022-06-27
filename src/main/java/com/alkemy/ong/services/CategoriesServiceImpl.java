@@ -29,8 +29,13 @@ public class CategoriesServiceImpl implements CategoriesService{
 
 
     public CategoryDTO save(CategoryDTO dto) {
+        Optional <Category> entityFound = categoryRepository.findByName(dto.getName());
+        if(entityFound.isPresent()) {
+            throw new RuntimeException("Category with the provided name is already present over the system");
+        }
         Category entity = categoryMapper.categoryDTO2Entity(dto);
         Category entitySaved = categoryRepository.save(entity);
+
         CategoryDTO dtoReturn = categoryMapper.categoryEntity2DTO(entitySaved);
 
         return dtoReturn;

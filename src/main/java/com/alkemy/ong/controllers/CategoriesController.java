@@ -31,9 +31,14 @@ public class CategoriesController {
 
     @PostMapping()
     public ResponseEntity<?> save(@Valid @RequestBody CategoryDTO dto) {
+        CategoryDTO modifiedDTO = null;
+        try {
+            modifiedDTO = categoriesService.save(dto);
+        } catch (RuntimeException r) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r.getMessage());
+        }
 
-        CategoryDTO savedDTO = categoriesService.save(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(modifiedDTO);
     }
 }
 
