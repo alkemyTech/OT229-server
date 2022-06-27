@@ -1,10 +1,12 @@
 package com.alkemy.ong.security.service;
 
+import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.entities.User;
+import com.alkemy.ong.mappers.UserMapper;
+import com.alkemy.ong.security.payload.LoginResponse;
 import com.alkemy.ong.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -18,6 +20,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     public AuthenticationServiceImpl(AuthenticationManager authenticationManager, UserService userService) {
@@ -34,7 +42,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<User> getAuthenticatedUser() throws IllegalStateException {
+    public Optional<LoginResponse> getAuthenticatedUser() throws IllegalStateException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             return Optional.empty();
@@ -43,7 +51,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .getUsername();
         User authUser = this.userService.getUserByEmail(authUserEmail)
                 .orElseThrow(() -> new IllegalStateException("A user is authenticated but can't be retrieved from the database."));
-        return Optional.of(authUser);
+
+        LoginResponse loginResponse = new LoginResponse();
+        UserDTO userDTO = userMapper.userEntity2DTO(authUser);
+
+        loginResponse.setUser(userDTO);
+        String token = jwtService.createToken(authUser);
+        loginResponse.setToken(token);
+        loginResponse.setMessage("Successful Authentication.");
+
+        return Optional.of(loginResponse);
     }
 
 }
