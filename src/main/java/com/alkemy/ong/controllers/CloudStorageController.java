@@ -1,6 +1,7 @@
 package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.impl.AmazonS3ServiceImpl;
 import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import java.io.IOException;
 public class CloudStorageController {
 
     @Autowired
-    private AmazonS3ServiceImpl amazonS3ServiceImpl;
+    private CloudStorageService amazonS3ServiceImpl;
 
     @PostMapping
     public ResponseEntity<?> uploadFile(@RequestParam(value = "file") MultipartFile file) {
@@ -41,6 +42,8 @@ public class CloudStorageController {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
         } catch (FileNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -53,6 +56,8 @@ public class CloudStorageController {
             return ResponseEntity.notFound().build();
         } catch (AmazonS3Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
