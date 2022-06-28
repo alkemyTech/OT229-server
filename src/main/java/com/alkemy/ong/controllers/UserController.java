@@ -56,4 +56,8 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
     }
+    @GetMapping("/auth/me")
+    public ResponseEntity<UserDTO> getMe(@RequestHeader("authorization") String jwt) throws Exception{
+        return new ResponseEntity<>(userService.getMe(jwt), HttpStatus.OK);
+    }
 }
