@@ -4,6 +4,7 @@ package com.alkemy.ong.services;
 import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.dto.UserDTORequest;
 import com.alkemy.ong.entities.User;
+import com.alkemy.ong.exception.AmazonS3Exception;
 import com.alkemy.ong.mappers.UserMapper;
 import com.alkemy.ong.repositories.UserRepository;
 import javassist.NotFoundException;
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws NotFoundException, IOException {
+    public UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws NotFoundException, IOException, AmazonS3Exception {
         Boolean exists = userRepo.existsById(userDTOrequest.getId());
         if (!exists) throw new NotFoundException("A user with id " + userDTOrequest.getId() + " was not found");
         User user = userRepo.getById(userDTOrequest.getId());
