@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    AmazonS3Service amazonS3Service;
+    CloudStorageService amazonS3Service;
 
     @Override
     public User save(User user) {
