@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping
+@RequestMapping("news")
 public class NewsController {
 
   @Autowired
