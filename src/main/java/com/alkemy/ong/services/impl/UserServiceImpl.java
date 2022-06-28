@@ -8,6 +8,7 @@ import com.alkemy.ong.exception.AmazonS3Exception;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.UserMapper;
 import com.alkemy.ong.repositories.UserRepository;
+import com.alkemy.ong.security.service.JwtService;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.UserService;
 import javassist.NotFoundException;
@@ -36,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     CloudStorageService amazonS3Service;
+
+    @Autowired
+    JwtService jwtService;
 
     @Override
     public User save(User user) {
@@ -86,8 +90,7 @@ public class UserServiceImpl implements UserService {
         return usersDTO;
 
     }
-    @Autowired
-    JwtService jwtService;
+
     public UserDTO getMe(String jwt) throws Exception{
         String emailUser = jwtService.getUsername(jwt);
         Boolean exitsUser = userRepo.existsByEmail(emailUser);
