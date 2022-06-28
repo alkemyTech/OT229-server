@@ -1,23 +1,26 @@
 package com.alkemy.ong.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-public class OrganizationDTO {
+public class UserDTORequest {
     private String id;
-    private String name;
-    private String image;
-    private Integer phone;
-    private String address;
-
+    private String firstName;
+    private String lastName;
     @Email(message = "Invalid email format")
     private String email;
-    private String welcomeText;
-    private String aboutUsText;
+    @Size(min = 1, max = 255)
+    private String password;
+
+
 }
