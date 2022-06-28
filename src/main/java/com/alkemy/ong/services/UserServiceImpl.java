@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
         Boolean exists = userRepo.existsById(userDTOrequest.getId());
         if (!exists) throw new NotFoundException("A user with id " + userDTOrequest.getId() + " was not found");
         User user = userRepo.getById(userDTOrequest.getId());
-        if (user.isSoftDelete()) throw new NotFoundException("A user with id " + userDTOrequest.getId() + " was not found");
         if (!userDTOrequest.getEmail().isEmpty()) user.setEmail(userDTOrequest.getEmail());
         if (!userDTOrequest.getFirstName().isEmpty()) user.setFirstName(userDTOrequest.getFirstName());
         if (!userDTOrequest.getLastName().isEmpty()) user.setLastName(userDTOrequest.getLastName());
