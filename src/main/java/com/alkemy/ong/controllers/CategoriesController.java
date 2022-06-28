@@ -40,6 +40,17 @@ public class CategoriesController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(modifiedDTO);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> edit(@Valid @RequestBody CategoryDTO dto, @PathVariable String id) {
+        CategoryDTO modifiedDTO = null;
+        try {
+            modifiedDTO = categoriesService.edit(dto,id);
+        } catch(RuntimeException r) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(modifiedDTO);
+    }
 }
 
 
