@@ -1,7 +1,9 @@
-package com.alkemy.ong.services;
+package com.alkemy.ong.services.impl;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.alkemy.ong.services.EmailService;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;

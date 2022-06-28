@@ -1,10 +1,12 @@
-package com.alkemy.ong.services;
+package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.OrganizationDTO;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
 import com.alkemy.ong.entities.Organization;
 import com.alkemy.ong.mappers.OrganizationMapper;
 import com.alkemy.ong.repositories.OrganizationsRepository;
+import com.alkemy.ong.services.CloudStorageService;
+import com.alkemy.ong.services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class OrganizationServiceImpl implements OrganizationService{
+public class OrganizationServiceImpl implements OrganizationService {
 
     @Autowired
     private OrganizationMapper organizationMapper;

@@ -1,5 +1,5 @@
 
-package com.alkemy.ong.services;
+package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.dto.UserDTORequest;
@@ -8,6 +8,8 @@ import com.alkemy.ong.exception.AmazonS3Exception;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.UserMapper;
 import com.alkemy.ong.repositories.UserRepository;
+import com.alkemy.ong.services.CloudStorageService;
+import com.alkemy.ong.services.UserService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

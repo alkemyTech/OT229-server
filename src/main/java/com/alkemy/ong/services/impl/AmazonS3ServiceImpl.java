@@ -1,7 +1,8 @@
-package com.alkemy.ong.services;
+package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.configuration.AmazonS3CredentialsConfiguration;
 import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.utility.FileManager;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -20,7 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @Service
-public class AmazonS3Service implements CloudStorageService {
+public class AmazonS3ServiceImpl implements CloudStorageService {
 
     @Autowired
     private AmazonS3CredentialsConfiguration credentialsConfiguration;
