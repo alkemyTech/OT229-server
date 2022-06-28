@@ -23,7 +23,7 @@ public class OrganizationServiceImpl implements OrganizationService{
     private OrganizationsRepository organizationsRepository;
 
     @Autowired
-    private AmazonS3Service amazonService;
+    private CloudStorageService amazonService;
 
     @Override
     public List<ReducedOrganizationDTO> getAll() {
