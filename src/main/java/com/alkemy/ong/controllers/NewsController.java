@@ -1,6 +1,7 @@
 package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.dto.NewsDTO;
+import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,11 +17,16 @@ public class NewsController {
 
   @Autowired
   private NewsService newsService;
+  @Autowired
+  private CloudStorageService cloudStorageService;
+
 
   @PostMapping
-  public ResponseEntity<NewsDTO> save(@RequestParam(value = "file",required = false) MultipartFile image, @Valid @RequestBody NewsDTO newsDTO) throws Exception{
-    NewsDTO newsSaved = this.newsService.save(image,newsDTO);
-    return ResponseEntity.status(HttpStatus.CREATED).body(newsSaved);
+  public ResponseEntity<NewsDTO> save(@RequestParam(value = "file",required = false) MultipartFile file, @ModelAttribute NewsDTO newsDTO) throws Exception{
+
+    newsDTO.setImage(cloudStorageService.uploadFile(file));
+    return ResponseEntity.status(HttpStatus.CREATED).body(this.newsService.save(file,newsDTO));
+
   }
 
 }

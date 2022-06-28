@@ -25,13 +25,13 @@ public class NewsServiceImpl implements NewsService {
 
   @Transactional
   @Override
-  public NewsDTO save(MultipartFile image, NewsDTO news) throws IOException {
+  public NewsDTO save(MultipartFile file, NewsDTO news) throws IOException {
 
+    String imageUrl=(cloudStorageService.uploadFile(file));
+    news.setImage(imageUrl);
     News entity = this.newsMapper.newsDTO2Entity(news);
     News newsSaved = this.newsRepository.save(entity);
-    newsSaved.setImage(cloudStorageService.uploadFile(image));
-    NewsDTO result = this.newsMapper.newsEntity2DTO(newsSaved);
-    return result;
+    return this.newsMapper.newsEntity2DTO(newsSaved);
   }
 
 }
