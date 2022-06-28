@@ -14,9 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 public class CategoryListResponse {
 
-    List<String> categories = new ArrayList<>();
+    private List<String> categories = new ArrayList<>();
 
-    boolean addCategory(String category) {
+    public boolean addCategory(String category) {
         return this.categories.add(category);
     }
 
