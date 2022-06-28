@@ -2,7 +2,9 @@ package com.alkemy.ong.services;
 
 import com.alkemy.ong.dto.OrganizationDTO;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface OrganizationService {
@@ -11,5 +13,5 @@ public interface OrganizationService {
 
     public ReducedOrganizationDTO getById (String id);
 
-    public OrganizationDTO updateOrganization(OrganizationDTO organizationDTO, String organizationName);
+    public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws IOException;
 }

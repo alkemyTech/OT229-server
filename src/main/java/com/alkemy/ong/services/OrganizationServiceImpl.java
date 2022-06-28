@@ -7,7 +7,9 @@ import com.alkemy.ong.mappers.OrganizationMapper;
 import com.alkemy.ong.repositories.OrganizationsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +21,9 @@ public class OrganizationServiceImpl implements OrganizationService{
 
     @Autowired
     private OrganizationsRepository organizationsRepository;
+
+    @Autowired
+    private AmazonS3Service amazonService;
 
     @Override
     public List<ReducedOrganizationDTO> getAll() {
@@ -39,8 +44,12 @@ public class OrganizationServiceImpl implements OrganizationService{
     }
 
     @Override
-    public OrganizationDTO updateOrganization(OrganizationDTO organizationDTO, String organizationName) {
-        Organization organization = organizationsRepository.findByName(organizationName).get();
+    public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws IOException {
+        Organization organization = organizationsRepository.findById(organizationDTO.getId()).get();
+
+        if(!image.isEmpty()){
+            organizationDTO.setImage(amazonService.uploadFile(image));
+        }
 
         organization = updateInfo(organization, organizationDTO);
 
@@ -50,27 +59,27 @@ public class OrganizationServiceImpl implements OrganizationService{
     }
 
     private Organization updateInfo(Organization organization, OrganizationDTO organizationDTO){
-        // Si el atributo del objeto OrganizationDTO es null, es porque no se quiere actualizar
-        if(organizationDTO.getName() != null && !organization.getName().equalsIgnoreCase(organizationDTO.getName())){
-            organization.setName(organizationDTO.getName());
+
+        if(!organizationDTO.getName().trim().isEmpty() && !organization.getName().equalsIgnoreCase(organizationDTO.getName())){
+            organization.setName(organizationDTO.getName().trim());
         }
         if(organizationDTO.getImage() != null && !organization.getImage().equalsIgnoreCase(organizationDTO.getImage())){
-            organization.setImage(organizationDTO.getImage());
+            organization.setImage(organizationDTO.getImage().trim());
         }
-        if(organizationDTO.getPhone() != null && organization.getPhone() != organizationDTO.getPhone()){
+        if(organizationDTO.getPhone() != 0 && organization.getPhone() != organizationDTO.getPhone()){
             organization.setPhone(organizationDTO.getPhone());
         }
-        if(organizationDTO.getAddress() != null && !organization.getAddress().equalsIgnoreCase(organizationDTO.getAddress())){
-            organization.setAddress(organizationDTO.getAddress());
+        if(!organizationDTO.getAddress().trim().isEmpty() && !organization.getAddress().equalsIgnoreCase(organizationDTO.getAddress())){
+            organization.setAddress(organizationDTO.getAddress().trim());
         }
-        if(organizationDTO.getEmail() != null && !organization.getEmail().equalsIgnoreCase(organizationDTO.getEmail())){
-            organization.setEmail(organizationDTO.getEmail());
+        if(!organizationDTO.getEmail().trim().isEmpty() && !organization.getEmail().equalsIgnoreCase(organizationDTO.getEmail())){
+            organization.setEmail(organizationDTO.getEmail().trim());
         }
-        if(organizationDTO.getWelcomeText() != null && !organization.getWelcomeText().equalsIgnoreCase(organizationDTO.getWelcomeText())){
-            organization.setWelcomeText(organizationDTO.getWelcomeText());
+        if(!organizationDTO.getWelcomeText().trim().isEmpty() && !organization.getWelcomeText().equalsIgnoreCase(organizationDTO.getWelcomeText())){
+            organization.setWelcomeText(organizationDTO.getWelcomeText().trim());
         }
-        if(organizationDTO.getAboutUsText() != null && !organization.getAboutUsText().equalsIgnoreCase(organizationDTO.getAboutUsText())){
-            organization.setAboutUsText(organizationDTO.getAboutUsText());
+        if(!organizationDTO.getAboutUsText().trim().isEmpty() && !organization.getAboutUsText().equalsIgnoreCase(organizationDTO.getAboutUsText())){
+            organization.setAboutUsText(organizationDTO.getAboutUsText().trim());
         }
 
         return organization;

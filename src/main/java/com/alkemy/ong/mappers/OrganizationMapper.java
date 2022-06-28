@@ -33,6 +33,7 @@ public class OrganizationMapper {
     public OrganizationDTO organizationEntity2OrganizationDTO(Organization organization){
         OrganizationDTO organizationDTO = new OrganizationDTO();
 
+        organizationDTO.setId(organization.getId());
         organizationDTO.setName(organization.getName());
         organizationDTO.setImage(organization.getImage());
         organizationDTO.setPhone(organization.getPhone());

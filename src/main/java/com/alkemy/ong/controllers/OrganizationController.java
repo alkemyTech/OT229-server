@@ -4,13 +4,16 @@ import com.alkemy.ong.dto.OrganizationDTO;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
 import com.alkemy.ong.services.OrganizationService;
 import com.alkemy.ong.utility.GlobalConstants;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 //@PreAuthorize("permitAll()") // Descomentar cuando se trabaje en el ticket 73
@@ -34,10 +37,16 @@ public class OrganizationController {
     }
 
     //@PreAuthorize("hasRole('ADMIN')") // Descomentar cuando se trabaje en el ticket 73
-    @PostMapping("/{organizationName}")
-    public ResponseEntity<OrganizationDTO> updateOrganization(@PathVariable String organizationName, @RequestBody @Valid OrganizationDTO organizationDTO){
-        OrganizationDTO org = organizationService.updateOrganization(organizationDTO, organizationName);
+    @PostMapping
+    public ResponseEntity<OrganizationDTO> updateOrganization(@RequestParam(value = "file", required = false) MultipartFile image,
+                                                              @ModelAttribute OrganizationDTO organizationDTO){
 
-        return ResponseEntity.status(HttpStatus.OK).body(org);
+        try{
+            OrganizationDTO org = organizationService.updateOrganization(image, organizationDTO);
+
+            return ResponseEntity.ok().body(org);
+        } catch (IOException e){
+            return ResponseEntity.notFound().build();
+        }
     }
 }
