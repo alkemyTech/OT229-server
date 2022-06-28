@@ -5,6 +5,7 @@ import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.dto.UserDTORequest;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.UserMapper;
 import com.alkemy.ong.repositories.UserRepository;
 import javassist.NotFoundException;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -68,6 +72,17 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
 
         return mapper.userEntity2DTO(user);
+    }
+
+    public List<UserDTO> getAll() {
+
+        List<UserDTO> usersDTO = new LinkedList<>();
+        for(User user : userRepo.findAll()){
+            usersDTO.add(mapper.userEntity2DTO(user));
+        }
+        usersDTO.sort(Comparator.comparing(UserDTO::getEmail).reversed());
+        return usersDTO;
+
     }
 
 }

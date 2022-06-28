@@ -9,11 +9,14 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+
 
 @RestController
 @RequestMapping(GlobalConstants.Endpoints.USER)
@@ -32,10 +35,17 @@ public class UserController {
             return e.getMessage();
         }
     }
+   
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getAll(){
 
-    @PutMapping
+        return new ResponseEntity<>(userService.getAll(),HttpStatus.OK);
+
+    }
+
+ @PutMapping
     public ResponseEntity<UserDTO> updateUser(@RequestParam(value = "file", required = false) MultipartFile multipartfile, @ModelAttribute UserDTORequest userDTORequest) {
-
         try {
             return new ResponseEntity<>(userService.updateUser(multipartfile, userDTORequest), HttpStatus.OK);
         } catch (NotFoundException e) {
