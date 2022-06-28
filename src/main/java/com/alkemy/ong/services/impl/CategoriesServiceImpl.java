@@ -1,9 +1,10 @@
-package com.alkemy.ong.services;
+package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.CategoryDTO;
 import com.alkemy.ong.entities.Category;
 import com.alkemy.ong.mappers.CategoryMapper;
 import com.alkemy.ong.repositories.CategoryRepository;
+import com.alkemy.ong.services.CategoriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class CategoriesServiceImpl implements CategoriesService{
+public class CategoriesServiceImpl implements CategoriesService {
 
     @Autowired
     private CategoryMapper categoryMapper;
