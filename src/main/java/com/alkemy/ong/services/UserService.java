@@ -5,6 +5,7 @@ import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.dto.UserDTORequest;
 import com.alkemy.ong.entities.User;
 import javassist.NotFoundException;
+import com.alkemy.ong.exception.AmazonS3Exception;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,5 +18,5 @@ public interface UserService {
   public User save(User user);
   Optional<User> getUserByEmail(String email);
   String delete(String id) throws NotFoundException;
-  UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws NotFoundException, IOException;
+  UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws NotFoundException, IOException, AmazonS3Exception;
 }
