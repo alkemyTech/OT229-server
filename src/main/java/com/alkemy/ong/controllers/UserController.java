@@ -2,6 +2,7 @@ package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.dto.UserDTORequest;
+import com.alkemy.ong.exception.AmazonS3Exception;
 import com.alkemy.ong.services.UserService;
 import com.alkemy.ong.utility.GlobalConstants;
 import javassist.NotFoundException;
@@ -39,6 +40,8 @@ public class UserController {
             return new ResponseEntity<>(userService.updateUser(multipartfile, userDTORequest), HttpStatus.OK);
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();
+         } catch (AmazonS3Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
         }
