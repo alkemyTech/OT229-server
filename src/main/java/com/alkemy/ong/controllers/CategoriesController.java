@@ -44,6 +44,10 @@ public class CategoriesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(modifiedDTO);
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> fedb49282b74fd99479716bd8e35120992fcb96e
 
     @PutMapping("/{id}")
     public ResponseEntity<?> edit(@Valid @RequestBody CategoryDTO dto, @PathVariable String id) {
@@ -54,13 +58,21 @@ public class CategoriesController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r.getMessage());
         }
         return ResponseEntity.status(HttpStatus.OK).body(modifiedDTO);
+<<<<<<< HEAD
 =======
+=======
+    }
+>>>>>>> fedb49282b74fd99479716bd8e35120992fcb96e
     
     @GetMapping
     public ResponseEntity<?> getCategoryList() {
         CategoryListResponse responseBody = new CategoryListResponse();
         responseBody.setCategories(this.categoriesService.getAllCategoryNames());
         return ResponseEntity.ok(responseBody);
+<<<<<<< HEAD
 >>>>>>> main
+=======
+
+>>>>>>> fedb49282b74fd99479716bd8e35120992fcb96e
     }
 }
