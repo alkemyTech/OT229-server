@@ -1,16 +1,19 @@
-package com.alkemy.ong.services;
+package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.CategoryDTO;
 import com.alkemy.ong.entities.Category;
 import com.alkemy.ong.mappers.CategoryMapper;
 import com.alkemy.ong.repositories.CategoryRepository;
+import com.alkemy.ong.services.CategoriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class CategoriesServiceImpl implements CategoriesService{
+public class CategoriesServiceImpl implements CategoriesService {
 
     @Autowired
     private CategoryMapper categoryMapper;
@@ -29,8 +32,8 @@ public class CategoriesServiceImpl implements CategoriesService{
 
 
     public CategoryDTO save(CategoryDTO dto) {
-        Optional <Category> entityFound = categoryRepository.findByName(dto.getName());
-        if(entityFound.isPresent()) {
+        Optional<Category> entityFound = categoryRepository.findByName(dto.getName());
+        if (entityFound.isPresent()) {
             throw new RuntimeException("Category with the provided name is already present over the system");
         }
         Category entity = categoryMapper.categoryDTO2Entity(dto);
@@ -40,6 +43,7 @@ public class CategoriesServiceImpl implements CategoriesService{
 
         return dtoReturn;
     }
+
 
 
     public CategoryDTO edit(CategoryDTO dto, String id) {
@@ -56,5 +60,16 @@ public class CategoriesServiceImpl implements CategoriesService{
         CategoryDTO result = categoryMapper.categoryEntity2DTO(modifiedEntity);
 
         return result;
+
+    }
+
+    
+    @Override
+    public List<String> getAllCategoryNames() {
+        return this.categoryRepository.findAllByOrderByName()
+                .stream()
+                .map(Category::getName)
+                .collect(Collectors.toList());
+
     }
 }

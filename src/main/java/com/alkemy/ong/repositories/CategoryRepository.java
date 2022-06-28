@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-
+import java.util.List;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, String> {
@@ -17,4 +17,6 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
             nativeQuery = true
     )
     Optional<Category> findByName(String name);
+    
+    List<Category> findAllByOrderByName();
 }
