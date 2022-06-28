@@ -32,8 +32,8 @@ public class CategoriesServiceImpl implements CategoriesService {
 
 
     public CategoryDTO save(CategoryDTO dto) {
-        Optional <Category> entityFound = categoryRepository.findByName(dto.getName());
-        if(entityFound.isPresent()) {
+        Optional<Category> entityFound = categoryRepository.findByName(dto.getName());
+        if (entityFound.isPresent()) {
             throw new RuntimeException("Category with the provided name is already present over the system");
         }
         Category entity = categoryMapper.categoryDTO2Entity(dto);
@@ -43,6 +43,27 @@ public class CategoriesServiceImpl implements CategoriesService {
 
         return dtoReturn;
     }
+
+
+
+    public CategoryDTO edit(CategoryDTO dto, String id) {
+        Optional<Category> entityFound = categoryRepository.findById(id);
+        Optional<Category> entitySameName = categoryRepository.findByName(dto.getName());
+        if (!entityFound.isPresent()) {
+            throw new RuntimeException("Category with the provided ID not present");
+        } else if (entitySameName.isPresent() && entitySameName.get().getId() != entityFound.get().getId()) {
+            throw new RuntimeException("The name is already present over the system, please change it");
+        }
+
+        Category modifiedEntity = categoryMapper.editEntity(entityFound.get(), dto);
+        categoryRepository.save(modifiedEntity);
+        CategoryDTO result = categoryMapper.categoryEntity2DTO(modifiedEntity);
+
+        return result;
+
+
+    }
+
     
     @Override
     public List<String> getAllCategoryNames() {
@@ -50,5 +71,6 @@ public class CategoriesServiceImpl implements CategoriesService {
                 .stream()
                 .map(Category::getName)
                 .collect(Collectors.toList());
+
     }
 }
