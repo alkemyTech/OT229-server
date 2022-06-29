@@ -7,7 +7,6 @@ import com.alkemy.ong.entities.User;
 import com.alkemy.ong.security.payload.SignupRequest;
 import com.alkemy.ong.security.payload.SingupResponse;
 import javassist.NotFoundException;
-import com.alkemy.ong.exception.AmazonS3Exception;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
