@@ -30,7 +30,7 @@ public class AuthController {
 
     @PostMapping(GlobalConstants.Endpoints.REGISTER)
     public ResponseEntity<?> register(@RequestParam(value="file", required = false) MultipartFile image,
-                                      @ModelAttribute SignupRequest signupRequest) {
+                                      @ModelAttribute @Valid SignupRequest signupRequest) {
       try {
           SingupResponse response = userService.createUser(signupRequest, image);
 
