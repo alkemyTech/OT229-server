@@ -2,6 +2,7 @@ package com.alkemy.ong.security.controller;
 
 import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.security.payload.LoginRequest;
+import com.alkemy.ong.security.payload.SingupResponse;
 import com.alkemy.ong.security.service.AuthenticationService;
 import com.alkemy.ong.services.UserService;
 import com.alkemy.ong.utility.GlobalConstants;
@@ -32,10 +33,9 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestParam(value="file", required = false) MultipartFile image,
                                       @ModelAttribute SignupRequest signupRequest) {
       try {
-          UserDTO userDTO = userService.createUser(signupRequest, image);
+          SingupResponse response = userService.createUser(signupRequest, image);
 
-
-          return new ResponseEntity(userDTO, HttpStatus.CREATED);
+          return new ResponseEntity(response, HttpStatus.CREATED);
       } catch (Exception e) {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
