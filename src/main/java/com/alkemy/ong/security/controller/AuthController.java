@@ -1,6 +1,5 @@
 package com.alkemy.ong.security.controller;
 
-import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.security.payload.LoginRequest;
 import com.alkemy.ong.security.payload.SingupResponse;
 import com.alkemy.ong.security.service.AuthenticationService;
