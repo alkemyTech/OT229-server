@@ -5,10 +5,14 @@ import com.alkemy.ong.entities.Category;
 import com.alkemy.ong.mappers.CategoryMapper;
 import com.alkemy.ong.repositories.CategoryRepository;
 import com.alkemy.ong.services.CategoriesService;
+import com.amazonaws.services.mq.model.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,6 +24,8 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+
 
     public CategoryDTO getById(String id) {
         Optional<Category> entity = categoryRepository.findById(id);
@@ -72,5 +78,12 @@ public class CategoriesServiceImpl implements CategoriesService {
                 .map(Category::getName)
                 .collect(Collectors.toList());
 
+    }
+
+    @Transactional
+    @Override
+    public void deleted(String id) {
+        Optional<Category>entity = this.categoryRepository.findById(id);
+        this.categoryRepository.delete(entity.get());
     }
 }

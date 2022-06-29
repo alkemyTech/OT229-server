@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(GlobalConstants.Endpoints.CATEGORIES)
@@ -64,5 +66,11 @@ public class CategoriesController {
         responseBody.setCategories(this.categoriesService.getAllCategoryNames());
         return ResponseEntity.ok(responseBody);
 
+    }
+
+    @DeleteMapping("{/id}")
+    public ResponseEntity<CategoryDTO> deleted(@PathVariable String id){
+        categoriesService.deleted(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
