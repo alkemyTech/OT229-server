@@ -9,7 +9,10 @@ public interface CategoriesService {
     public CategoryDTO getById (String id);
 
     public CategoryDTO save (CategoryDTO dto);
-    
+
+    public CategoryDTO edit (CategoryDTO dto, String id);
+
     List<String> getAllCategoryNames();
     
 }
+

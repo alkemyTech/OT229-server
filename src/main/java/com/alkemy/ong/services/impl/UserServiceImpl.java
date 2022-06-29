@@ -38,6 +38,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     CloudStorageService amazonS3Service;
 
+    @Autowired
+    JwtService jwtService;
+
     @Override
     public User save(User user) {
         return userRepo.save(user);
@@ -89,6 +92,15 @@ public class UserServiceImpl implements UserService {
     }
     @Autowired
     JwtService jwtService;
+    public UserDTO getMe(String jwt) throws Exception{
+        String emailUser = jwtService.getUsername(jwt);
+        Boolean exitsUser = userRepo.existsByEmail(emailUser);
+        if (!exitsUser) throw new NotFoundException("A user with this token was not found");
+        Optional<User> user = userRepo.findByEmail(emailUser);
+        return mapper.userEntity2DTO(user.get());
+
+    }
+
     public UserDTO getMe(String jwt) throws Exception{
         String emailUser = jwtService.getUsername(jwt);
         Boolean exitsUser = userRepo.existsByEmail(emailUser);

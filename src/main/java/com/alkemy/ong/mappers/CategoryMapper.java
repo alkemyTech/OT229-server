@@ -25,4 +25,12 @@ public class CategoryMapper {
 
         return entity;
     }
+
+    public Category editEntity (Category entity, CategoryDTO dto) {
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        entity.setImage(dto.getImage());
+
+        return entity;
+    }
 }

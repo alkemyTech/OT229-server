@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -16,6 +18,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
+@SQLDelete(sql = "UPDATE activity SET soft_deleted = true WHERE id = ?")
+@Where(clause = "soft_deleted = false")
 public class News {
 
     @Id
@@ -34,7 +38,7 @@ public class News {
 
     @CreationTimestamp
     private Date timestamp;
-
+    @Column(name = "soft_deleted")
     private Boolean softDelete;
 
     @ManyToOne()
