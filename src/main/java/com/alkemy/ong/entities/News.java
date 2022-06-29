@@ -39,7 +39,7 @@ public class News {
     @CreationTimestamp
     private Date timestamp;
     @Column(name = "soft_deleted")
-    private Boolean softDelete;
+    private Boolean softDelete=Boolean.FALSE;
 
     @ManyToOne()
     @JoinColumn(name = "categoryId")
