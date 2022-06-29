@@ -6,5 +6,7 @@ import java.util.Set;
 
 public interface RoleService {
 
-    Set<Role> findRoleUser();
+    Set<Role> getRoleUser();
+
+    Role creationRoleUser();
 }
