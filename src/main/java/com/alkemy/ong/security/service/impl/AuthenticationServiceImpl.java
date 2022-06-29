@@ -1,9 +1,11 @@
-package com.alkemy.ong.security.service;
+package com.alkemy.ong.security.service.impl;
 
 import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.UserMapper;
 import com.alkemy.ong.security.payload.LoginResponse;
+import com.alkemy.ong.security.service.AuthenticationService;
+import com.alkemy.ong.security.service.JwtService;
 import com.alkemy.ong.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

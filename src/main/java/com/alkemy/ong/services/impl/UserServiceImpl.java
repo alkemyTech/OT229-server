@@ -5,11 +5,14 @@ import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.dto.UserDTORequest;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.exception.AmazonS3Exception;
-import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.UserMapper;
 import com.alkemy.ong.repositories.UserRepository;
+import com.alkemy.ong.security.payload.SignupRequest;
+import com.alkemy.ong.security.payload.SingupResponse;
 import com.alkemy.ong.security.service.JwtService;
 import com.alkemy.ong.services.CloudStorageService;
+import com.alkemy.ong.services.EmailService;
+import com.alkemy.ong.services.RoleService;
 import com.alkemy.ong.services.UserService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -40,6 +40,38 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     JwtService jwtService;
+
+    @Autowired
+    EmailService emailService;
+
+    @Autowired
+    RoleService roleService;
+
+    @Override
+    public SingupResponse createUser(SignupRequest signupRequest, MultipartFile image) throws IOException {
+        User user = new User();
+
+        user.setFirstName(signupRequest.getFirstName());
+        user.setLastName(signupRequest.getLastName());
+        user.setEmail(signupRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+
+        if(image != null && !image.isEmpty()){
+            user.setPhoto(amazonS3Service.uploadFile(image));
+        }
+
+        user.setRoleId(roleService.getRoleUser());
+
+        save(user);
+        emailService.sendEmail(user.getEmail());
+
+        SingupResponse singupResponse = new SingupResponse();
+        singupResponse.setUser(mapper.userEntity2DTO(user));
+        singupResponse.setMessage("Successful registration");
+        singupResponse.setToken(jwtService.createToken(user));
+
+        return singupResponse;
+    }
 
     @Override
     public User save(User user) {
