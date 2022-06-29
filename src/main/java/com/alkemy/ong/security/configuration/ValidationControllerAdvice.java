@@ -14,6 +14,10 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.stream.Collectors;
 
+/**
+ * This class catches and processes the exceptions thrown during a annotation-based validation process and generates
+ * a default response.
+ */
 @ControllerAdvice
 public class ValidationControllerAdvice {
 
