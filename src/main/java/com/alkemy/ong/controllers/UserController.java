@@ -28,7 +28,7 @@ public class UserController {
     @DeleteMapping
     public String deleteUser(@RequestParam("id") String id, HttpServletResponse httpServletResponse) {
         try {
-            httpServletResponse.setStatus(HttpStatus.OK.value());
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
             return userService.delete(id);
         } catch (NotFoundException e) {
             httpServletResponse.setStatus(HttpStatus.NOT_FOUND.value());
