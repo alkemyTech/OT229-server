@@ -45,15 +45,17 @@ public class UserController {
     }
 
  @PutMapping
-    public ResponseEntity<UserDTO> updateUser(@RequestParam(value = "file", required = false) MultipartFile multipartfile, @ModelAttribute UserDTORequest userDTORequest) {
+    public ResponseEntity<?> updateUser(@RequestParam(value = "file", required = false) MultipartFile multipartfile, @ModelAttribute UserDTORequest userDTORequest) {
         try {
             return new ResponseEntity<>(userService.updateUser(multipartfile, userDTORequest), HttpStatus.OK);
         } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
          } catch (AmazonS3Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
         } catch (IOException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
     @GetMapping("/auth/me")

@@ -95,12 +95,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws NotFoundException, IOException, AmazonS3Exception {
+    public UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws Exception {
         Boolean exists = userRepo.existsById(userDTOrequest.getId());
         if (!exists) throw new NotFoundException("A user with id " + userDTOrequest.getId() + " was not found");
         User user = userRepo.getById(userDTOrequest.getId());
 
-        if (!userDTOrequest.getEmail().isEmpty()) user.setEmail(userDTOrequest.getEmail());
+        if (!userDTOrequest.getEmail().isEmpty()){
+            Optional<User> u = userRepo.findByEmail(userDTOrequest.getEmail());
+            if(u.isPresent())throw new Exception("The email is already in use");
+            user.setEmail(userDTOrequest.getEmail());}
         if (!userDTOrequest.getFirstName().isEmpty()) user.setFirstName(userDTOrequest.getFirstName());
         if (!userDTOrequest.getLastName().isEmpty()) user.setLastName(userDTOrequest.getLastName());
         if (!userDTOrequest.getPassword().isEmpty())
