@@ -62,7 +62,7 @@ public abstract class FileManager {
          */
         public FileNameBuilder withTimeStamp() {
             String timestamp = Long.toString( new Date().getTime() );
-            this.name += ("-" + timestamp);
+            this.name = timestamp + "-" + this.name;
             return this;
         }
 
