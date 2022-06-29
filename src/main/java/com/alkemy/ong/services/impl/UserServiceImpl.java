@@ -56,11 +56,11 @@ public class UserServiceImpl implements UserService {
         user.setEmail(signupRequest.getEmail());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
 
-        if(!image.isEmpty()){
+        if(image != null && !image.isEmpty()){
             user.setPhoto(amazonS3Service.uploadFile(image));
         }
 
-        user.setRoleId(roleService.findRoleUser());
+        user.setRoleId(roleService.getRoleUser());
 
         save(user);
         emailService.sendEmail(user.getEmail());
