@@ -69,8 +69,12 @@ public class CategoriesController {
     }
 
     @DeleteMapping("{/id}")
-    public ResponseEntity<CategoryDTO> deleted(@PathVariable String id){
-        categoriesService.deleted(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    public ResponseEntity<?> deleted(@PathVariable String id){
+        try {
+            categoriesService.deleted(id);
+        }catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
