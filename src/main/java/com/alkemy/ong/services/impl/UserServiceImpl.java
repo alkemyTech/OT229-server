@@ -3,7 +3,6 @@ package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.dto.UserDTORequest;
-import com.alkemy.ong.entities.Role;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.exception.AmazonS3Exception;
 import com.alkemy.ong.mappers.UserMapper;
