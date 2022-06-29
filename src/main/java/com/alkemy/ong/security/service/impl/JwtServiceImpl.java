@@ -1,7 +1,8 @@
-package com.alkemy.ong.security.service;
+package com.alkemy.ong.security.service.impl;
 
 import com.alkemy.ong.entities.Role;
 import com.alkemy.ong.entities.User;
+import com.alkemy.ong.security.service.JwtService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class JwtServiceImpl implements JwtService{
+public class JwtServiceImpl implements JwtService {
     private final String BEARER = "Bearer ";
 
     @Value("${token.issuer}")
