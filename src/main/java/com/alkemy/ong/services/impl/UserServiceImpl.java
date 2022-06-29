@@ -50,9 +50,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SingupResponse createUser(SignupRequest signupRequest, MultipartFile image) throws IOException {
-        Optional<User> userFound = userRepo.findByEmail(signupRequest.getEmail());
+        Boolean userFound = userRepo.existsByEmail(signupRequest.getEmail());
 
-        if(!userFound.isPresent()){
+        if(!userFound){
             User user = new User();
 
             user.setFirstName(signupRequest.getFirstName());
