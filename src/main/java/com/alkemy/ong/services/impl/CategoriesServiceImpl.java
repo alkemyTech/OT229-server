@@ -84,7 +84,7 @@ public class CategoriesServiceImpl implements CategoriesService {
     @Override
     public void deleted(String id) {
         Optional<Category>entity = this.categoryRepository.findById(id);
-        if(!entity.isEmpty()){
+        if(entity.isEmpty()){
             throw new RuntimeException("Category not present");
         }
         this.categoryRepository.delete(entity.get());
