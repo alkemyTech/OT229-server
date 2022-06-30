@@ -30,8 +30,14 @@ public class NewsController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<NewsDTO> findById(@PathVariable String id){
-      NewsDTO newsDTO = newsService.findById(id);
+  public ResponseEntity<?> findById(@PathVariable String id){
+    NewsDTO newsDTO=null;
+    try {
+      newsDTO = newsService.findById(id);
+    }catch (RuntimeException e){
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
       return ResponseEntity.status(HttpStatus.OK).body(newsDTO);
   }
 }
