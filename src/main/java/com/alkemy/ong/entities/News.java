@@ -18,8 +18,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE activity SET soft_deleted = true WHERE id = ?")
-@Where(clause = "soft_deleted = false")
+@SQLDelete(sql = "UPDATE news SET soft_delete = true WHERE id = ?")
+@Where(clause = "soft_delete = false")
 public class News {
 
     @Id
@@ -37,7 +37,7 @@ public class News {
 
     @CreationTimestamp
     private Date timestamp;
-    @Column(name = "soft_deleted")
+    @Column(name = "soft_delete")
     private Boolean softDelete=Boolean.FALSE;
 
     @ManyToOne()
