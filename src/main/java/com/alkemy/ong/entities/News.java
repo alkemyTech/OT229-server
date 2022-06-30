@@ -33,7 +33,6 @@ public class News {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
     private String image;
 
     @CreationTimestamp
