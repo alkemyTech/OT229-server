@@ -5,6 +5,7 @@ import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.dto.UserDTORequest;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.exception.RegisterException;
 import com.alkemy.ong.mappers.UserMapper;
 import com.alkemy.ong.repositories.UserRepository;
 import com.alkemy.ong.security.payload.SignupRequest;
@@ -49,28 +50,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SingupResponse createUser(SignupRequest signupRequest, MultipartFile image) throws IOException {
-        User user = new User();
+        Boolean userFound = userRepo.existsByEmail(signupRequest.getEmail());
 
-        user.setFirstName(signupRequest.getFirstName());
-        user.setLastName(signupRequest.getLastName());
-        user.setEmail(signupRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        if(!userFound){
+            User user = new User();
 
-        if(image != null && !image.isEmpty()){
-            user.setPhoto(amazonS3Service.uploadFile(image));
+            user.setFirstName(signupRequest.getFirstName());
+            user.setLastName(signupRequest.getLastName());
+            user.setEmail(signupRequest.getEmail());
+            user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+
+            if(image != null && !image.isEmpty()){
+                user.setPhoto(amazonS3Service.uploadFile(image));
+            }
+
+            user.setRoleId(roleService.getRoleUser());
+
+            save(user);
+            emailService.sendEmail(user.getEmail());
+
+            SingupResponse singupResponse = new SingupResponse();
+            singupResponse.setUser(mapper.userEntity2DTO(user));
+            singupResponse.setMessage("Successful registration");
+            singupResponse.setToken(jwtService.createToken(user));
+
+            return singupResponse;
+        }else{
+            throw new RegisterException("The email is already in use");
         }
-
-        user.setRoleId(roleService.getRoleUser());
-
-        save(user);
-        emailService.sendEmail(user.getEmail());
-
-        SingupResponse singupResponse = new SingupResponse();
-        singupResponse.setUser(mapper.userEntity2DTO(user));
-        singupResponse.setMessage("Successful registration");
-        singupResponse.setToken(jwtService.createToken(user));
-
-        return singupResponse;
     }
 
     @Override
@@ -103,7 +110,8 @@ public class UserServiceImpl implements UserService {
         if (!userDTOrequest.getEmail().isEmpty()){
             Optional<User> u = userRepo.findByEmail(userDTOrequest.getEmail());
             if(u.isPresent())throw new Exception("The email is already in use");
-            user.setEmail(userDTOrequest.getEmail());}
+            user.setEmail(userDTOrequest.getEmail());
+        }
         if (!userDTOrequest.getFirstName().isEmpty()) user.setFirstName(userDTOrequest.getFirstName());
         if (!userDTOrequest.getLastName().isEmpty()) user.setLastName(userDTOrequest.getLastName());
         if (!userDTOrequest.getPassword().isEmpty())

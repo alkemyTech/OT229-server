@@ -1,5 +1,6 @@
 package com.alkemy.ong.security.controller;
 
+import com.alkemy.ong.exception.RegisterException;
 import com.alkemy.ong.security.payload.LoginRequest;
 import com.alkemy.ong.security.payload.SingupResponse;
 import com.alkemy.ong.security.service.AuthenticationService;
@@ -31,13 +32,15 @@ public class AuthController {
     @PostMapping(GlobalConstants.Endpoints.REGISTER)
     public ResponseEntity<?> register(@RequestParam(value="file", required = false) MultipartFile image,
                                       @ModelAttribute @Valid SignupRequest signupRequest) {
-      try {
-          SingupResponse response = userService.createUser(signupRequest, image);
+          try {
+              SingupResponse response = userService.createUser(signupRequest, image);
 
-          return new ResponseEntity(response, HttpStatus.CREATED);
-      } catch (Exception e) {
-          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-      }
+              return new ResponseEntity(response, HttpStatus.CREATED);
+          } catch (RegisterException e){
+              return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+          } catch (Exception e) {
+              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+          }
     }
 
     @PostMapping(GlobalConstants.Endpoints.LOGIN)

@@ -8,16 +8,16 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 public class SignupRequest {
-    @NotBlank
+    @NotBlank(message = "Parameter 'firstName' should be complete.")
     private String firstName;
 
-    @NotBlank
+    @NotBlank(message = "Parameter 'lastName' should be complete.")
     private String lastName;
 
     @NotBlank
     @Email(message = "Invalid email format")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Password cant be blank")
     private String password;
 }
