@@ -7,8 +7,10 @@ import com.alkemy.ong.mappers.ContactMapper;
 import com.alkemy.ong.repositories.ContactRepository;
 import com.alkemy.ong.services.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class ContractServiceImpl implements ContactService {
+@Service
+public class ContactServiceImpl implements ContactService {
 
         @Autowired
         ContactMapper mapper;
