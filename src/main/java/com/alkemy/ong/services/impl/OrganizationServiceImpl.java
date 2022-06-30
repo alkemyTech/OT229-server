@@ -83,6 +83,16 @@ public class OrganizationServiceImpl implements OrganizationService {
         if(!organizationDTO.getAboutUsText().trim().isEmpty() && !organization.getAboutUsText().equalsIgnoreCase(organizationDTO.getAboutUsText())){
             organization.setAboutUsText(organizationDTO.getAboutUsText().trim());
         }
+        if (!organizationDTO.getUrlFacebook().trim().isEmpty() && !organization.getUrlFacebook().equalsIgnoreCase(organizationDTO.getUrlFacebook())){
+            organization.setUrlFacebook(organizationDTO.getUrlFacebook().trim());
+        }
+        if (!organizationDTO.getUrlInstagram().trim().isEmpty() && !organization.getUrlInstagram().equalsIgnoreCase(organizationDTO.getUrlInstagram())){
+            organization.setUrlInstagram(organizationDTO.getUrlInstagram().trim());
+        }
+        if (!organizationDTO.getUrlLinkedin().trim().isEmpty() && !organization.getUrlLinkedin().equalsIgnoreCase(organizationDTO.getUrlLinkedin())){
+            organization.setUrlLinkedin(organizationDTO.getUrlLinkedin().trim());
+        }
+
 
         return organization;
     }
