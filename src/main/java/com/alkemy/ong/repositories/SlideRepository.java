@@ -10,6 +10,7 @@ import java.util.List;
 @Repository
 public interface SlideRepository extends JpaRepository<SlidesEntity, String> {
 
-    public List<SlidesEntity> findByOrganizationId (String organizationId);
+    public List<SlidesEntity> findByOrganizationIdOrderBySlideOrder (String organizationId);
     public List<SlidesEntity> findBySlideOrder(Integer order);
+
 }
