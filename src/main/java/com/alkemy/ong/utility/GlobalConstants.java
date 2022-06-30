@@ -14,7 +14,7 @@ public abstract class GlobalConstants {
         public static final String USER = "/users/";
         public static final String CATEGORIES = "/categories";
         public static final String CLOUD_STORAGE = "/cloud-storage";
-
+        public static final String CONTACT = "/contacts";
     }
 
 }
