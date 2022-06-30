@@ -49,5 +49,11 @@ public class Organization {
     private Date timeStamp;
 
     private boolean softDelete = Boolean.FALSE;
+    @Column(name = "urlFacebook")
+    private String urlFacebook;
+    @Column(name = "urlInstragram")
+    private String urlInstagram;
+    @Column(name = "urlLinkedin")
+    private String urlLinkedin;
 
 }

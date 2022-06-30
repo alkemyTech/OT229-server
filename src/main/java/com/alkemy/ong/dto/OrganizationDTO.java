@@ -15,6 +15,9 @@ public class OrganizationDTO {
     private String image;
     private Integer phone;
     private String address;
+    private String urlFacebook;
+    private String urlInstagram;
+    private String urlLinkedin;
 
     @Email(message = "Invalid email format")
     private String email;
