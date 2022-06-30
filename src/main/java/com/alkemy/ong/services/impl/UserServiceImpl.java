@@ -108,8 +108,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepo.getById(userDTOrequest.getId());
 
         if (!userDTOrequest.getEmail().isEmpty()){
-            Optional<User> u = userRepo.findByEmail(userDTOrequest.getEmail());
-            if(u.isPresent())throw new Exception("The email is already in use");
+            Boolean emailExists= userRepo.existsByEmail(userDTOrequest.getEmail());
+            if(emailExists)throw new Exception("The email is already in use");
             user.setEmail(userDTOrequest.getEmail());
         }
         if (!userDTOrequest.getFirstName().isEmpty()) user.setFirstName(userDTOrequest.getFirstName());
