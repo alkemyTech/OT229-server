@@ -8,4 +8,5 @@ import java.io.IOException;
 public interface NewsService {
   NewsDTO save (MultipartFile file, NewsDTO news) throws IOException;
 
+  NewsDTO findById(String id);
 }

@@ -1,5 +1,5 @@
 
-package com.alkemy.ong.security;
+package com.alkemy.ong.security.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
