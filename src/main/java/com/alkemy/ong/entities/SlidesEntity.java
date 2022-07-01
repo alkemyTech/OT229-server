@@ -22,16 +22,16 @@ public class SlidesEntity {
   @Column(name = "id")
   private String id;
 
-  @Column(name="organizationId", nullable = false)
+  @Column(name="organization_id", nullable = false)
   private String organizationId;
 
-  @Column(name="imageUrl", nullable = false)
+  @Column(name = "image_url", nullable = false)
   private String imageUrl;
 
-  @Column(name = "text", nullable = false)
+  @Column(name = "text")
   private String text;
 
   @Column(name = "slide_order")
-  private Integer slideOrder;
+  private int slideOrder;
 
 }

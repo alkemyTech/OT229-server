@@ -36,7 +36,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public ReducedOrganizationDTO getById(String id) {
+    public ReducedOrganizationDTO getById(String id) throws RuntimeException {
         Optional<Organization> entity = organizationsRepository.findById(id);
         if (!entity.isPresent()) {
             throw new RuntimeException("Organization with the provided ID not present");

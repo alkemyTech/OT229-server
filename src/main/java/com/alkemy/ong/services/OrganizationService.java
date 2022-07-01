@@ -11,7 +11,14 @@ public interface OrganizationService {
 
     public List<ReducedOrganizationDTO> getAll();
 
-    public ReducedOrganizationDTO getById (String id);
+    /**
+     * Returns organization's most relevant fields.
+     *
+     * @param id the id of the organization.
+     * @return  the dto of the organization.
+     * @throws RuntimeException if the organization with the received id doesn't exist.
+     */
+    public ReducedOrganizationDTO getById (String id) throws RuntimeException;
 
     public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws IOException;
 }
