@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(GlobalConstants.Endpoints.CONTACT)
 public class ContactController {
@@ -24,7 +22,7 @@ public class ContactController {
     private ContactService service;
 
     @PostMapping
-    public ResponseEntity<?> createContact(@ModelAttribute ContactDTORequest request) {
+    public ResponseEntity<?> createContact(@Valid @ModelAttribute ContactDTORequest request) {
         try {
             return new ResponseEntity<>(service.create(request), HttpStatus.CREATED);
         } catch (Exception e) {
