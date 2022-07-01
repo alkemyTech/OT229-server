@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
         for(User user : userRepo.findAll()){
             usersDTO.add(mapper.userEntity2DTO(user));
         }
-        usersDTO.sort(Comparator.comparing(UserDTO::getEmail).reversed());
+        usersDTO.sort(Comparator.comparing(UserDTO::getEmail));
         return usersDTO;
 
     }
