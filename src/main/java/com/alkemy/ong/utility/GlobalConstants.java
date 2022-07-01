@@ -6,6 +6,12 @@ public abstract class GlobalConstants {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ROLE_USER = "ROLE_USER";
 
+    // Send email
+    public static final String TEMPLATE_CONTACT = "CONTACT";
+    public static final String TEMPLATE_WELCOME = "WELCOME";
+    public static final String TITLE_EMAIL_WELCOME = "Welcome! Thank you for registering";
+    public static final String TITLE_EMAIL_CONTACT = "Thank you for contacting us! We will be answering your query shortly";
+
     public static abstract class Endpoints {
 
         public static final String LOGIN = "/auth/login";
