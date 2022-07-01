@@ -1,8 +1,11 @@
 package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.dto.OrganizationDTO;
+import com.alkemy.ong.dto.OrganizationInfoResponse;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
+import com.alkemy.ong.dto.SlidesEntityDTO;
 import com.alkemy.ong.services.OrganizationService;
+import com.alkemy.ong.services.SlidesService;
 import com.alkemy.ong.utility.GlobalConstants;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,8 @@ public class OrganizationController {
 
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private SlidesService slidesService;
 
     @GetMapping
     public ResponseEntity<List<ReducedOrganizationDTO>> getAll() {
@@ -31,9 +36,14 @@ public class OrganizationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReducedOrganizationDTO> getById(@PathVariable String id) {
-        ReducedOrganizationDTO dto = organizationService.getById(id);
-        return ResponseEntity.ok().body(dto);
+    public ResponseEntity<?> getById(@PathVariable String id) {
+        try {
+            ReducedOrganizationDTO organization = organizationService.getById(id);
+            List<SlidesEntityDTO> slides = this.slidesService.findByOrganization(id);
+            return ResponseEntity.ok().body(new OrganizationInfoResponse(organization, slides));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     //@PreAuthorize("hasRole('ADMIN')") // Descomentar cuando se trabaje en el ticket 73
@@ -49,4 +59,5 @@ public class OrganizationController {
             return ResponseEntity.notFound().build();
         }
     }
+
 }
