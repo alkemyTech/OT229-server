@@ -17,6 +17,7 @@ public abstract class GlobalConstants {
         public static final String NEWS = "/news";
         public static final String CONTACT = "/contacts";
         public static final String ACTIVITIES = "/activities";
+        public static final String SLIDES = "/slides";
 
     }
 
