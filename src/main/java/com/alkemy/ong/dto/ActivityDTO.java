@@ -3,6 +3,7 @@ package com.alkemy.ong.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Value;
 
 import javax.validation.constraints.*;
 
@@ -16,6 +17,7 @@ public class ActivityDTO {
 
     @NotEmpty(message = "The Activity content should be inputted")
     private String content;
+
 
     private String image;
 }

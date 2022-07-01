@@ -33,7 +33,7 @@ public class ActivityEntity {
   private String name;
   @Column(name = "description", nullable = false)
   private String content;
-  @Column(name = "image", nullable = false)
+  @Column(name = "image")
   private String image;
 
   @CreationTimestamp

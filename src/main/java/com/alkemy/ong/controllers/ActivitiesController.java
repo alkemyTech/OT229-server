@@ -29,10 +29,10 @@ public class ActivitiesController {
                                    @Valid @ModelAttribute ActivityDTO dto) {
 
         try {
-            if (file == null) {
-                dto.setImage("No File Uploaded");
-            } else {
+            if (file != null) {
                 dto.setImage(amazonS3Service.uploadFile(file));
+            } else {
+                dto.setImage(null);
             }
 
             return ResponseEntity.status(HttpStatus.CREATED).body(activitiesService.save(dto));
@@ -45,6 +45,9 @@ public class ActivitiesController {
 
             return ResponseEntity.badRequest().body(e.getMessage());
 
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
