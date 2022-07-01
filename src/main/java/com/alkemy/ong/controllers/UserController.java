@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class UserController {
     }
 
  @PutMapping
-    public ResponseEntity<?> updateUser(@RequestParam(value = "file", required = false) MultipartFile multipartfile, @ModelAttribute UserDTORequest userDTORequest) {
+    public ResponseEntity<?> updateUser(@RequestParam(value = "file", required = false) MultipartFile multipartfile,@Valid @ModelAttribute UserDTORequest userDTORequest) {
         try {
             return new ResponseEntity<>(userService.updateUser(multipartfile, userDTORequest), HttpStatus.OK);
         } catch (NotFoundException e) {
