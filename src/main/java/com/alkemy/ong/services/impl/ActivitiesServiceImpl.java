@@ -23,8 +23,8 @@ public class ActivitiesServiceImpl implements ActivitiesService {
 
 
     public ActivityDTO save (ActivityDTO dto) {
-        Optional<ActivityEntity> entityFound = activityRepository.findByName(dto.getName());
-        if (entityFound.isPresent()) {
+        Boolean entityFound = activityRepository.existsByName(dto.getName());
+        if (entityFound) {
             throw new RuntimeException("Activity with the provided name is already present over the system");
         }
         ActivityEntity entity = activityMapper.activityDTO2Entity(dto);

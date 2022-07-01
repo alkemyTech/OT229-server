@@ -21,7 +21,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "activity")
 @SQLDelete(sql = "UPDATE activity SET softDelete = true WHERE id = ?")
-@Where(clause = "deleted = false")
+@Where(clause = "soft_delete = false")
 public class ActivityEntity {
 
   @Id

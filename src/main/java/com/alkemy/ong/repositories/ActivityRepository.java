@@ -11,10 +11,7 @@ import java.util.Optional;
 @Repository
 public interface ActivityRepository extends JpaRepository<ActivityEntity, String> {
 
-    @Query(
-            value = "select * from activity a where a.name = ? limit 1",
-            nativeQuery = true
-    )
-    Optional<ActivityEntity> findByName(String name);
+
+    Boolean existsByName(String name);
 }
 
