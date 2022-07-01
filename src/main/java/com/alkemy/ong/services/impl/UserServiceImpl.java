@@ -15,6 +15,7 @@ import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.EmailService;
 import com.alkemy.ong.services.RoleService;
 import com.alkemy.ong.services.UserService;
+import com.alkemy.ong.utility.GlobalConstants;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService {
             user.setRoleId(roleService.getRoleUser());
 
             save(user);
-            emailService.sendEmail(user.getEmail());
+            emailService.sendEmail(user.getEmail(), GlobalConstants.TEMPLATE_WELCOME);
 
             SingupResponse singupResponse = new SingupResponse();
             singupResponse.setUser(mapper.userEntity2DTO(user));

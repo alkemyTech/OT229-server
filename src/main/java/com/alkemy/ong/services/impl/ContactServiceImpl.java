@@ -9,6 +9,8 @@ import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.ContactMapper;
 import com.alkemy.ong.repositories.ContactRepository;
 import com.alkemy.ong.services.ContactService;
+import com.alkemy.ong.services.EmailService;
+import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +21,14 @@ import java.util.List;
 @Service
 public class ContactServiceImpl implements ContactService {
 
-        @Autowired
-        ContactMapper mapper;
+    @Autowired
+    ContactMapper mapper;
 
-        @Autowired
-        ContactRepository repository;
+    @Autowired
+    ContactRepository repository;
 
-
+    @Autowired
+    EmailService emailService;
 
     @Override
     public ContactDTOResponse create(ContactDTORequest request) throws Exception {
@@ -36,18 +39,19 @@ public class ContactServiceImpl implements ContactService {
         Contact contact = mapper.DTORequest2ContactEntity(request);
         repository.save(contact);
 
-
+        emailService.sendEmail(contact.getEmail(), GlobalConstants.TEMPLATE_CONTACT);
         String message = "Hi " + contact.getName() +
                 "! We received your form, shortly you will receive a response to the provided email box: "
                 + contact.getEmail();
 
         return mapper.ContactEntityToDTOResponse(contact, message);
 
-      }
+    }
+
     public List<ContactDTO> getAll() {
 
         List<ContactDTO> contactDTOS = new LinkedList<>();
-        for(Contact contact : repository.findAll()){
+        for (Contact contact : repository.findAll()) {
             contactDTOS.add(mapper.ContactEntityToDTO(contact));
         }
         contactDTOS.sort(Comparator.comparing(ContactDTO::getEmail));
