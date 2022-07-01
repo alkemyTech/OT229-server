@@ -1,5 +1,6 @@
 package com.alkemy.ong.mappers;
 
+import com.alkemy.ong.dto.ContactDTO;
 import com.alkemy.ong.dto.ContactDTORequest;
 import com.alkemy.ong.dto.ContactDTOResponse;
 import com.alkemy.ong.entities.Contact;
@@ -23,5 +24,14 @@ response.setEmail(contact.getEmail());
 response.setName(contact.getName());
 response.setConfirmation(message);
 return response;
+  }
+  public ContactDTO ContactEntityToDTO (Contact contact){
+      ContactDTO contactDTO = new ContactDTO();
+      contactDTO.setName(contact.getName());
+      contactDTO.setMessage(contact.getMessage());
+      contactDTO.setPhone(contact.getPhone());
+      contactDTO.setEmail(contact.getEmail());
+      contactDTO.setDeletedAt(contact.getDeletedAt());
+      return contactDTO;
   }
 }
