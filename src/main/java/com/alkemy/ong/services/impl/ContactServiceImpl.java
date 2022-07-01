@@ -50,7 +50,7 @@ public class ContactServiceImpl implements ContactService {
         for(Contact contact : repository.findAll()){
             contactDTOS.add(mapper.ContactEntityToDTO(contact));
         }
-        contactDTOS.sort(Comparator.comparing(ContactDTO::getEmail).reversed());
+        contactDTOS.sort(Comparator.comparing(ContactDTO::getEmail));
         return contactDTOS;
 
     }
