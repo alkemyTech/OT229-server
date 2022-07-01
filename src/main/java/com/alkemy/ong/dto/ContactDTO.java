@@ -12,6 +12,5 @@ public class ContactDTO {
     private String email;
     private Long phone;
     private String message;
-    private Timestamp deletedAt;
 
 }

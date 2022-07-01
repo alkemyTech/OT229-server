@@ -31,7 +31,6 @@ return response;
       contactDTO.setMessage(contact.getMessage());
       contactDTO.setPhone(contact.getPhone());
       contactDTO.setEmail(contact.getEmail());
-      contactDTO.setDeletedAt(contact.getDeletedAt());
       return contactDTO;
   }
 }
