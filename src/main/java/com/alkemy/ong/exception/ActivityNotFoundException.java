@@ -2,7 +2,7 @@ package com.alkemy.ong.exception;
 
 import java.io.IOException;
 
-public class ActivityNotFoundException extends IOException {
+public class ActivityNotFoundException extends RuntimeException {
 
     public ActivityNotFoundException(){
         super();

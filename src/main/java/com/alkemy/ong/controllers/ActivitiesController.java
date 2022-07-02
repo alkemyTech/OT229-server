@@ -1,7 +1,7 @@
 package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.dto.ActivityDTO;
-import com.alkemy.ong.exception.ActivityException;
+import com.alkemy.ong.exception.ActivityNamePresentException;
 import com.alkemy.ong.exception.ActivityNotFoundException;
 import com.alkemy.ong.exception.AmazonS3Exception;
 import com.alkemy.ong.services.ActivitiesService;
@@ -30,7 +30,12 @@ public class ActivitiesController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(activitiesService.save(file,dto));
 
-        } catch (ActivityException e) {
+        } catch (ActivityNotFoundException e) {
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+        catch (ActivityNamePresentException e) {
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 
@@ -57,7 +62,7 @@ public class ActivitiesController {
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
-        } catch (ActivityException e) {
+        } catch (ActivityNamePresentException e) {
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 
