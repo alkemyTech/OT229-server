@@ -26,4 +26,12 @@ public class ActivityMapper {
 
         return dto;
     }
+
+    public ActivityEntity editEntity (ActivityEntity entity, ActivityDTO dto) {
+        entity.setImage(dto.getImage());
+        entity.setName(dto.getName());
+        entity.setContent(dto.getContent());
+
+        return entity;
+    }
 }

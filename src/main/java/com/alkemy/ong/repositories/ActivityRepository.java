@@ -13,5 +13,11 @@ public interface ActivityRepository extends JpaRepository<ActivityEntity, String
 
 
     Boolean existsByName(String name);
+
+    @Query(
+            value = "select * from activity a where a.name = ? limit 1",
+            nativeQuery = true
+    )
+    Optional<ActivityEntity> findByName(String name);
 }
 

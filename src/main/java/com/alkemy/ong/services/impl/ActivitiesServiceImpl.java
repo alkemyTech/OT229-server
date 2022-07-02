@@ -3,6 +3,7 @@ package com.alkemy.ong.services.impl;
 import com.alkemy.ong.dto.ActivityDTO;
 import com.alkemy.ong.entities.ActivityEntity;
 import com.alkemy.ong.exception.ActivityException;
+import com.alkemy.ong.exception.ActivityNotFoundException;
 import com.alkemy.ong.exception.AmazonS3Exception;
 import com.alkemy.ong.mappers.ActivityMapper;
 import com.alkemy.ong.repositories.ActivityRepository;
@@ -49,5 +50,32 @@ public class ActivitiesServiceImpl implements ActivitiesService {
         ActivityDTO dtoReturn = activityMapper.activityEntity2DTO(entitySaved);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(dtoReturn);
+    }
+
+    @Override
+    public ResponseEntity<?> edit(MultipartFile file, ActivityDTO dto, String id) throws IOException {
+        Optional<ActivityEntity> entityFound = activityRepository.findById(id);
+
+        if (!entityFound.isPresent()) {
+            throw new ActivityNotFoundException("Activity with the provided ID was not found over the system");
+        }
+
+        Optional<ActivityEntity> entitySameName = activityRepository.findByName(dto.getName());
+
+        if (entitySameName.isPresent() && entitySameName.get().getId() != entityFound.get().getId()) {
+            throw new ActivityException("Cannot change to the provided name as it should be unique over the system");
+        }
+
+        if (file != null && !file.isEmpty()) {
+            dto.setImage(amazonS3Service.uploadFile(file));
+        } else {
+            dto.setImage(null);
+        }
+
+        ActivityEntity modifiedEntity = activityMapper.editEntity(entityFound.get(), dto);
+        activityRepository.save(modifiedEntity);
+        ActivityDTO result = activityMapper.activityEntity2DTO(modifiedEntity);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

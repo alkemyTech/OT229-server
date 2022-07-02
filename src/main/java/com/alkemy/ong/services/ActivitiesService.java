@@ -10,4 +10,6 @@ import java.io.IOException;
 public interface ActivitiesService {
 
     public ResponseEntity<?> save (MultipartFile file, ActivityDTO dto) throws IOException;
+
+    public ResponseEntity<?> edit (MultipartFile file, ActivityDTO dto, String id) throws IOException;
 }
