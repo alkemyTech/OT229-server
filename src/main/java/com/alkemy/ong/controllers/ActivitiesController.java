@@ -30,12 +30,7 @@ public class ActivitiesController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(activitiesService.save(file,dto));
 
-        } catch (ActivityNotFoundException e) {
-
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-
-        catch (ActivityNamePresentException e) {
+        } catch (ActivityNamePresentException e) {
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 
