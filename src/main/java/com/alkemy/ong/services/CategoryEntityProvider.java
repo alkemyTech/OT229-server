@@ -18,6 +18,6 @@ public interface CategoryEntityProvider {
      * @param name    the Category name.
      * @return  the Entity found wrapped in a Java Optional.
      */
-    Optional<Category> getEntityByName(String name) throws EntityNotFoundException;
+    Optional<Category> getEntityByName(String name);
 
 }

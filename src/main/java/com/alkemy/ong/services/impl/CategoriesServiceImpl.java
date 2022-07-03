@@ -77,7 +77,7 @@ public class CategoriesServiceImpl implements CategoriesService, CategoryEntityP
     }
 
     @Override
-    public Optional<Category> getEntityByName(String name) throws EntityNotFoundException {
+    public Optional<Category> getEntityByName(String name) {
         return this.categoryRepository.findByName(name);
     }
 
