@@ -43,9 +43,9 @@ public class SlidesServiceImpl implements SlidesService {
 
     @Override
     public List<ReducedSlideDTO> slideList(){
-        List<ReducedSlideDTO> slidesFound = slideRepository.findAll().stream()
+        List<ReducedSlideDTO> slidesFound = slideRepository.findAllByOrderBySlideOrderAsc()
+                .stream()
                 .map(this.slidesMapper::entityToReducedDTO)
-                .sorted(Comparator.comparing(ReducedSlideDTO::getSlideOrder))
                 .collect(Collectors.toList());
 
         return slidesFound;
