@@ -1,6 +1,5 @@
 package com.alkemy.ong.exception;
 
-import java.io.IOException;
 
 public class ActivityNotFoundException extends RuntimeException {
 
