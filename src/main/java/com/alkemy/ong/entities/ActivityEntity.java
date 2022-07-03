@@ -20,8 +20,8 @@ import lombok.Setter;
 @Getter
 @Entity
 @Table(name = "activity")
-@SQLDelete(sql = "UPDATE activity SET softDelete = true WHERE id = ?")
-@Where(clause = "deleted = false")
+@SQLDelete(sql = "UPDATE activity SET soft_delete = true WHERE id = ?")
+@Where(clause = "soft_delete = false")
 public class ActivityEntity {
 
   @Id
@@ -33,7 +33,7 @@ public class ActivityEntity {
   private String name;
   @Column(name = "description", nullable = false)
   private String content;
-  @Column(name = "image", nullable = false)
+  @Column(name = "image")
   private String image;
 
   @CreationTimestamp
