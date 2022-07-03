@@ -2,6 +2,7 @@ package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.dto.ActivityDTO;
 import com.alkemy.ong.exception.ActivityNamePresentException;
+import com.alkemy.ong.exception.ActivityNotFoundException;
 import com.alkemy.ong.exception.AmazonS3Exception;
 import com.alkemy.ong.services.ActivitiesService;
 import com.alkemy.ong.utility.GlobalConstants;
@@ -41,6 +42,35 @@ public class ActivitiesController {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> edit (@RequestParam(value = "file", required = false) MultipartFile file,
+                                   @Valid @ModelAttribute ActivityDTO dto, @PathVariable String id) {
+
+        try {
+
+            return ResponseEntity.status(HttpStatus.OK).body(activitiesService.edit(file,dto,id));
+
+        } catch (ActivityNotFoundException e) {
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
+
+        } catch (ActivityNamePresentException e) {
+
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+
+        } catch (AmazonS3Exception e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+        }
+        catch (IOException e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
 
     }
 
