@@ -26,7 +26,6 @@ public class ActivityMapper {
 
         return dto;
     }
-<<<<<<< HEAD
 
     public ActivityEntity editEntity (ActivityEntity entity, ActivityDTO dto) {
         entity.setImage(dto.getImage());
@@ -35,6 +34,5 @@ public class ActivityMapper {
 
         return entity;
     }
-=======
->>>>>>> b78135dc29a47d94555123150688adc17bada3ae
+
 }
