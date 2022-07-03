@@ -1,5 +1,6 @@
 package com.alkemy.ong.controllers;
 
+import com.alkemy.ong.dto.ReducedSlideDTO;
 import com.alkemy.ong.dto.SlidesEntityDTO;
 import com.alkemy.ong.services.SlidesService;
 import com.alkemy.ong.utility.GlobalConstants;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(GlobalConstants.Endpoints.SLIDES)
@@ -28,6 +31,13 @@ public class SlidesController {
         }catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping()
+    public ResponseEntity<?> slideList(){
+        List<ReducedSlideDTO> slides = slidesService.slideList();
+
+        return ResponseEntity.ok().body(slides);
     }
 
 }
