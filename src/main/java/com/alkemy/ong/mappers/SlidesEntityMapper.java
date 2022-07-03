@@ -1,5 +1,6 @@
 package com.alkemy.ong.mappers;
 
+import com.alkemy.ong.dto.ReducedSlideDTO;
 import com.alkemy.ong.dto.SlidesEntityDTO;
 import com.alkemy.ong.entities.SlidesEntity;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,12 @@ public class SlidesEntityMapper {
                 .setImageUrl(entity.getImageUrl())
                 .setText(entity.getText())
                 .setSlideOrder(entity.getSlideOrder());
+    }
+
+    public ReducedSlideDTO entityToReducedDTO(SlidesEntity slideEntity){
+        return new ReducedSlideDTO()
+                .setImageUrl(slideEntity.getImageUrl())
+                .setSlideOrder(slideEntity.getSlideOrder());
     }
 
 }
