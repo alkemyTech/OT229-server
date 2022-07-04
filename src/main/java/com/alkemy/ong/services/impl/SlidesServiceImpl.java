@@ -5,10 +5,13 @@ import com.alkemy.ong.dto.SlidesEntityDTO;
 import com.alkemy.ong.entities.SlidesEntity;
 import com.alkemy.ong.mappers.SlidesEntityMapper;
 import com.alkemy.ong.repositories.SlideRepository;
+import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.SlidesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,7 +23,8 @@ public class SlidesServiceImpl implements SlidesService {
     private SlideRepository slideRepository;
     @Autowired
     private SlidesEntityMapper slidesMapper;
-
+    @Autowired
+    private CloudStorageService cloudStorageService;
     @Override
     public List<SlidesEntityDTO> findByOrganization(String organizationId) {
         return this.slideRepository.findByOrganizationIdOrderBySlideOrder(organizationId)
@@ -48,6 +52,15 @@ public class SlidesServiceImpl implements SlidesService {
                 .collect(Collectors.toList());
 
         return slidesFound;
+    }
+
+    @Override
+    public SlidesEntityDTO create(MultipartFile file, SlidesEntityDTO slide) throws IOException {
+        String imageUrl= cloudStorageService.uploadFile(file);
+        slide.setImageUrl(imageUrl);
+        SlidesEntity entity=this.slidesMapper.dtoToEntity(slide);
+        SlidesEntity entitySaved=this.slideRepository.save(entity);
+        return this.slidesMapper.entityToDto(entitySaved);
     }
 
 }
