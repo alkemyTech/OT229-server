@@ -13,7 +13,7 @@ public class CategoryMapper {
         dto.setName(entity.getName());
         dto.setImage(entity.getImage());
         dto.setDescription(entity.getDescription());
-
+        dto.setId(entity.getId());
         return dto;
     }
 
@@ -22,7 +22,7 @@ public class CategoryMapper {
         entity.setDescription(dto.getDescription());
         entity.setImage(dto.getImage());
         entity.setName(dto.getName());
-
+        entity.setId(dto.getId());
         return entity;
     }
 
