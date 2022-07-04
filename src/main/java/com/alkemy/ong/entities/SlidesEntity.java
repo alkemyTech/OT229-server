@@ -1,10 +1,6 @@
 package com.alkemy.ong.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +28,8 @@ public class SlidesEntity {
   private String text;
 
   @Column(name = "slide_order")
-  private int slideOrder;
+  private Integer slideOrder;
 
+  @ManyToOne (cascade= CascadeType.ALL)
+  private Organization organization;
 }

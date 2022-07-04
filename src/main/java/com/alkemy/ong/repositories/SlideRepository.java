@@ -1,6 +1,9 @@
 package com.alkemy.ong.repositories;
 
+import com.alkemy.ong.entities.Organization;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.alkemy.ong.entities.SlidesEntity;
@@ -15,4 +18,6 @@ public interface SlideRepository extends JpaRepository<SlidesEntity, String> {
 
     public List<SlidesEntity> findAllByOrderBySlideOrderAsc();
 
+    @Query(value = "SELECT MAX(s.slide_order) FROM Slide d WHERE s.organization = :organization ")
+    Integer getLastOrder(@Param("organizations")Organization organization);
 }

@@ -56,10 +56,18 @@ public class SlidesServiceImpl implements SlidesService {
 
     @Override
     public SlidesEntityDTO create(MultipartFile file, SlidesEntityDTO slide) throws IOException {
+        SlidesEntity entity=this.slidesMapper.dtoToEntity(slide);
+
+        if (entity.getSlideOrder()==null) {
+            entity.setSlideOrder(slideRepository.getLastOrder(entity.getOrganization())+1);
+        }
+
         String imageUrl= cloudStorageService.uploadFile(file);
         slide.setImageUrl(imageUrl);
-        SlidesEntity entity=this.slidesMapper.dtoToEntity(slide);
+
         SlidesEntity entitySaved=this.slideRepository.save(entity);
+
+
         return this.slidesMapper.entityToDto(entitySaved);
     }
 
