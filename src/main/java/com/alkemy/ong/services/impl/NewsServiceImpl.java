@@ -72,17 +72,17 @@ public class NewsServiceImpl implements NewsService {
 
   @Transactional
   @Override
-  public NewsDTO updateNews(String id, MultipartFile image, NewsDTO updatedNews) throws EntityNotFoundException, IOException, AmazonS3Exception, IllegalArgumentException {
+  public NewsDTO updateNews(String id, MultipartFile imageFile, NewsDTO updatedNews) throws EntityNotFoundException, IOException, AmazonS3Exception, IllegalArgumentException {
     News newsToUpdate = this.newsRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("News with the provided id not found."));
-    // If the News is not going to be update with a new image, then this attribute should have the current image url.
-    String updatedImageUrl = updatedNews.getImage();
-    if (image != null && !image.isEmpty()) {
-      updatedImageUrl = cloudStorageService.uploadFile(image);
-    }
-    updatedNews.setImage(updatedImageUrl);
     this.newsMapper.UpdateNewsInstance(newsToUpdate, updatedNews);
     this.updateNewsCategory(newsToUpdate, updatedNews.getCategory());
+    // If the News is not going to be update with a new image, then this attribute should have the current image url.
+    String updatedImageUrl = updatedNews.getImage();
+    if (imageFile != null && !imageFile.isEmpty()) {
+      updatedImageUrl = cloudStorageService.uploadFile(imageFile);
+    }
+    updatedNews.setImage(updatedImageUrl);
     return this.newsMapper.newsEntity2DTO(newsToUpdate);
   }
 
