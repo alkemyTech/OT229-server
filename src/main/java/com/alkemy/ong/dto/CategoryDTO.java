@@ -21,6 +21,4 @@ public class CategoryDTO {
 
     private String image;
 
-    private String id;
-
 }
