@@ -47,7 +47,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws IOException {
+    public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws IOException, RuntimeException {
         Optional<Organization> organizationFound = organizationsRepository.findById(organizationDTO.getId());
 
         if(organizationFound.isPresent()){
@@ -65,7 +65,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
             return organizationMapper.organizationEntity2OrganizationDTO(organizationUpdated);
         }else{
-            throw new IOException("Organization with the provided ID not present");
+            throw new RuntimeException("Organization with the provided ID not present");
         }
     }
 

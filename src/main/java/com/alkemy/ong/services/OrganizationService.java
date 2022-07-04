@@ -2,6 +2,7 @@ package com.alkemy.ong.services;
 
 import com.alkemy.ong.dto.OrganizationDTO;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
+import com.alkemy.ong.exception.AmazonS3Exception;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,5 +21,5 @@ public interface OrganizationService {
      */
     public ReducedOrganizationDTO getById (String id) throws RuntimeException;
 
-    public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws IOException;
+    public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws IOException, RuntimeException;
 }

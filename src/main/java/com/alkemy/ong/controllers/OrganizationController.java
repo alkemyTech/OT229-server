@@ -58,8 +58,10 @@ public class OrganizationController {
             return ResponseEntity.ok().body(org);
         }catch (AmazonS3Exception e){
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
-        } catch (IOException e){
+        } catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IOException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
