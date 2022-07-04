@@ -33,10 +33,10 @@ public class EmailServiceImp implements EmailService {
     private SendGrid sendGrid;
 
     @Override
-    public String sendEmail(String email,String template) throws IOException{
+    public String sendEmail(String emailAddress, String template) throws IOException{
 
         try {
-            Mail mail = prepareMail(email,template);
+            Mail mail = prepareMail(emailAddress,template);
             Request request = new Request();
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
@@ -50,19 +50,19 @@ public class EmailServiceImp implements EmailService {
 
     }
 
-    private Mail prepareMail(String email,String template) throws IOException,TemplateException {
+    private Mail prepareMail(String emailAddress,String template) throws IOException,TemplateException {
 
         Mail mail = new Mail();
-        Email fromEmail = new Email();
+        Email fromEmailAddress = new Email();
         Content content = new Content();
 
-        fromEmail.setEmail("ot229alkemy@gmail.com");
-        mail.setFrom(fromEmail);
-        Email to = new Email();
-        to.setEmail(email);
+        fromEmailAddress.setEmail("ot229alkemy@gmail.com");
+        mail.setFrom(fromEmailAddress);
+        Email toEmailAddress = new Email();
+        toEmailAddress.setEmail(emailAddress);
 
         Personalization personalization = new Personalization();
-        personalization.addTo(to);
+        personalization.addTo(toEmailAddress);
         content.setType("text/html");
 
         if (template.equals(GlobalConstants.TEMPLATE_WELCOME)) {

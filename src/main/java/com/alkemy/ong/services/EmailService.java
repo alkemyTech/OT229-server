@@ -7,6 +7,6 @@ import java.io.IOException;
 
 public interface EmailService {
 
-    String sendEmail(String email,String template)throws IOException;
+    String sendEmail(String emailAddress,String template)throws IOException;
 
 }
