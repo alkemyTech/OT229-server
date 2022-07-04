@@ -50,7 +50,7 @@ public class EmailServiceImp implements EmailService {
 
     }
 
-    public Mail prepareMail(String email,String template) throws IOException,TemplateException {
+    private Mail prepareMail(String email,String template) throws IOException,TemplateException {
 
         Mail mail = new Mail();
         Email fromEmail = new Email();
@@ -82,15 +82,13 @@ public class EmailServiceImp implements EmailService {
 
     }
 
-    @Override
-    public String prepareContactTemplate() throws IOException, TemplateException {
+    private String prepareContactTemplate() throws IOException, TemplateException {
         Map<String, Object> model = new HashMap<>();
         model.put("title", GlobalConstants.TITLE_EMAIL_CONTACT);
         return FreeMarkerTemplateUtils.processTemplateIntoString(configuration.getTemplate("plantilla_email.html"),model);
     }
 
-    @Override
-    public String prepareWelcomeTemplate() throws IOException, TemplateException {
+    private String prepareWelcomeTemplate() throws IOException, TemplateException {
         Map<String,Object> model = new HashMap<>();
         model.put("title",GlobalConstants.TITLE_EMAIL_WELCOME );
         return FreeMarkerTemplateUtils.processTemplateIntoString(configuration.getTemplate("plantilla_email.html"),model);
