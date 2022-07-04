@@ -3,6 +3,7 @@ package com.alkemy.ong.services.impl;
 import com.alkemy.ong.dto.OrganizationDTO;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
 import com.alkemy.ong.entities.Organization;
+import com.alkemy.ong.exception.AmazonS3Exception;
 import com.alkemy.ong.mappers.OrganizationMapper;
 import com.alkemy.ong.repositories.OrganizationsRepository;
 import com.alkemy.ong.services.CloudStorageService;
@@ -47,17 +48,25 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws IOException {
-        Organization organization = organizationsRepository.findById(organizationDTO.getId()).get();
+        Optional<Organization> organizationFound = organizationsRepository.findById(organizationDTO.getId());
 
-        if(!image.isEmpty()){
-            organizationDTO.setImage(amazonService.uploadFile(image));
+        if(organizationFound.isPresent()){
+            if(!image.isEmpty()){
+                try{
+                    organizationDTO.setImage(amazonService.uploadFile(image));
+                }catch(AmazonS3Exception e){
+                    throw new AmazonS3Exception("Image could not be saved. Try again later.");
+                }
+            }
+
+            Organization organizationUpdated = updateInfo(organizationFound.get(), organizationDTO);
+
+            organizationsRepository.save(organizationUpdated);
+
+            return organizationMapper.organizationEntity2OrganizationDTO(organizationUpdated);
+        }else{
+            throw new IOException("Organization with the provided ID not present");
         }
-
-        organization = updateInfo(organization, organizationDTO);
-
-        organizationsRepository.save(organization);
-
-        return organizationMapper.organizationEntity2OrganizationDTO(organization);
     }
 
     private Organization updateInfo(Organization organization, OrganizationDTO organizationDTO){
