@@ -2,12 +2,21 @@ package com.alkemy.ong.runner;
 
 import com.alkemy.ong.entities.Organization;
 import com.alkemy.ong.repositories.OrganizationsRepository;
+import com.alkemy.ong.services.CloudStorageService;
+import com.amazonaws.util.IOUtils;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
+
+import javax.activation.MimetypesFileTypeMap;
+import java.io.File;
+import java.io.FileInputStream;
 
 @Component
 public class Runner implements CommandLineRunner {
 
+
+    private final CloudStorageService amazonS3Service;
     private final OrganizationsRepository organizationsRepository;
 
     @Override
@@ -20,7 +29,15 @@ public class Runner implements CommandLineRunner {
             org.setUrlInstagram("SomosMás");
             org.setUrlFacebook("Somos_Más");
             org.setEmail("somosfundacionmas@gmail.com");
-            org.setImage("src/SomosMas.jpg");
+
+            File file = new File("src/main/resources/images/fundacion-mas.png");
+            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
+            FileInputStream input = new FileInputStream(file);
+            MockMultipartFile multipartFile = new MockMultipartFile("somos-mas", file.getName(), mimeType, IOUtils.toByteArray(input));
+
+            org.setImage(amazonS3Service.uploadFile(multipartFile));
+
+
             org.setAddress("La Cava, Cordoba, Argentina");
             org.setAboutUsText("Desde 1997 en Somos Más trabajamos con los chicos y chicas," + "\n" +
                     " mamás y papás, abuelos y vecinos del barrio La Cava generando" + "\n" +
@@ -38,7 +55,8 @@ public class Runner implements CommandLineRunner {
         }
     }
 
-    public Runner(OrganizationsRepository organizationsRepository) {
+    public Runner(OrganizationsRepository organizationsRepository, CloudStorageService amazonS3Service) {
         this.organizationsRepository = organizationsRepository;
+        this.amazonS3Service = amazonS3Service;
     }
 }
