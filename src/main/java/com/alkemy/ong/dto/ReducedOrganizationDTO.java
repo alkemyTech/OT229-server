@@ -14,4 +14,10 @@ public class ReducedOrganizationDTO {
     private int phone;
 
     private String address;
+
+    private String urlFacebook;
+
+    private String urlInstagram;
+
+    private String urlLinkedin;
 }
