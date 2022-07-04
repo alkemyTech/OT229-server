@@ -30,4 +30,12 @@ public class NewsMapper {
     return dto;
   }
 
+  public void UpdateNewsInstance(News newsToBeUpdated, NewsDTO updatedNews) {
+    newsToBeUpdated.setId(updatedNews.getId());
+    newsToBeUpdated.setName(updatedNews.getName());
+    newsToBeUpdated.setContent(updatedNews.getContent());
+    newsToBeUpdated.setImage(updatedNews.getImage());
+    newsToBeUpdated.setCategory(this.categoryMapper.categoryDTO2Entity(updatedNews.getCategory()));
+  }
+
 }

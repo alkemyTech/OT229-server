@@ -7,9 +7,6 @@ import java.io.IOException;
 
 public interface EmailService {
 
-    String sendEmail(String email)throws IOException;
-    Mail prepareMail(String email) throws TemplateException, IOException;
-
-    String prepareWelcomeTemplate(String email) throws IOException, TemplateException;
+    String sendEmail(String emailAddress,String template)throws IOException;
 
 }

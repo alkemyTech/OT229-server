@@ -4,22 +4,30 @@ import com.alkemy.ong.dto.CategoryDTO;
 import com.alkemy.ong.entities.Category;
 import com.alkemy.ong.mappers.CategoryMapper;
 import com.alkemy.ong.repositories.CategoryRepository;
+import com.alkemy.ong.repositories.NewsRepository;
 import com.alkemy.ong.services.CategoriesService;
+import com.alkemy.ong.services.CategoryEntityProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class CategoriesServiceImpl implements CategoriesService {
+public class CategoriesServiceImpl implements CategoriesService, CategoryEntityProvider {
 
     @Autowired
     private CategoryMapper categoryMapper;
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private NewsRepository newsRepository;
 
     public CategoryDTO getById(String id) {
         Optional<Category> entity = categoryRepository.findById(id);
@@ -51,7 +59,7 @@ public class CategoriesServiceImpl implements CategoriesService {
         Optional<Category> entitySameName = categoryRepository.findByName(dto.getName());
         if (!entityFound.isPresent()) {
             throw new RuntimeException("Category with the provided ID not present");
-        } else if (entitySameName.isPresent() && entitySameName.get().getId() != entityFound.get().getId()) {
+        } else if (entitySameName.isPresent() && !entitySameName.get().getId().equals( entityFound.get().getId() )) {
             throw new RuntimeException("The name is already present over the system, please change it");
         }
 
@@ -73,4 +81,22 @@ public class CategoriesServiceImpl implements CategoriesService {
                 .collect(Collectors.toList());
 
     }
+
+    @Transactional
+    @Override
+    public void deleteCategory(String id) {
+        this.newsRepository.detachCategory(id);
+        Optional<Category>entity = this.categoryRepository.findById(id);
+        if(entity.isEmpty()){
+            throw new RuntimeException("Category not present");
+        }
+        this.categoryRepository.delete(entity.get());
+    }
+
+    @Override
+    public Optional<Category> getEntityByName(String name) {
+        return this.categoryRepository.findByName(name);
+    }
+
+
 }

@@ -13,4 +13,6 @@ public interface SlideRepository extends JpaRepository<SlidesEntity, String> {
     public List<SlidesEntity> findByOrganizationIdOrderBySlideOrder (String organizationId);
     public List<SlidesEntity> findBySlideOrder(Integer order);
 
+    public List<SlidesEntity> findAllByOrderBySlideOrderAsc();
+
 }

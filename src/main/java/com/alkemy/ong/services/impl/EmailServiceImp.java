@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.alkemy.ong.services.EmailService;
+import com.alkemy.ong.utility.GlobalConstants;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -32,10 +33,10 @@ public class EmailServiceImp implements EmailService {
     private SendGrid sendGrid;
 
     @Override
-    public String sendEmail(String email) throws IOException{
+    public String sendEmail(String emailAddress, String template) throws IOException{
 
         try {
-            Mail mail = prepareMail(email);
+            Mail mail = prepareMail(emailAddress,template);
             Request request = new Request();
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
@@ -49,36 +50,47 @@ public class EmailServiceImp implements EmailService {
 
     }
 
-    public Mail prepareMail(String email) throws IOException,TemplateException {
+    private Mail prepareMail(String emailAddress,String template) throws IOException,TemplateException {
 
         Mail mail = new Mail();
-        Email fromEmail = new Email();
+        Email fromEmailAddress = new Email();
         Content content = new Content();
 
-        content.setType("text/html");
-        content.setValue(prepareWelcomeTemplate(email));
-
-        fromEmail.setEmail("ot229alkemy@gmail.com");
-        mail.setFrom(fromEmail);
-        Email to = new Email();
-        to.setEmail(email);
+        fromEmailAddress.setEmail("ot229alkemy@gmail.com");
+        mail.setFrom(fromEmailAddress);
+        Email toEmailAddress = new Email();
+        toEmailAddress.setEmail(emailAddress);
 
         Personalization personalization = new Personalization();
-        personalization.addTo(to);
+        personalization.addTo(toEmailAddress);
+        content.setType("text/html");
 
+        if (template.equals(GlobalConstants.TEMPLATE_WELCOME)) {
+            content.setValue(prepareWelcomeTemplate());
+            mail.setSubject("ONG: Welcome!");
+        }else if (template.equals(GlobalConstants.TEMPLATE_CONTACT)) {
+            content.setValue(prepareContactTemplate());
+            mail.setSubject("ONG: Contact Form");
+        }else {
+            content.setValue(template);
+            mail.setSubject("ONG OT229");
+        }
         mail.addContent(content);
-        mail.setSubject("Bienvenid@");
-
         mail.addPersonalization(personalization);
 
         return mail;
 
     }
 
-    @Override
-    public String prepareWelcomeTemplate(String email) throws IOException, TemplateException {
+    private String prepareContactTemplate() throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put("title", GlobalConstants.TITLE_EMAIL_CONTACT);
+        return FreeMarkerTemplateUtils.processTemplateIntoString(configuration.getTemplate("plantilla_email.html"),model);
+    }
+
+    private String prepareWelcomeTemplate() throws IOException, TemplateException {
         Map<String,Object> model = new HashMap<>();
-        model.put("email",email);
+        model.put("title",GlobalConstants.TITLE_EMAIL_WELCOME );
         return FreeMarkerTemplateUtils.processTemplateIntoString(configuration.getTemplate("plantilla_email.html"),model);
     }
 }

@@ -22,4 +22,19 @@ public interface NewsService {
    */
   NewsDTO deleteNews(String id) throws EntityNotFoundException, IOException;
 
+  /**
+   * Updates a News entry.
+   *
+   * @param id  the id of the News to be edited.
+   * @param image a new image for the News entity, or <code>null</code> if the image is not to be updated.
+   * @param updatedNews the DTO with the updated fields of the News. The Entity whole Entity is updated from these values,
+   *                    so every field must be present, not just the updated ones.
+   * @return  an dto with the info from the updated entity.
+   * @throws EntityNotFoundException  if an entity with the provided id can't be found.
+   * @throws IOException  if there was a problem with the file attached.
+   * @throws AmazonS3Exception  if there was a problem with the cloud storage service.
+   * @throws IllegalArgumentException if the News' Category to be updated is present but has an invalid name.
+   */
+  NewsDTO updateNews(String id, MultipartFile image, NewsDTO updatedNews) throws EntityNotFoundException, IOException, AmazonS3Exception, IllegalArgumentException;
+
 }
