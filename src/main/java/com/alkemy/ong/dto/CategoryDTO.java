@@ -11,6 +11,7 @@ import javax.validation.constraints.Pattern;
 @Getter
 public class CategoryDTO {
 
+    private String id;
     @NotBlank(message = "The Category name must not be blank")
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "The Category name has to be a String")
     @NotNull(message = "The Category must not be null")

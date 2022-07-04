@@ -2,6 +2,7 @@ package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.dto.CategoryDTO;
 import com.alkemy.ong.dto.CategoryListResponse;
+import com.alkemy.ong.dto.DeleteEntityResponse;
 import com.alkemy.ong.services.CategoriesService;
 import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -64,5 +67,15 @@ public class CategoriesController {
         responseBody.setCategories(this.categoriesService.getAllCategoryNames());
         return ResponseEntity.ok(responseBody);
 
+    }
+
+    @DeleteMapping("{/id}")
+    public ResponseEntity<?> delete(@PathVariable String id){
+        try {
+            categoriesService.deleteCategory(id);
+        }catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
