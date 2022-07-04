@@ -1,5 +1,6 @@
 package com.alkemy.ong.services.impl;
 
+import com.alkemy.ong.dto.ReducedSlideDTO;
 import com.alkemy.ong.dto.SlidesEntityDTO;
 import com.alkemy.ong.entities.SlidesEntity;
 import com.alkemy.ong.mappers.SlidesEntityMapper;
@@ -37,6 +38,16 @@ public class SlidesServiceImpl implements SlidesService {
         }else{
             throw new RuntimeException("Slide with the provided ID not present");
         }
+    }
+
+    @Override
+    public List<ReducedSlideDTO> slideList(){
+        List<ReducedSlideDTO> slidesFound = slideRepository.findAllByOrderBySlideOrderAsc()
+                .stream()
+                .map(this.slidesMapper::entityToReducedDTO)
+                .collect(Collectors.toList());
+
+        return slidesFound;
     }
 
 }
