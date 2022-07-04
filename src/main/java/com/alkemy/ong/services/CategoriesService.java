@@ -13,6 +13,7 @@ public interface CategoriesService {
     public CategoryDTO edit (CategoryDTO dto, String id);
 
     List<String> getAllCategoryNames();
-    
+
+    public void deleteCategory(String id);
 }
 
