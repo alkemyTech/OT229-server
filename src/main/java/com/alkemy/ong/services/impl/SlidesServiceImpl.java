@@ -7,6 +7,7 @@ import com.alkemy.ong.mappers.SlidesEntityMapper;
 import com.alkemy.ong.repositories.SlideRepository;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.SlidesService;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,5 +82,18 @@ public class SlidesServiceImpl implements SlidesService {
         cloudStorageService.deleteFileFromS3Bucket(slide.getImageUrl());
         return dto;
     }
+
+    @Override
+    public SlidesEntityDTO updateSlide(String id, MultipartFile file, SlidesEntityDTO slide) throws EntityNotFoundException, IOException, AmazonS3Exception, IllegalArgumentException {
+        SlidesEntity entity = this.slideRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Slide whit the provide id not found"));
+        this.slidesMapper.UpdateSlide(entity,slide);
+        String newImage = slide.getImageUrl();
+        if (file != null && !file.isEmpty()){
+            newImage=cloudStorageService.uploadFile(file);
+        }
+        slide.setImageUrl(newImage);
+        return this.slidesMapper.entityToDto(entity);
+    }
+
 
 }
