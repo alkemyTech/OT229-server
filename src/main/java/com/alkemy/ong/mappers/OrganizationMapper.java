@@ -26,6 +26,9 @@ public class OrganizationMapper {
         dto.setImage(entity.getImage());
         dto.setName(entity.getName());
         dto.setPhone(entity.getPhone());
+        dto.setUrlFacebook(entity.getUrlFacebook());
+        dto.setUrlInstagram(entity.getUrlInstagram());
+        dto.setUrlLinkedin(entity.getUrlLinkedin());
 
         return dto;
     }
