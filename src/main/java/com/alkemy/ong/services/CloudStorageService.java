@@ -37,4 +37,14 @@ public interface CloudStorageService {
      */
     InputStream downloadFile(String fileUrl) throws IOException;
 
+    /**
+     * Uploads a file to the external Cloud Storage.
+     *
+     * The file should be encoded in Base64. It will then be decoded and uploaded to the cloud.
+     *
+     * @param multipartFile the file to be uploaded, decoded in Base64.
+     * @return  the absolute url to access the uploaded file.
+     * @throws IOException
+     */
+    String uploadBase64File(MultipartFile multipartFile) throws IOException;
 }

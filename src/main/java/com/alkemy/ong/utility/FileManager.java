@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Date;
 
 /**
@@ -85,6 +86,21 @@ public abstract class FileManager {
             return this.name;
         }
 
+    }
+
+    /**
+     * Converts a base64 encoded multi-part file into an in-memory decoded java io File.
+     *
+     * @param multipartFile the multi-part file, received from an endpoint, which is encoded in base64.
+     * @return  an in-memory Java file, decoded.
+     * @throws IOException  if the original file name can't be retrieved from the multi-part file.
+     */
+    public static File convertBase64MultipartToFile(MultipartFile multipartFile) throws IOException {
+        File simpleFile = new File(multipartFile.getOriginalFilename());
+        FileOutputStream fileOutputStream = new FileOutputStream(simpleFile);
+        fileOutputStream.write(Base64.getDecoder().decode( multipartFile.getBytes() ));
+        fileOutputStream.close();
+        return simpleFile;
     }
 
 }

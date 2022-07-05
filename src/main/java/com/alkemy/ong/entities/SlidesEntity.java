@@ -1,10 +1,6 @@
 package com.alkemy.ong.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +18,7 @@ public class SlidesEntity {
   @Column(name = "id")
   private String id;
 
-  @Column(name="organization_id", nullable = false)
+  @Column(name="organization_id",nullable=false)
   private String organizationId;
 
   @Column(name = "image_url", nullable = false)
@@ -32,6 +28,6 @@ public class SlidesEntity {
   private String text;
 
   @Column(name = "slide_order")
-  private int slideOrder;
+  private Integer slideOrder;
 
 }

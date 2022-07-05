@@ -140,4 +140,33 @@ public class AmazonS3ServiceImpl implements CloudStorageService {
         return fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
     }
 
+    /**
+     * Uploads a file to the Amazon S3 Bucket
+     *
+     * The file should be encoded in Base64. It will then be decoded and uploaded to the cloud.
+     *
+     * @param multipartFile the file to be uploaded, decoded in Base64.
+     * @return  the absolute url to access the uploaded file
+     * @throws IOException if it fails to convert the multi-part file into a file, or if the original file name can't be
+     *                      retrieved.
+     * @throws AmazonS3Exception if there was a problem with the Amazon S3 client.
+     */
+    @Override
+    public String uploadBase64File(MultipartFile multipartFile) throws IOException, AmazonS3Exception {
+
+        File file = FileManager.convertBase64MultipartToFile(multipartFile);
+        String fileName = FileManager.buildFileName(multipartFile).withTimeStamp().withoutSpaces().build();
+        String bucketName = this.credentialsConfiguration.getBucketName();
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
+        try {
+            s3client.putObject(putObjectRequest);
+        } catch (Exception e) {
+            throw new AmazonS3Exception(e.getMessage(), e);
+        } finally {
+            file.delete();
+        }
+        return this.s3client.getUrl(bucketName, fileName).toString();
+    }
+
+
 }
