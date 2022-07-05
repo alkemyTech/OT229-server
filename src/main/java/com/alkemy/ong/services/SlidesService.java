@@ -19,5 +19,5 @@ public interface SlidesService {
 
     SlidesEntityDTO create(MultipartFile file,SlidesEntityDTO slide) throws IOException;
 
-    SlidesEntityDTO deleteSlide(String id) throws NotFoundException;
+    SlidesEntityDTO deleteSlide(String id) throws NotFoundException, IOException;
 }

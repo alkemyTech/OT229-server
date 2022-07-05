@@ -74,10 +74,11 @@ public class SlidesServiceImpl implements SlidesService {
     }
 
     @Override
-    public SlidesEntityDTO deleteSlide(String id) throws NotFoundException {
+    public SlidesEntityDTO deleteSlide(String id) throws NotFoundException, IOException {
         SlidesEntity slide = slideRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Slide with the provided id not found."));
         SlidesEntityDTO dto = this.slidesMapper.entityToDto(slide);
         this.slideRepository.delete(slide);
+        cloudStorageService.deleteFileFromS3Bucket(slide.getImageUrl());
         return dto;
     }
 
