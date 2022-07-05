@@ -7,10 +7,12 @@ import com.alkemy.ong.mappers.SlidesEntityMapper;
 import com.alkemy.ong.repositories.SlideRepository;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.SlidesService;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -69,6 +71,14 @@ public class SlidesServiceImpl implements SlidesService {
 
 
         return this.slidesMapper.entityToDto(entitySaved);
+    }
+
+    @Override
+    public SlidesEntityDTO deleteSlide(String id) throws NotFoundException {
+        SlidesEntity slide = slideRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Slide with the provided id not found."));
+        SlidesEntityDTO dto = this.slidesMapper.entityToDto(slide);
+        this.slideRepository.delete(slide);
+        return dto;
     }
 
 }
