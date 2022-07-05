@@ -15,6 +15,7 @@ import org.hibernate.annotations.Where;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 @Setter
 @Getter
@@ -31,6 +32,7 @@ public class ActivityEntity {
   private String id;
   @Column(name = "name", nullable = false)
   private String name;
+  @Length(max = 10000)
   @Column(name = "description", nullable = false)
   private String content;
   @Column(name = "image")

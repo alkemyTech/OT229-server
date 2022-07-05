@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -41,6 +42,7 @@ public class Organization {
     @Column(name = "welcomeText", nullable = false)
     private String welcomeText;
 
+    @Length(max = 2000)
     @Column(name = "aboutUsText")
     private String aboutUsText;
 
