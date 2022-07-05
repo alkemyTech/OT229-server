@@ -4,6 +4,10 @@ import com.alkemy.ong.dto.CategoryDTO;
 import com.alkemy.ong.dto.NewsDTO;
 import com.alkemy.ong.entities.Category;
 import com.alkemy.ong.entities.News;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
+import com.alkemy.ong.exception.EntityImageProcessingException;
+import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.mappers.CategoryMapper;
 import com.alkemy.ong.mappers.NewsMapper;
 import com.alkemy.ong.repositories.NewsRepository;
@@ -11,16 +15,12 @@ import com.alkemy.ong.services.CategoriesService;
 import com.alkemy.ong.services.CategoryEntityProvider;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.NewsService;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -41,7 +41,7 @@ public class NewsServiceImpl implements NewsService {
 
   @Transactional
   @Override
-  public NewsDTO save(MultipartFile file, NewsDTO news) throws IOException {
+  public NewsDTO save(MultipartFile file, NewsDTO news) throws CloudStorageClientException, CorruptedFileException {
 
     String imageUrl=(cloudStorageService.uploadFile(file));
     news.setImage(imageUrl);
@@ -61,10 +61,14 @@ public class NewsServiceImpl implements NewsService {
 
   @Transactional
   @Override
-  public NewsDTO deleteNews(String id) throws EntityNotFoundException, IOException {
+  public NewsDTO deleteNews(String id) throws EntityNotFoundException, CloudStorageClientException {
     News newsToDelete = this.newsRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("News with the provided id not found."));
-    this.deleteNewsImageFromCloudStorage(newsToDelete);
+    try {
+      this.deleteNewsImageFromCloudStorage(newsToDelete);
+    } catch (FileNotFoundOnCloudException e) {
+      // If the file didn't exist, nothing needs to be done.
+    }
     NewsDTO newsDTO = this.newsMapper.newsEntity2DTO(newsToDelete);
     this.newsRepository.delete(newsToDelete);
     return newsDTO;
@@ -72,7 +76,7 @@ public class NewsServiceImpl implements NewsService {
 
   @Transactional
   @Override
-  public NewsDTO updateNews(String id, MultipartFile imageFile, NewsDTO updatedNews) throws EntityNotFoundException, IOException, AmazonS3Exception, IllegalArgumentException {
+  public NewsDTO updateNews(String id, MultipartFile imageFile, NewsDTO updatedNews) throws EntityNotFoundException, IllegalArgumentException, CloudStorageClientException, CorruptedFileException {
     News newsToUpdate = this.newsRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("News with the provided id not found."));
     this.newsMapper.UpdateNewsInstance(newsToUpdate, updatedNews);
@@ -80,6 +84,13 @@ public class NewsServiceImpl implements NewsService {
     // If the News is not going to be update with a new image, then this attribute should have the current image url.
     String updatedImageUrl = updatedNews.getImage();
     if (imageFile != null && !imageFile.isEmpty()) {
+      if (updatedImageUrl != null) {
+        try {
+          this.cloudStorageService.deleteFileFromS3Bucket(updatedImageUrl);
+        } catch (FileNotFoundOnCloudException e) {
+          // If the file didn't exist, nothing needs to be done.
+        }
+      }
       updatedImageUrl = cloudStorageService.uploadFile(imageFile);
     }
     updatedNews.setImage(updatedImageUrl);
@@ -122,17 +133,18 @@ public class NewsServiceImpl implements NewsService {
    * Deletes the image referenced by a News entity from the cloud storage.
    *
    * @param news the owner of the image.
-   * @throws IOException  if there was a problem with the cloud storage client.
+   * @throws CloudStorageClientException  if there was a problem with the cloud storage client.
    */
-  private void deleteNewsImageFromCloudStorage(News news) throws IOException {
+  private void deleteNewsImageFromCloudStorage(News news) throws CloudStorageClientException, FileNotFoundOnCloudException {
     if (news.getImage() != null && !news.getImage().equals("")) {
       try {
         this.cloudStorageService.deleteFileFromS3Bucket(news.getImage());
-      } catch (IOException e) {
-        // All exceptions thrown from deleteFileFromS3Bucket() inherit from IOException, FileNotFoundException being one.
-        // In the case where it was FileNotFoundException, meaning there was no file stored in the S3 service with the
-        // provided url, then I don't need to do anything, hence it's excluded from the "if" and it's not thrown again.
-        if (!(e instanceof FileNotFoundException)) {
+      } catch (EntityImageProcessingException e) {
+        // All exceptions thrown from deleteFileFromS3Bucket() inherit from EntityImageProcessingException,
+        // FileNotFoundOnCloudException being one. In the case where it was FileNotFoundOnCloudException, meaning there
+        // was no file stored in the S3 service with the provided url, then I don't need to do anything, hence it's
+        // excluded from the "if" and it's not thrown again.
+        if (!(e instanceof FileNotFoundOnCloudException)) {
           throw e;
         }
       }

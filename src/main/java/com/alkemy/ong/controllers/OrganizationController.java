@@ -4,19 +4,17 @@ import com.alkemy.ong.dto.OrganizationDTO;
 import com.alkemy.ong.dto.OrganizationInfoResponse;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
 import com.alkemy.ong.dto.SlidesEntityDTO;
-import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.services.OrganizationService;
 import com.alkemy.ong.services.SlidesService;
 import com.alkemy.ong.utility.GlobalConstants;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -50,18 +48,14 @@ public class OrganizationController {
     //@PreAuthorize("hasRole('ADMIN')") // Descomentar cuando se trabaje en el ticket 73
     @PostMapping
     public ResponseEntity<?> updateOrganization(@RequestParam(value = "file", required = false) MultipartFile image,
-                                                              @ModelAttribute OrganizationDTO organizationDTO){
+                                                              @ModelAttribute OrganizationDTO organizationDTO) throws CloudStorageClientException, CorruptedFileException {
 
         try{
             OrganizationDTO org = organizationService.updateOrganization(image, organizationDTO);
 
             return ResponseEntity.ok().body(org);
-        }catch (AmazonS3Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
-        } catch (RuntimeException e){
+        }catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (IOException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

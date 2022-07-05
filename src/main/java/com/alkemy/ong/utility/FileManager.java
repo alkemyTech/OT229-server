@@ -1,5 +1,6 @@
 package com.alkemy.ong.utility;
 
+import com.alkemy.ong.exception.CorruptedFileException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,14 +30,19 @@ public abstract class FileManager {
      * Converts a multi-part file into an in-memory java io File.
      * @param multipartFile the multi-part file, received from an endpoint.
      * @return  an in-memory Java file.
-     * @throws IOException  if the original file name can't be retrieved from the multi-part file.
+     * @throws CorruptedFileException  if the original file name can't be retrieved from the multi-part file, or if
+     * the latter is corrupted.
      */
-    public static File convertMultiPartToFile(MultipartFile multipartFile) throws IOException {
-        File simpleFile = new File(multipartFile.getOriginalFilename());
-        FileOutputStream fileOutputStream = new FileOutputStream(simpleFile);
-        fileOutputStream.write(multipartFile.getBytes());
-        fileOutputStream.close();
-        return simpleFile;
+    public static File convertMultiPartToFile(MultipartFile multipartFile) throws CorruptedFileException {
+        try {
+            File simpleFile = new File(multipartFile.getOriginalFilename());
+            FileOutputStream fileOutputStream = new FileOutputStream(simpleFile);
+            fileOutputStream.write(multipartFile.getBytes());
+            fileOutputStream.close();
+            return simpleFile;
+        } catch (IOException e) {
+            throw new CorruptedFileException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -93,14 +99,19 @@ public abstract class FileManager {
      *
      * @param multipartFile the multi-part file, received from an endpoint, which is encoded in base64.
      * @return  an in-memory Java file, decoded.
-     * @throws IOException  if the original file name can't be retrieved from the multi-part file.
+     * @throws CorruptedFileException  if the original file name can't be retrieved from the multi-part file, or if
+     * the latter is corrupted.
      */
-    public static File convertBase64MultipartToFile(MultipartFile multipartFile) throws IOException {
-        File simpleFile = new File(multipartFile.getOriginalFilename());
-        FileOutputStream fileOutputStream = new FileOutputStream(simpleFile);
-        fileOutputStream.write(Base64.getDecoder().decode( multipartFile.getBytes() ));
-        fileOutputStream.close();
-        return simpleFile;
+    public static File convertBase64MultipartToFile(MultipartFile multipartFile) throws CorruptedFileException {
+        try {
+            File simpleFile = new File(multipartFile.getOriginalFilename());
+            FileOutputStream fileOutputStream = new FileOutputStream(simpleFile);
+            fileOutputStream.write(Base64.getDecoder().decode( multipartFile.getBytes() ));
+            fileOutputStream.close();
+            return simpleFile;
+        } catch (IOException e) {
+            throw new CorruptedFileException(e.getMessage(), e);
+        }
     }
 
 }

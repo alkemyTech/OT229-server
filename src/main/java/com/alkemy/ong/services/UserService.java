@@ -4,6 +4,8 @@ package com.alkemy.ong.services;
 import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.dto.UserDTORequest;
 import com.alkemy.ong.entities.User;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.security.payload.SignupRequest;
 import com.alkemy.ong.security.payload.SingupResponse;
 import javassist.NotFoundException;
@@ -16,7 +18,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-  SingupResponse createUser(SignupRequest  signupRequest, MultipartFile image) throws IOException;
+  SingupResponse createUser(SignupRequest  signupRequest, MultipartFile image) throws IOException, CloudStorageClientException, CorruptedFileException;
 
   public User save(User user);
   Optional<User> getUserByEmail(String email);
