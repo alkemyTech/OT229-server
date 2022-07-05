@@ -44,7 +44,7 @@ public class SlidesController {
 
     @PostMapping
     public ResponseEntity<?> createSlide(@RequestParam(value = "file",required = false)MultipartFile file, @ModelAttribute SlidesEntityDTO slidesDTO) throws IOException {
-        slidesDTO.setImageUrl(cloudStorageService.uploadFile(file));
+        slidesDTO.setImageUrl(cloudStorageService.uploadBase64File(file));
         return ResponseEntity.status(HttpStatus.CREATED).body(this.slidesService.create(file,slidesDTO));
     }
 
