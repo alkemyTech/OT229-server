@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface OrganizationsRepository extends JpaRepository<Organization, String> {
 
+    public Boolean existsByName(String name);
+
 }

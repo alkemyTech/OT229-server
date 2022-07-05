@@ -33,4 +33,13 @@ public class SlidesEntityMapper {
                 .setSlideOrder(slideEntity.getSlideOrder());
     }
 
+    public void UpdateSlide(SlidesEntity slidesEntity,SlidesEntityDTO slidesEntityDTO){
+        slidesEntity.setId(slidesEntityDTO.getId());
+        slidesEntity.setSlideOrder(slidesEntityDTO.getSlideOrder());
+        slidesEntity.setText(slidesEntityDTO.getText());
+        slidesEntity.setImageUrl(slidesEntityDTO.getImageUrl());
+        slidesEntity.setOrganizationId(slidesEntityDTO.getOrganizationId()
+        );
+    }
+
 }
