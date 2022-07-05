@@ -3,10 +3,12 @@ package com.alkemy.ong.services;
 import com.alkemy.ong.dto.ReducedSlideDTO;
 import com.alkemy.ong.dto.SlidesEntityDTO;
 import com.alkemy.ong.entities.SlidesEntity;
-import javassist.NotFoundException;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
+import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 public interface SlidesService {
@@ -17,7 +19,7 @@ public interface SlidesService {
 
     List<ReducedSlideDTO> slideList();
 
-    SlidesEntityDTO create(MultipartFile file,SlidesEntityDTO slide) throws IOException;
+    SlidesEntityDTO create(MultipartFile file,SlidesEntityDTO slide) throws CloudStorageClientException, CorruptedFileException;
 
-    SlidesEntityDTO deleteSlide(String id) throws NotFoundException, IOException;
+    SlidesEntityDTO deleteSlide(String id) throws EntityNotFoundException, CloudStorageClientException, FileNotFoundOnCloudException;
 }
