@@ -18,6 +18,6 @@ public interface SlideRepository extends JpaRepository<SlidesEntity, String> {
 
     public List<SlidesEntity> findAllByOrderBySlideOrderAsc();
 
-    @Query(value = "SELECT MAX(s.slide_order) FROM Slide d WHERE s.organization = :organization ")
-    Integer getLastOrder(@Param("organization")Organization organization);
+    @Query(value = "SELECT MAX(s.slideOrder) FROM SlidesEntity s WHERE s.organizationId = :organizationId")
+    Integer getLastOrder(@Param("organizationId") String organizationId);
 }

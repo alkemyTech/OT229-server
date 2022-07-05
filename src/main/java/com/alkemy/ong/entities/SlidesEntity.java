@@ -18,7 +18,7 @@ public class SlidesEntity {
   @Column(name = "id")
   private String id;
 
-  @Column(name="organization_id", nullable = false)
+  @Column(name="organization_id",nullable=false)
   private String organizationId;
 
   @Column(name = "image_url", nullable = false)
@@ -30,6 +30,4 @@ public class SlidesEntity {
   @Column(name = "slide_order")
   private Integer slideOrder;
 
-  @ManyToOne (cascade= CascadeType.ALL)
-  private Organization organization;
 }

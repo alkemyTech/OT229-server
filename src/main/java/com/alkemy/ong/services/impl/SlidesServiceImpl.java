@@ -59,7 +59,7 @@ public class SlidesServiceImpl implements SlidesService {
         SlidesEntity entity=this.slidesMapper.dtoToEntity(slide);
 
         if (entity.getSlideOrder()==null) {
-            entity.setSlideOrder(slideRepository.getLastOrder(entity.getOrganization())+1);
+            entity.setSlideOrder(slideRepository.getLastOrder(entity.getOrganizationId())+1);
         }
 
         String imageUrl= cloudStorageService.uploadFile(file);
