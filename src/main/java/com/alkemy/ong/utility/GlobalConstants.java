@@ -13,9 +13,6 @@ public abstract class GlobalConstants {
     public static final String TITLE_EMAIL_CONTACT = "Thank you for contacting us! We will be answering your query shortly";
 
     public static abstract class Endpoints {
-
-        public static final String LOGIN = "/auth/login";
-        public static final String REGISTER = "/auth/register";
         public static final String ORGANIZATION_PUBLIC_INFO = "/organization/public";
         public static final String USER = "/users/";
         public static final String CATEGORIES = "/categories";
@@ -25,6 +22,11 @@ public abstract class GlobalConstants {
         public static final String ACTIVITIES = "/activities";
         public static final String SLIDES = "/slides";
 
+    }
+
+    public static abstract class EndpointsRoutes{
+        public static final String LOGIN = "/auth/login";
+        public static final String REGISTER = "/auth/register";
     }
 
 }
