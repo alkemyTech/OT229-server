@@ -32,7 +32,7 @@ public class ContactController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping
     public ResponseEntity<List<ContactDTO>> getAll(){
 
