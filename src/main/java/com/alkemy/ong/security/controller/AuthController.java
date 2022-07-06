@@ -29,7 +29,7 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(GlobalConstants.Endpoints.REGISTER)
+    @PostMapping(GlobalConstants.EndpointsRoutes.REGISTER)
     public ResponseEntity<?> register(@RequestParam(value="file", required = false) MultipartFile image,
                                       @ModelAttribute @Valid SignupRequest signupRequest) {
           try {
@@ -43,7 +43,7 @@ public class AuthController {
           }
     }
 
-    @PostMapping(GlobalConstants.Endpoints.LOGIN)
+    @PostMapping(GlobalConstants.EndpointsRoutes.LOGIN)
     public ResponseEntity<?> login(@Valid LoginRequest loginForm) {
 
         try {
