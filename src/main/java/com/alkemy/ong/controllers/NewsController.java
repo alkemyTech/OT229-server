@@ -2,7 +2,8 @@ package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.dto.DeleteEntityResponse;
 import com.alkemy.ong.dto.NewsDTO;
-import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.NewsService;
 import com.alkemy.ong.utility.GlobalConstants;
@@ -47,21 +48,19 @@ public class NewsController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteNews(@PathVariable String id) {
+  public ResponseEntity<?> deleteNews(@PathVariable String id) throws CloudStorageClientException {
     try {
       NewsDTO newsDTO = this.newsService.deleteNews(id);
       return ResponseEntity.ok(new DeleteEntityResponse("News successfully deleted.", newsDTO));
     } catch (EntityNotFoundException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    } catch (IOException cloudStorageServiceProblemException) {
-      return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("There was a problem trying do delete the associated images. Please try again later.");
     }
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<?> updateNews(@RequestParam(value = "file", required = false) MultipartFile file,
                                       @Valid @ModelAttribute NewsDTO updatedNews,
-                                      @PathVariable String id) {
+                                      @PathVariable String id) throws CloudStorageClientException, CorruptedFileException {
 
     try {
       return ResponseEntity.ok(this.newsService.updateNews(id, file, updatedNews));
@@ -69,10 +68,6 @@ public class NewsController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    } catch (AmazonS3Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Image could not be saved. Try again later.");
-    } catch (IOException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Broken or invalid image");
     }
   }
 

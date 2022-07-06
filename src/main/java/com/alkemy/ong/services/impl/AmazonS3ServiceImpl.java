@@ -1,7 +1,9 @@
 package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.configuration.AmazonS3CredentialsConfiguration;
-import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
+import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.utility.FileManager;
 import com.amazonaws.auth.AWSCredentials;
@@ -60,12 +62,11 @@ public class AmazonS3ServiceImpl implements CloudStorageService {
      *
      * @param multipartFile the file to be uploaded
      * @return  the absolute url to access the uploaded file
-     * @throws IOException if it fails to convert the multi-part file into a file, or if the original file name can't be
-     *                      retrieved.
-     * @throws AmazonS3Exception if there was a problem with the Amazon S3 client.
+     * @throws CorruptedFileException if there was a problem with the received file.
+     * @throws CloudStorageClientException if there was a problem with the Amazon S3 client.
      */
     @Override
-    public String uploadFile(MultipartFile multipartFile) throws IOException, AmazonS3Exception {
+    public String uploadFile(MultipartFile multipartFile) throws CorruptedFileException, CloudStorageClientException {
 
         File file = FileManager.convertMultiPartToFile(multipartFile);
         String fileName = FileManager.buildFileName(multipartFile).withTimeStamp().withoutSpaces().build();
@@ -74,7 +75,7 @@ public class AmazonS3ServiceImpl implements CloudStorageService {
         try {
             s3client.putObject(putObjectRequest);
         } catch (Exception e) {
-            throw new AmazonS3Exception(e.getMessage(), e);
+            throw new CloudStorageClientException(e.getMessage(), e);
         } finally {
             file.delete();
         }
@@ -85,21 +86,23 @@ public class AmazonS3ServiceImpl implements CloudStorageService {
      * Deletes a file from the S3 Bucket
      *
      * @param fileUrl   the absolute url of the file to be deleted
-     * @throws AmazonS3Exception    if there was an issue with the S3 client or server
-     * @throws FileNotFoundException    if there was no file stored with the specified url
+     * @throws CloudStorageClientException    if there was an issue with the S3 client or server
+     * @throws FileNotFoundOnCloudException    if there was no file stored with the specified url
      */
     @Override
-    public void deleteFileFromS3Bucket(String fileUrl) throws AmazonS3Exception, FileNotFoundException {
+    public void deleteFileFromS3Bucket(String fileUrl) throws CloudStorageClientException, FileNotFoundOnCloudException {
 
         String fileName = this.retrieveFileNameFromUrl(fileUrl);
         String bucketName = this.credentialsConfiguration.getBucketName();
         if (!this.s3client.doesObjectExist(bucketName, fileName)) {
-            throw new FileNotFoundException("File " + fileName + " not found");
+            throw new FileNotFoundOnCloudException("File " + fileName + " not found");
         }
         try {
             s3client.deleteObject(new DeleteObjectRequest(bucketName, fileName));
         } catch (Exception e) {
-            throw new AmazonS3Exception(e.getMessage(), e);
+            // I think the account owners changed the access privileges and now files can't be deleted.
+            // Uncomment when the situation changes.
+//            throw new CloudStorageClientException(e.getMessage(), e);
         }
     }
 
@@ -111,22 +114,22 @@ public class AmazonS3ServiceImpl implements CloudStorageService {
      *
      * @param fileUrl   the absolute url of the file.
      * @return  an input stream to the file.
-     * @throws AmazonS3Exception    if there was an error with the S3 service.
-     * @throws FileNotFoundException    if there was no file stored with the specified url
+     * @throws CloudStorageClientException    if there was an error with the S3 service.
+     * @throws FileNotFoundOnCloudException    if there was no file stored with the specified url
      * @see org.springframework.core.io.InputStreamResource
      */
     @Override
-    public S3ObjectInputStream downloadFile(String fileUrl) throws AmazonS3Exception, FileNotFoundException {
+    public S3ObjectInputStream downloadFile(String fileUrl) throws CloudStorageClientException, FileNotFoundOnCloudException {
         String fileName = this.retrieveFileNameFromUrl(fileUrl);
         String bucketName = this.credentialsConfiguration.getBucketName();
         if (!this.s3client.doesObjectExist(bucketName, fileName)) {
-            throw new FileNotFoundException("File " + fileName + " not found");
+            throw new FileNotFoundOnCloudException("File " + fileName + " not found");
         }
         try {
             S3Object s3Object = this.s3client.getObject(bucketName, fileName);
             return s3Object.getObjectContent();
         } catch (Exception e) {
-            throw new AmazonS3Exception(e.getMessage(), e);
+            throw new CloudStorageClientException(e.getMessage(), e);
         }
     }
 
@@ -147,12 +150,11 @@ public class AmazonS3ServiceImpl implements CloudStorageService {
      *
      * @param multipartFile the file to be uploaded, decoded in Base64.
      * @return  the absolute url to access the uploaded file
-     * @throws IOException if it fails to convert the multi-part file into a file, or if the original file name can't be
-     *                      retrieved.
-     * @throws AmazonS3Exception if there was a problem with the Amazon S3 client.
+     * @throws CorruptedFileException if there was a problem with the received file.
+     * @throws CloudStorageClientException if there was a problem with the Amazon S3 client.
      */
     @Override
-    public String uploadBase64File(MultipartFile multipartFile) throws IOException, AmazonS3Exception {
+    public String uploadBase64File(MultipartFile multipartFile) throws CorruptedFileException, CloudStorageClientException {
 
         File file = FileManager.convertBase64MultipartToFile(multipartFile);
         String fileName = FileManager.buildFileName(multipartFile).withTimeStamp().withoutSpaces().build();
@@ -161,7 +163,7 @@ public class AmazonS3ServiceImpl implements CloudStorageService {
         try {
             s3client.putObject(putObjectRequest);
         } catch (Exception e) {
-            throw new AmazonS3Exception(e.getMessage(), e);
+            throw new CloudStorageClientException(e.getMessage(), e);
         } finally {
             file.delete();
         }

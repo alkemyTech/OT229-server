@@ -3,7 +3,8 @@ package com.alkemy.ong.controllers;
 import com.alkemy.ong.dto.ActivityDTO;
 import com.alkemy.ong.exception.ActivityNamePresentException;
 import com.alkemy.ong.exception.ActivityNotFoundException;
-import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.services.ActivitiesService;
 import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class ActivitiesController {
 
     @PostMapping
     public ResponseEntity<?> save(@RequestParam(value = "file", required = false) MultipartFile file,
-                                   @Valid @ModelAttribute ActivityDTO dto) {
+                                   @Valid @ModelAttribute ActivityDTO dto) throws CloudStorageClientException, CorruptedFileException {
 
         try {
 
@@ -34,20 +35,13 @@ public class ActivitiesController {
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 
-        } catch (AmazonS3Exception e) {
-
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
-        }
-        catch (IOException e) {
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> edit (@RequestParam(value = "file", required = false) MultipartFile file,
-                                   @Valid @ModelAttribute ActivityDTO dto, @PathVariable String id) {
+                                   @Valid @ModelAttribute ActivityDTO dto, @PathVariable String id) throws CloudStorageClientException, CorruptedFileException {
 
         try {
 
@@ -62,13 +56,6 @@ public class ActivitiesController {
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 
-        } catch (AmazonS3Exception e) {
-
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
-        }
-        catch (IOException e) {
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
 

@@ -4,7 +4,8 @@ package com.alkemy.ong.services.impl;
 import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.dto.UserDTORequest;
 import com.alkemy.ong.entities.User;
-import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.RegisterException;
 import com.alkemy.ong.mappers.UserMapper;
 import com.alkemy.ong.repositories.UserRepository;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
     RoleService roleService;
 
     @Override
-    public SingupResponse createUser(SignupRequest signupRequest, MultipartFile image) throws IOException {
+    public SingupResponse createUser(SignupRequest signupRequest, MultipartFile image) throws IOException, CloudStorageClientException, CorruptedFileException {
         Boolean userFound = userRepo.existsByEmail(signupRequest.getEmail());
 
         if(!userFound){

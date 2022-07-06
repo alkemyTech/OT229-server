@@ -3,7 +3,8 @@ package com.alkemy.ong.services.impl;
 import com.alkemy.ong.dto.OrganizationDTO;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
 import com.alkemy.ong.entities.Organization;
-import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.mappers.OrganizationMapper;
 import com.alkemy.ong.repositories.OrganizationsRepository;
 import com.alkemy.ong.services.CloudStorageService;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,15 +47,15 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws IOException, RuntimeException {
+    public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws RuntimeException, CloudStorageClientException, CorruptedFileException {
         Optional<Organization> organizationFound = organizationsRepository.findById(organizationDTO.getId());
 
         if(organizationFound.isPresent()){
             if(!image.isEmpty()){
                 try{
                     organizationDTO.setImage(amazonService.uploadFile(image));
-                }catch(AmazonS3Exception e){
-                    throw new AmazonS3Exception("Image could not be saved. Try again later.");
+                }catch(CloudStorageClientException e){
+                    throw new CloudStorageClientException("Image could not be saved. Try again later.");
                 }
             }
 

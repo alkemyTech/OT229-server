@@ -1,5 +1,8 @@
 package com.alkemy.ong.security.configuration;
 
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
+import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.security.payload.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -77,6 +80,27 @@ public class ValidationControllerAdvice {
                         .map(FieldError::getDefaultMessage)
                         .collect(Collectors.toList())
         );
+    }
+
+    @ExceptionHandler(CloudStorageClientException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ResponseBody
+    String onCloudStorageClientException(CloudStorageClientException e) {
+        return "There was a problem with the cloud storage service. Problem is: " + e.getMessage();
+    }
+
+    @ExceptionHandler(CorruptedFileException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    String onCorruptedFileException(CorruptedFileException e) {
+        return "Incompatible or corrupted file.";
+    }
+
+    @ExceptionHandler(FileNotFoundOnCloudException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    String onFileNotFoundOnCloudException(FileNotFoundOnCloudException e) {
+        return "The file doesn't exist.";
     }
 
 }

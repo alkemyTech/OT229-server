@@ -2,6 +2,8 @@ package com.alkemy.ong.runner;
 
 import com.alkemy.ong.entities.ActivityEntity;
 import com.alkemy.ong.entities.Organization;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.repositories.ActivityRepository;
 import com.alkemy.ong.repositories.OrganizationsRepository;
 import com.alkemy.ong.services.CloudStorageService;
@@ -29,7 +31,7 @@ public class Runner implements CommandLineRunner {
         populateActivities();
     }
 
-    private void populateActivities() throws IOException{
+    private void populateActivities() throws IOException, CloudStorageClientException, CorruptedFileException {
         ActivityEntity[] activities = new ActivityEntity[BASIC_ACTIVITIES_AMMOUNT];
         initializeBasicActivities(activities);
 
@@ -135,7 +137,7 @@ public class Runner implements CommandLineRunner {
 
     }
 
-    private void polulateOrganization() throws IOException {
+    private void polulateOrganization() throws IOException, CloudStorageClientException, CorruptedFileException {
         if (!organizationsRepository.existsByName("Somos Más")) {
             Organization org = new Organization();
             org.setName("Somos Más");
