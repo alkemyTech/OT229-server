@@ -9,7 +9,6 @@ import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.SlidesService;
 import com.alkemy.ong.utility.GlobalConstants;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
