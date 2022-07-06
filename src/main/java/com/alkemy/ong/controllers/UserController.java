@@ -9,7 +9,6 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,7 +43,7 @@ public class UserController {
 
     }
 
- @PutMapping
+    @PutMapping
     public ResponseEntity<?> updateUser(@RequestParam(value = "file", required = false) MultipartFile multipartfile,@Valid @ModelAttribute UserDTORequest userDTORequest) {
         try {
             return new ResponseEntity<>(userService.updateUser(multipartfile, userDTORequest), HttpStatus.OK);
