@@ -4,18 +4,19 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 public class NewsDTO {
   private String id;
-  @NotEmpty
+  @NotEmpty(message = "name must be provided")
   private String name;
-  @NotEmpty
+  @NotEmpty(message = "content must be provided")
   private String content;
-  @NotEmpty
+
   private String image;
-  @NotEmpty
+  @NotNull(message = "category must be provided")
   private CategoryDTO category;
 
 }
