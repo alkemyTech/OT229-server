@@ -1,5 +1,6 @@
 package com.alkemy.ong.security.controller;
 
+import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.exception.RegisterException;
 import com.alkemy.ong.security.payload.LoginRequest;
 import com.alkemy.ong.security.payload.SingupResponse;
@@ -29,7 +30,7 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(GlobalConstants.EndpointsRoutes.REGISTER)
+    @PostMapping(GlobalConstants.Endpoints.REGISTER)
     public ResponseEntity<?> register(@RequestParam(value="file", required = false) MultipartFile image,
                                       @ModelAttribute @Valid SignupRequest signupRequest) {
           try {
@@ -43,7 +44,7 @@ public class AuthController {
           }
     }
 
-    @PostMapping(GlobalConstants.EndpointsRoutes.LOGIN)
+    @PostMapping(GlobalConstants.Endpoints.LOGIN)
     public ResponseEntity<?> login(@Valid LoginRequest loginForm) {
 
         try {
@@ -58,6 +59,11 @@ public class AuthController {
         } catch (IllegalStateException e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
+    }
+
+    @GetMapping(GlobalConstants.Endpoints.AUTH_ME)
+    public ResponseEntity<UserDTO> getMe(@RequestHeader("authorization") String jwt) throws Exception{
+        return new ResponseEntity<>(userService.getMe(jwt), HttpStatus.OK);
     }
     
 }
