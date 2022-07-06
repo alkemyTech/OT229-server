@@ -36,8 +36,7 @@ public class UserController {
             return e.getMessage();
         }
     }
-   
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAll(){
 
@@ -58,9 +57,5 @@ public class UserController {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-    }
-    @GetMapping("/auth/me")
-    public ResponseEntity<UserDTO> getMe(@RequestHeader("authorization") String jwt) throws Exception{
-        return new ResponseEntity<>(userService.getMe(jwt), HttpStatus.OK);
     }
 }
