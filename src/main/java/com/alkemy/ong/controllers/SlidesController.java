@@ -3,7 +3,9 @@ package com.alkemy.ong.controllers;
 import com.alkemy.ong.dto.DeleteEntityResponse;
 import com.alkemy.ong.dto.ReducedSlideDTO;
 import com.alkemy.ong.dto.SlidesEntityDTO;
-import com.alkemy.ong.exception.AmazonS3Exception;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
+import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.SlidesService;
 import com.alkemy.ong.utility.GlobalConstants;
@@ -48,7 +50,7 @@ public class SlidesController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createSlide(@RequestParam(value = "file",required = false)MultipartFile file, @ModelAttribute SlidesEntityDTO slidesDTO) throws IOException {
+    public ResponseEntity<?> createSlide(@RequestParam(value = "file",required = false)MultipartFile file, @ModelAttribute SlidesEntityDTO slidesDTO) throws IOException, CloudStorageClientException, CorruptedFileException {
         try {
             slidesDTO.setImageUrl(cloudStorageService.uploadBase64File(file));
             return ResponseEntity.status(HttpStatus.CREATED).body(this.slidesService.create(file,slidesDTO));
@@ -58,28 +60,24 @@ public class SlidesController {
     }
 
     @DeleteMapping("/id")
-    public ResponseEntity<?>deleteSlide(@PathVariable String id) throws NotFoundException {
+    public ResponseEntity<?>deleteSlide(@PathVariable String id) throws CloudStorageClientException, FileNotFoundOnCloudException {
         try {
             SlidesEntityDTO slideDTO = this.slidesService.deleteSlide(id);
             return ResponseEntity.ok(new DeleteEntityResponse("Slide successful deleted",slideDTO));
-        }catch (EntityNotFoundException | IOException e ){
+        }catch (EntityNotFoundException e ){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?>updateSlide(@RequestParam(value = "file", required = false) MultipartFile file, @Valid @ModelAttribute SlidesEntityDTO slide,@PathVariable String id){
+    public ResponseEntity<?>updateSlide(@RequestParam(value = "file", required = false) MultipartFile file, @Valid @ModelAttribute SlidesEntityDTO slide,@PathVariable String id) throws CloudStorageClientException, CorruptedFileException {
         try {
             return ResponseEntity.ok(this.slidesService.updateSlide(id,file,slide));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (AmazonS3Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Image could not be saved. Try again later.");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Broken or invalid image");
         }
     }
 

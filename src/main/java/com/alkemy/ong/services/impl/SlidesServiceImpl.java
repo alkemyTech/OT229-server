@@ -3,18 +3,18 @@ package com.alkemy.ong.services.impl;
 import com.alkemy.ong.dto.ReducedSlideDTO;
 import com.alkemy.ong.dto.SlidesEntityDTO;
 import com.alkemy.ong.entities.SlidesEntity;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
+import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.mappers.SlidesEntityMapper;
 import com.alkemy.ong.repositories.SlideRepository;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.SlidesService;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -58,7 +58,7 @@ public class SlidesServiceImpl implements SlidesService {
     }
 
     @Override
-    public SlidesEntityDTO create(MultipartFile file, SlidesEntityDTO slide) throws IOException {
+    public SlidesEntityDTO create(MultipartFile file, SlidesEntityDTO slide) throws CloudStorageClientException, CorruptedFileException {
         SlidesEntity entity=this.slidesMapper.dtoToEntity(slide);
 
         if (entity.getSlideOrder()==null) {
@@ -75,7 +75,7 @@ public class SlidesServiceImpl implements SlidesService {
     }
 
     @Override
-    public SlidesEntityDTO deleteSlide(String id) throws NotFoundException, IOException {
+    public SlidesEntityDTO deleteSlide(String id) throws EntityNotFoundException, CloudStorageClientException, FileNotFoundOnCloudException {
         SlidesEntity slide = slideRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Slide with the provided id not found."));
         SlidesEntityDTO dto = this.slidesMapper.entityToDto(slide);
         this.slideRepository.delete(slide);
@@ -84,7 +84,7 @@ public class SlidesServiceImpl implements SlidesService {
     }
 
     @Override
-    public SlidesEntityDTO updateSlide(String id, MultipartFile file, SlidesEntityDTO slide) throws EntityNotFoundException, IOException, AmazonS3Exception, IllegalArgumentException {
+    public SlidesEntityDTO updateSlide(String id, MultipartFile file, SlidesEntityDTO slide) throws EntityNotFoundException, IllegalArgumentException, CloudStorageClientException, CorruptedFileException {
         SlidesEntity entity = this.slideRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Slide whit the provide id not found"));
         this.slidesMapper.UpdateSlide(entity,slide);
         String newImage = slide.getImageUrl();
