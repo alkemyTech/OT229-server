@@ -113,7 +113,7 @@ public class ValidationControllerAdvice {
      * @return  the response body.
      */
     @ExceptionHandler(PageIndexOutOfBoundsException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     String onPageIndexOutOfBoundsException(PageIndexOutOfBoundsException e) {
         return e.getMessage();
