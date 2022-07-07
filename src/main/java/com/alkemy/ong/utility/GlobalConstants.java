@@ -26,6 +26,8 @@ public abstract class GlobalConstants {
         public static final String SLIDES = "/slides";
         public static final String TESTIMONIALS="/testimonials";
 
+        public static final String MEMBERS= "/members";
+
     }
 
     public static abstract class EndpointsRoutes{
