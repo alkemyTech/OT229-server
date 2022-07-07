@@ -60,7 +60,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                         GlobalConstants.Endpoints.LOGIN
                                 ).permitAll()
 
-                                .anyRequest().hasAnyAuthority(GlobalConstants.ROLE_USER, GlobalConstants.ROLE_ADMIN)
+
 
                                 // Permitted access to a USER
                                 .antMatchers(HttpMethod.GET, GlobalConstants.EndpointsRoutes.USER_GET).hasAnyAuthority(GlobalConstants.ROLE_USER)
@@ -73,6 +73,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                 .antMatchers(HttpMethod.POST, "/**").hasAnyAuthority(GlobalConstants.ROLE_ADMIN)
                                 .antMatchers(HttpMethod.PUT, "/**").hasAnyAuthority(GlobalConstants.ROLE_ADMIN)
                                 .antMatchers(HttpMethod.DELETE, "/**").hasAnyAuthority(GlobalConstants.ROLE_ADMIN)
+
+                                .anyRequest().hasAnyAuthority(GlobalConstants.ROLE_USER, GlobalConstants.ROLE_ADMIN)
+                        
                 ).addFilter(jwtAuthorizationFilter());
 
 
