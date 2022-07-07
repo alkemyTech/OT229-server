@@ -28,7 +28,7 @@ public class TestimonialController {
     }
     @PutMapping
     public ResponseEntity<?> updateTestimonial(@Valid @ModelAttribute TestimonialDTORequest request,
-                                               @RequestParam("file") MultipartFile file,
+                                               @RequestParam(value = "file", required = false) MultipartFile file,
                                                @RequestParam("id")String id) throws CloudStorageClientException, CorruptedFileException {
        try{
            return new ResponseEntity<>(service.update(id,file,request), HttpStatus.OK);
