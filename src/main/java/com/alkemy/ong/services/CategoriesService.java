@@ -30,5 +30,6 @@ public interface CategoriesService {
     PageResultResponse<String> getAllCategoryNames(int pageNumber) throws PageIndexOutOfBoundsException;
 
     public void deleteCategory(String id);
+
 }
 
