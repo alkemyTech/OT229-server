@@ -60,13 +60,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                         GlobalConstants.Endpoints.LOGIN
                                 ).permitAll()
 
-                                .antMatchers(HttpMethod.GET, GlobalConstants.EndpointsRoutes.PUBLIC_GET).permitAll()
-
-                                // Permitted access to an USER
-                                .antMatchers(HttpMethod.GET, GlobalConstants.EndpointsRoutes.USER_GET).hasAnyAuthority(GlobalConstants.ALL_ROLES)
-                                .antMatchers(HttpMethod.POST, GlobalConstants.EndpointsRoutes.USER_POST).hasAnyAuthority(GlobalConstants.ALL_ROLES)
-                                .antMatchers(HttpMethod.PUT, GlobalConstants.EndpointsRoutes.USER_PUT).hasAnyAuthority(GlobalConstants.ALL_ROLES)
-                                .antMatchers(HttpMethod.DELETE, GlobalConstants.EndpointsRoutes.USER_DELETE).hasAnyAuthority(GlobalConstants.ALL_ROLES)
+                                // Permitted access to a USER
+                                .antMatchers(HttpMethod.GET, GlobalConstants.EndpointsRoutes.USER_GET).hasAnyAuthority(GlobalConstants.ROLE_USER)
+                                .antMatchers(HttpMethod.POST, GlobalConstants.EndpointsRoutes.USER_POST).hasAnyAuthority(GlobalConstants.ROLE_USER)
+                                .antMatchers(HttpMethod.PUT, GlobalConstants.EndpointsRoutes.USER_PUT).hasAnyAuthority(GlobalConstants.ROLE_USER)
+                                .antMatchers(HttpMethod.DELETE, GlobalConstants.EndpointsRoutes.USER_DELETE).hasAnyAuthority(GlobalConstants.ROLE_USER)
 
                                 // ADMIN access -> can do all
                                 .antMatchers(HttpMethod.GET, "/**").hasAnyAuthority(GlobalConstants.ROLE_ADMIN)

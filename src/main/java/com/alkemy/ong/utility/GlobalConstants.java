@@ -5,7 +5,6 @@ public abstract class GlobalConstants {
     //  Default role names
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ROLE_USER = "ROLE_USER";
-    public static final String[] ALL_ROLES = {"ROLE_USER", "ROLE_ADMIN"};
 
     // Send email
     public static final String TEMPLATE_CONTACT = "CONTACT";
@@ -30,11 +29,11 @@ public abstract class GlobalConstants {
     }
 
     public static abstract class EndpointsRoutes{
-        public static final String[] USER_GET = {"/auth/me", "/contacts"};
+        public static final String[] USER_GET = {"/auth/me", "/organization/public", "/post/{id}/comments", "/news/list"};
         public static final String[] USER_POST = {"/comments", "/contacts", "/members"};
         public static final String[] USER_PUT = {"/comments/{id}", "/members/{id}", "/users/{id}"};
         public static final String[] USER_DELETE = {"/comments/{id}", "/users/{id}"};
-        public static final String[] PUBLIC_GET = {"/organization/public", "/post/{id}/comments", "/news/list"};
+
     }
 
 }
