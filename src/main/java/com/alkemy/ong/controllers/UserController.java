@@ -46,7 +46,7 @@ public class UserController {
     }
 
  @PutMapping
-    public ResponseEntity<?> updateUser(@RequestParam(value = "file", required = false) MultipartFile multipartfile,@Valid @ModelAttribute UserDTORequest userDTORequest) {
+    public ResponseEntity<?> updateUser(@RequestParam(value = "file", required = false) MultipartFile multipartfile,@ModelAttribute UserDTORequest userDTORequest) {
         try {
             return new ResponseEntity<>(userService.updateUser(multipartfile, userDTORequest), HttpStatus.OK);
         } catch (NotFoundException e) {
