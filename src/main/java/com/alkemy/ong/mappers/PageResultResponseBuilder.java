@@ -69,8 +69,7 @@ public class PageResultResponseBuilder<T, R> {
          * This sub-builder is intended to produce a result with converted elements.
          *
          * @param <T>   the class of the entities retrieved by the repository
-         * @param <R>   the class of the objects to be contained in the response. If the response content doesn't need to be
-         *              converted, then the same class as the original entities (T) can be provided again.
+         * @param <R>   the class of the objects that the entities will be converted to.
          */
         public static class MappedProvidedBuilder <T, R> {
 
