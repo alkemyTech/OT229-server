@@ -15,10 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
-//@PreAuthorize("permitAll()") // Descomentar cuando se trabaje en el ticket 73
 @RestController
 @RequestMapping(GlobalConstants.Endpoints.ORGANIZATION_PUBLIC_INFO)
 public class OrganizationController {
@@ -45,7 +43,6 @@ public class OrganizationController {
         }
     }
 
-    //@PreAuthorize("hasRole('ADMIN')") // Descomentar cuando se trabaje en el ticket 73
     @PostMapping
     public ResponseEntity<?> updateOrganization(@RequestParam(value = "file", required = false) MultipartFile image,
                                                               @ModelAttribute OrganizationDTO organizationDTO) throws CloudStorageClientException, CorruptedFileException {

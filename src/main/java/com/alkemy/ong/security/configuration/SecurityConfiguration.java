@@ -4,9 +4,11 @@ import com.alkemy.ong.security.filter.JwtAuthorizationFilter;
 import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -18,7 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * Handles all global security configurations like endpoint access restriction and defining authentication,
  * authorization and encryption policies.
  */
+@Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
@@ -50,18 +54,31 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // Endpoint restriction
                 .authorizeRequests(
                         expressionInterceptUrlRegistry -> expressionInterceptUrlRegistry
-                                // Allowing requests to the following endpoints to pass through without authentication
+                                // Routes to register and login
                                 .antMatchers(
-                                        GlobalConstants.Endpoints.REGISTER + "/**",
-                                        GlobalConstants.Endpoints.LOGIN + "/**"
+                                        GlobalConstants.Endpoints.REGISTER,
+                                        GlobalConstants.Endpoints.LOGIN
                                 ).permitAll()
-                                .antMatchers(
-                                        HttpMethod.GET,
-                                        GlobalConstants.Endpoints.ORGANIZATION_PUBLIC_INFO + "/**"
-                                ).permitAll()
-                                // Requiring authentication and certain roles for any endpoint not specified above
+
+
+
+                                // Permitted access to a USER
+                                .antMatchers(HttpMethod.GET, GlobalConstants.EndpointsRoutes.USER_GET).hasAnyAuthority(GlobalConstants.ROLE_USER)
+                                .antMatchers(HttpMethod.POST, GlobalConstants.EndpointsRoutes.USER_POST).hasAnyAuthority(GlobalConstants.ROLE_USER)
+                                .antMatchers(HttpMethod.PUT, GlobalConstants.EndpointsRoutes.USER_PUT).hasAnyAuthority(GlobalConstants.ROLE_USER)
+                                .antMatchers(HttpMethod.DELETE, GlobalConstants.EndpointsRoutes.USER_DELETE).hasAnyAuthority(GlobalConstants.ROLE_USER)
+
+                                // ADMIN access -> can do all
+                                .antMatchers(HttpMethod.GET, "/**").hasAnyAuthority(GlobalConstants.ROLE_ADMIN)
+                                .antMatchers(HttpMethod.POST, "/**").hasAnyAuthority(GlobalConstants.ROLE_ADMIN)
+                                .antMatchers(HttpMethod.PUT, "/**").hasAnyAuthority(GlobalConstants.ROLE_ADMIN)
+                                .antMatchers(HttpMethod.DELETE, "/**").hasAnyAuthority(GlobalConstants.ROLE_ADMIN)
+
                                 .anyRequest().hasAnyAuthority(GlobalConstants.ROLE_USER, GlobalConstants.ROLE_ADMIN)
+                        
                 ).addFilter(jwtAuthorizationFilter());
+
+
 
     }
 

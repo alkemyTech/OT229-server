@@ -13,9 +13,9 @@ public abstract class GlobalConstants {
     public static final String TITLE_EMAIL_CONTACT = "Thank you for contacting us! We will be answering your query shortly";
 
     public static abstract class Endpoints {
-
         public static final String LOGIN = "/auth/login";
         public static final String REGISTER = "/auth/register";
+        public static final String AUTH_ME = "/auth/me";
         public static final String ORGANIZATION_PUBLIC_INFO = "/organization/public";
         public static final String USER = "/users/";
         public static final String CATEGORIES = "/categories";
@@ -27,6 +27,14 @@ public abstract class GlobalConstants {
         public static final String TESTIMONIALS="/testimonials";
 
         public static final String MEMBERS= "/members";
+
+    }
+
+    public static abstract class EndpointsRoutes{
+        public static final String[] USER_GET = {"/auth/me", "/organization/public", "/post/{id}/comments", "/news/list"};
+        public static final String[] USER_POST = {"/comments", "/contacts", "/members"};
+        public static final String[] USER_PUT = {"/comments/{id}", "/members/{id}", "/users/{id}"};
+        public static final String[] USER_DELETE = {"/comments/{id}", "/users/{id}"};
 
     }
 
