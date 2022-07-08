@@ -19,7 +19,7 @@ public class CommentServiceImpl implements CommentService {
     UserServiceImpl userService;
 
     @Override
-    public void deleteComment(String idComentary, String token) throws Exception {
+    public String deleteComment(String idComentary, String token) throws Exception {
         try{
             // Buscar el comentario por ID, buscar los roles del usuario
         }catch (EntityNotFoundException e){
@@ -35,8 +35,10 @@ public class CommentServiceImpl implements CommentService {
         // Si es administrador lo puede eliminar
         if(roles.contains("ROLE_ADMIN")){
             // Lo elimina
+            return "Successfully deleted comment";
         }else if(true){ // Verifico si es el propietario del comentario
             // comment.getUserId().equals(user.getId()) -> delete
+            return "Successfully deleted comment";
         }else{
             throw new Exception("You don't have permissions to delete this comment");
         }
