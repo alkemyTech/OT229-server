@@ -1,8 +1,10 @@
 package com.alkemy.ong.services;
 
 import com.alkemy.ong.dto.NewsDTO;
+import com.alkemy.ong.dto.PageResultResponse;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
+import com.alkemy.ong.exception.PageIndexOutOfBoundsException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
@@ -36,5 +38,17 @@ public interface NewsService {
    * @throws IllegalArgumentException if the News' Category to be updated is present but has an invalid name.
    */
   NewsDTO updateNews(String id, MultipartFile image, NewsDTO updatedNews) throws EntityNotFoundException, IllegalArgumentException, CloudStorageClientException, CorruptedFileException;
+
+  /**
+   * Performs a paginated search for all the News entries in the database and returns them alongside the urls
+   * to get the previous and next page results.
+   *
+   * <p>Page size and sorting criteria are read from global constants.
+   * @param pageNumber  the index of the page to be retrieved.
+   * @return the list of News. If the provided index exceeds the last existing index, an empty list will
+   *          be returned, and the previous page url attribute will point to the last available page.
+   * @throws PageIndexOutOfBoundsException  if the index is not a positive integer.
+   */
+  PageResultResponse<NewsDTO> getAllNews(int pageNumber) throws PageIndexOutOfBoundsException;
 
 }
