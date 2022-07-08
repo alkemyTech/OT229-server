@@ -4,6 +4,7 @@ import com.alkemy.ong.dto.DeleteEntityResponse;
 import com.alkemy.ong.dto.NewsDTO;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
+import com.alkemy.ong.exception.PageIndexOutOfBoundsException;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.NewsService;
 import com.alkemy.ong.utility.GlobalConstants;
@@ -69,6 +70,11 @@ public class NewsController {
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+  }
+
+  @GetMapping
+  public ResponseEntity<?> getAllNews(@RequestParam(value = GlobalConstants.PAGE_INDEX_PARAM) int page) throws PageIndexOutOfBoundsException {
+    return ResponseEntity.ok( this.newsService.getAllNews(page) );
   }
 
 }
