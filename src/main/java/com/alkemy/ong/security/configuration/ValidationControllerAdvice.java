@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -133,6 +134,20 @@ public class ValidationControllerAdvice {
             return e.getMessage().substring(0, e.getMessage().lastIndexOf("'") + 1) + " missing.";
         }
         return "Missing request param.";
+    }
+
+    /**
+     * Catches and processes the response for the exception thrown when a requested endpoint param is sent with a
+     * different type than the one specified in the method declaration.
+     *
+     * @param e the exception.
+     * @return  the response body.
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    String onMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        return "Incorrect param type";
     }
 
 }
