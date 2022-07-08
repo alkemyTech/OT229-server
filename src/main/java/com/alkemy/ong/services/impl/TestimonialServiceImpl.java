@@ -5,6 +5,8 @@ import com.alkemy.ong.dto.TestimonialDTOResponse;
 import com.alkemy.ong.entities.Testimonial;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
+import com.alkemy.ong.exception.EntityImageProcessingException;
+import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.mappers.TestimonialMapper;
 import com.alkemy.ong.repositories.TestimonialRepository;
 import com.alkemy.ong.services.CloudStorageService;
@@ -52,4 +54,25 @@ public class TestimonialServiceImpl implements TestimonialService {
         repository.save(testimonialFound);
         return mapper.testimonialEntity2DTOResponse(testimonialFound);
     }
+
+    @Override
+    public String delete(String id) throws NotFoundException, CloudStorageClientException, FileNotFoundOnCloudException {
+       Boolean exists = repository.existsById(id);
+        if(!exists)throw new NotFoundException("Error: Testimonial with id \" + id + \" was not found\"");
+       Testimonial testimonial=repository.getById(id);
+       deleteTestimonialImageFromCloudStorage(testimonial);
+       repository.deleteById(id);
+       return "Successfully deleted user with id " + id;
+    }
+    private void deleteTestimonialImageFromCloudStorage(Testimonial testimonial)throws CloudStorageClientException, FileNotFoundOnCloudException {
+        String urlImage = testimonial.getImage();
+        if (urlImage != null && !urlImage.isEmpty()){
+            try {
+               amazonS3Service.deleteFileFromS3Bucket(urlImage);
+            } catch (EntityImageProcessingException e){
+                if (!(e instanceof FileNotFoundOnCloudException)){
+                    throw e;
+                }
+            }
+        }
 }
