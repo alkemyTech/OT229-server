@@ -62,17 +62,17 @@ public class TestimonialServiceImpl implements TestimonialService {
        Testimonial testimonial=repository.getById(id);
        deleteTestimonialImageFromCloudStorage(testimonial);
        repository.deleteById(id);
-       return "Successfully deleted user with id " + id;
+       return "Successfully deleted testimonial with id " + id;
     }
     private void deleteTestimonialImageFromCloudStorage(Testimonial testimonial)throws CloudStorageClientException, FileNotFoundOnCloudException {
         String urlImage = testimonial.getImage();
-        if (urlImage != null && !urlImage.isEmpty()){
+        if (urlImage != null && !urlImage.isEmpty()) {
             try {
-               amazonS3Service.deleteFileFromS3Bucket(urlImage);
-            } catch (EntityImageProcessingException e){
-                if (!(e instanceof FileNotFoundOnCloudException)){
+                amazonS3Service.deleteFileFromS3Bucket(urlImage);
+            } catch (EntityImageProcessingException e) {
+                if (!(e instanceof FileNotFoundOnCloudException)) {
                     throw e;
                 }
             }
         }
-}
+    }}
