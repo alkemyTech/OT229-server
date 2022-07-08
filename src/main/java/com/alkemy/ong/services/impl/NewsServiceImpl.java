@@ -1,6 +1,7 @@
 package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.CategoryDTO;
+import com.alkemy.ong.dto.DatedNewsDTO;
 import com.alkemy.ong.dto.NewsDTO;
 import com.alkemy.ong.dto.PageResultResponse;
 import com.alkemy.ong.entities.Category;
@@ -102,7 +103,7 @@ public class NewsServiceImpl implements NewsService {
   }
 
   @Override
-  public PageResultResponse<NewsDTO> getAllNews(int pageNumber) throws PageIndexOutOfBoundsException {
+  public PageResultResponse<DatedNewsDTO> getAllNews(int pageNumber) throws PageIndexOutOfBoundsException {
     if (pageNumber < 0) {
       throw new PageIndexOutOfBoundsException("Page number must be positive.");
     }
@@ -112,9 +113,9 @@ public class NewsServiceImpl implements NewsService {
             Sort.by(GlobalConstants.NEWS_SORT_ATTRIBUTE)
     );
     Page<News> springDataResultPage = this.newsRepository.findAll(pageRequest);
-    return new PageResultResponseBuilder<News, NewsDTO>()
+    return new PageResultResponseBuilder<News, DatedNewsDTO>()
             .from(springDataResultPage)
-            .mapWith(this.newsMapper::newsEntity2DTO)
+            .mapWith(this.newsMapper::newsEntity2DatedDTO)
             .build();
   }
 

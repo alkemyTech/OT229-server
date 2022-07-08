@@ -1,5 +1,6 @@
 package com.alkemy.ong.services;
 
+import com.alkemy.ong.dto.DatedNewsDTO;
 import com.alkemy.ong.dto.NewsDTO;
 import com.alkemy.ong.dto.PageResultResponse;
 import com.alkemy.ong.exception.CloudStorageClientException;
@@ -49,6 +50,6 @@ public interface NewsService {
    *          be returned, and the previous page url attribute will point to the last available page.
    * @throws PageIndexOutOfBoundsException  if the index is not a positive integer.
    */
-  PageResultResponse<NewsDTO> getAllNews(int pageNumber) throws PageIndexOutOfBoundsException;
+  PageResultResponse<DatedNewsDTO> getAllNews(int pageNumber) throws PageIndexOutOfBoundsException;
 
 }
