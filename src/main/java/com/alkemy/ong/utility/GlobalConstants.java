@@ -12,6 +12,11 @@ public abstract class GlobalConstants {
     public static final String TITLE_EMAIL_WELCOME = "Welcome! Thank you for registering";
     public static final String TITLE_EMAIL_CONTACT = "Thank you for contacting us! We will be answering your query shortly";
 
+    // Pagination
+    public static final int GLOBAL_PAGE_SIZE = 10;
+    public static final String PAGE_INDEX_PARAM = "page";
+    public static final String CATEGORY_SORT_ATTRIBUTE = "name";
+
     public static abstract class Endpoints {
         public static final String LOGIN = "/auth/login";
         public static final String REGISTER = "/auth/register";

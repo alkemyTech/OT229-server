@@ -1,16 +1,20 @@
 package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.CategoryDTO;
+import com.alkemy.ong.dto.PageResultResponse;
 import com.alkemy.ong.entities.Category;
+import com.alkemy.ong.exception.PageIndexOutOfBoundsException;
 import com.alkemy.ong.mappers.CategoryMapper;
+import com.alkemy.ong.mappers.PageResultResponseBuilder;
 import com.alkemy.ong.repositories.CategoryRepository;
 import com.alkemy.ong.repositories.NewsRepository;
 import com.alkemy.ong.services.CategoriesService;
 import com.alkemy.ong.services.CategoryEntityProvider;
+import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import java.util.List;
@@ -80,6 +84,23 @@ public class CategoriesServiceImpl implements CategoriesService, CategoryEntityP
                 .map(Category::getName)
                 .collect(Collectors.toList());
 
+    }
+
+    @Override
+    public PageResultResponse<String> getAllCategoryNames(int pageNumber) throws PageIndexOutOfBoundsException {
+        if (pageNumber < 0) {
+            throw new PageIndexOutOfBoundsException("Page number must be positive.");
+        }
+        Pageable pageRequest = PageRequest.of(
+                pageNumber,
+                GlobalConstants.GLOBAL_PAGE_SIZE,
+                Sort.by(GlobalConstants.CATEGORY_SORT_ATTRIBUTE)
+        );
+        Page<Category> springDataResultPage = this.categoryRepository.findAll(pageRequest);
+        return new PageResultResponseBuilder<Category, String>()
+                .from(springDataResultPage)
+                .mapWith(Category::getName)
+                .build();
     }
 
     @Transactional

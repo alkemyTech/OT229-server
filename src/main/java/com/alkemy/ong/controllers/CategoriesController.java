@@ -1,8 +1,7 @@
 package com.alkemy.ong.controllers;
 
-import com.alkemy.ong.dto.CategoryDTO;
-import com.alkemy.ong.dto.CategoryListResponse;
-import com.alkemy.ong.dto.DeleteEntityResponse;
+import com.alkemy.ong.dto.*;
+import com.alkemy.ong.exception.PageIndexOutOfBoundsException;
 import com.alkemy.ong.services.CategoriesService;
 import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
-
-import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping(GlobalConstants.Endpoints.CATEGORIES)
@@ -60,13 +55,9 @@ public class CategoriesController {
 
     }
 
-    
     @GetMapping
-    public ResponseEntity<?> getCategoryList() {
-        CategoryListResponse responseBody = new CategoryListResponse();
-        responseBody.setCategories(this.categoriesService.getAllCategoryNames());
-        return ResponseEntity.ok(responseBody);
-
+    public ResponseEntity<?> getCategoryList(@RequestParam(value = GlobalConstants.PAGE_INDEX_PARAM) int page) throws PageIndexOutOfBoundsException {
+        return ResponseEntity.ok(this.categoriesService.getAllCategoryNames(page));
     }
 
     @DeleteMapping("{/id}")
@@ -78,4 +69,5 @@ public class CategoriesController {
         }
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
 }
