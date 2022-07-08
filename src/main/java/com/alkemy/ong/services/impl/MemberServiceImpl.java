@@ -14,6 +14,8 @@ import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
@@ -27,22 +29,28 @@ public class MemberServiceImpl implements MemberService {
 
     @Autowired
     private MemberMapper memberMapper;
+    @Autowired
+    private CloudStorageService cloudStorageService;
 
     @Override
-    public MemberDTOResponse create(MemberDTORequest request) throws Exception {
+    public MemberDTOResponse create(MultipartFile file, MemberDTORequest request) throws CloudStorageClientException, CorruptedFileException {
         Member member;
         //Este regx es para validar el formato name
         String regx = "^[\\p{L} .'-]+$";
         String name = request.getName();
         if (Pattern.matches(regx,name)) {
+            if (file != null && !file.isEmpty()){
+                request.setImage(cloudStorageService.uploadFile(file));
+            } else {
+                request.setImage(null);
+            }
             member = memberMapper.dtoRequest2MemberEntity(request);
             membersRepository.save(member);
             return memberMapper.memberEntity2DTOResponse(member);
         } else {
             //Utilice este metodo para validar el String
-            throw new Exception("Formato de Nombre invalido");
+            throw new RuntimeException("Formato de Nombre invalido");
         }
-
 
     }
     @Override
