@@ -70,7 +70,7 @@ public class MemberServiceImpl implements MemberService {
 
     private void deleteMemberImageFromCloudStorage(Member member)throws CloudStorageClientException, FileNotFoundOnCloudException{
         String urlImage = member.getImage();
-        if (urlImage != null && urlImage.equals("")){
+        if (urlImage != null && !urlImage.equals("")){
             try {
                 this.cloudStorageService.deleteFileFromS3Bucket(urlImage);
             } catch (EntityImageProcessingException e){
