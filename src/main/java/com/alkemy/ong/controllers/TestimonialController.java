@@ -3,6 +3,7 @@ package com.alkemy.ong.controllers;
 import com.alkemy.ong.dto.TestimonialDTORequest;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
+import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.services.TestimonialService;
 import com.alkemy.ong.utility.GlobalConstants;
 import javassist.NotFoundException;
@@ -36,5 +37,14 @@ public class TestimonialController {
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
        }
 
+    }
+    @DeleteMapping
+    public ResponseEntity<?>deleteTestimonial(@RequestParam("id")String id)throws CloudStorageClientException, FileNotFoundOnCloudException {
+
+        try{
+            return new ResponseEntity<>(service.delete(id),HttpStatus.NO_CONTENT);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
