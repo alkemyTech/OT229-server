@@ -30,8 +30,8 @@ public abstract class GlobalConstants {
         public static final String ACTIVITIES = "/activities";
         public static final String SLIDES = "/slides";
         public static final String TESTIMONIALS="/testimonials";
-
         public static final String MEMBERS= "/members";
+        public static final String COMMENTS = "/comments";
 
     }
 
