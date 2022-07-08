@@ -1,7 +1,9 @@
 package com.alkemy.ong.mappers;
 
 import com.alkemy.ong.dto.PageResultResponse;
+import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.data.domain.Page;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -15,6 +17,50 @@ import java.util.stream.Collectors;
  *              converted, then the same class as the original entities (T) can be provided again.
  */
 public class PageResultResponseBuilder<T, R> {
+
+    /**
+     * Builds the url to send a request to get the next page of results.
+     *
+     * @param hasNext   indicates whether a page with an index higher than the current one exists.
+     * @param currentPageIndex the number of the current page of the results.
+     * @return  the url for the next result page, or <code>null</code> if there is no page after the current one.
+     */
+    public static String buildNextPageUrl(boolean hasNext, long currentPageIndex) {
+        if (!hasNext) {
+            return null;
+        }
+        return ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .replaceQueryParam(GlobalConstants.PAGE_INDEX_PARAM, currentPageIndex + 1)
+                .build()
+                .encode()
+                .toUriString();
+    }
+
+    /**
+     * Builds the url to send a request to get the previous page of results.
+     *
+     * @param hasPrevious indicates whether a page with an index lower than the current one exists.
+     * @param currentPageIndex the number of the current page of the results.
+     * @param lastPageIndex the number of the last page of results.
+     * @return  the url for the previous result page, or <code>null</code> if there is no page before the current one,
+     *          or the index of the last page if an index beyond the last page was provided.
+     */
+    public static String buildPreviousPageUrl(boolean hasPrevious, long currentPageIndex, long lastPageIndex) {
+        if (!hasPrevious) {
+            return null;
+        }
+        long previousPageIndex;
+        if (currentPageIndex > lastPageIndex) {
+            previousPageIndex = lastPageIndex;
+        } else {
+            previousPageIndex = currentPageIndex - 1;
+        }
+        return ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .replaceQueryParam(GlobalConstants.PAGE_INDEX_PARAM, previousPageIndex)
+                .build()
+                .encode()
+                .toUriString();
+    }
 
     /**
      * Provides the original data source.
@@ -42,16 +88,6 @@ public class PageResultResponseBuilder<T, R> {
         }
 
         /**
-         * Provides a mapper function to convert the listed entities.
-         *
-         * @param entityMapperFunction  a mapper function to convert the entities of class T into objects of class R.
-         * @return  a sub-builder with both the data source and the mapper function to continue the building process.
-         */
-        public MappedProvidedBuilder <T, R> mapWith(Function<T, R> entityMapperFunction) {
-            return new MappedProvidedBuilder<>(this.springDataPage, entityMapperFunction);
-        }
-
-        /**
          * Builds the PageResultResponse without converting the entities to another class.
          *
          * @return  a response with the original entities.
@@ -59,8 +95,26 @@ public class PageResultResponseBuilder<T, R> {
         public PageResultResponse<T> build() {
             return new PageResultResponse<T>()
                     .setContent(this.springDataPage.getContent())
-                    .setNextPageUrl(this.springDataPage.getNumber(), this.springDataPage.hasNext())
-                    .setPreviousPageUrl(this.springDataPage.getNumber(), this.springDataPage.hasPrevious());
+                    .setNext_page_url(
+                            PageResultResponseBuilder.buildNextPageUrl(this.springDataPage.hasNext(), this.springDataPage.getNumber())
+                    )
+                    .setPrevious_page_url(
+                            PageResultResponseBuilder.buildPreviousPageUrl(
+                                    this.springDataPage.hasPrevious(),
+                                    this.springDataPage.getNumber(),
+                                    this.springDataPage.getTotalPages() - 1
+                            )
+                    );
+        }
+
+        /**
+         * Provides a mapper function to convert the listed entities.
+         *
+         * @param entityMapperFunction  a mapper function to convert the entities of class T into objects of class R.
+         * @return  a sub-builder with both the data source and the mapper function to continue the building process.
+         */
+        public MappedProvidedBuilder <T, R> mapWith(Function<T, R> entityMapperFunction) {
+            return new MappedProvidedBuilder<>(this.springDataPage, entityMapperFunction);
         }
 
         /**
@@ -93,12 +147,20 @@ public class PageResultResponseBuilder<T, R> {
                                         .map(this.entityMapperFunction)
                                         .collect(Collectors.toList())
                         )
-                        .setNextPageUrl(this.springDataPage.getNumber(), this.springDataPage.hasNext())
-                        .setPreviousPageUrl(this.springDataPage.getNumber(), this.springDataPage.hasPrevious());
+                        .setNext_page_url(
+                                PageResultResponseBuilder.buildNextPageUrl(this.springDataPage.hasNext(), this.springDataPage.getNumber())
+                        )
+                        .setPrevious_page_url(
+                                PageResultResponseBuilder.buildPreviousPageUrl(
+                                        this.springDataPage.hasPrevious(),
+                                        this.springDataPage.getNumber(),
+                                        this.springDataPage.getTotalPages() - 1
+                                )
+                        );
             }
 
-        }
+        } // MappedProvidedBuilder class
 
-    }
+    } // End of ContentProvidedBuilder class
 
-}
+} // End of PageResultResponseBuilder class
