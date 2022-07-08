@@ -5,8 +5,6 @@ import com.alkemy.ong.dto.MemberDTORequest;
 import com.alkemy.ong.dto.MemberDTOResponse;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 
