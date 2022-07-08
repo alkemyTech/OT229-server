@@ -1,5 +1,6 @@
 package com.alkemy.ong.mappers;
 
+import com.alkemy.ong.dto.MemberDTO;
 import com.alkemy.ong.dto.MemberDTORequest;
 import com.alkemy.ong.dto.MemberDTOResponse;
 import com.alkemy.ong.entities.Member;
@@ -30,5 +31,16 @@ public class MemberMapper {
         memberDTOResponse.setLinkedinUrl(member.getLinkedinUrl());
         return memberDTOResponse;
 
+    }
+    public MemberDTO memberEntity2DTOMember(Member member){
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setId(member.getId());
+        memberDTO.setDescription(member.getDescription());
+        memberDTO.setImage(member.getImage());
+        memberDTO.setName(member.getName());
+        memberDTO.setFacebookUrl(member.getFacebookUrl());
+        memberDTO.setInstagramUrl(member.getInstagramUrl());
+        memberDTO.setLinkedinUrl(member.getLinkedinUrl());
+        return memberDTO;
     }
 }
