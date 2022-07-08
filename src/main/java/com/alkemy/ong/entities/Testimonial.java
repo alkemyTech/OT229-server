@@ -5,12 +5,16 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.Date;
 
 @Entity
 @Getter
 @Setter
+@SQLDelete(sql = "UPDATE testimonials SET soft_delete = true where id = ?")
+@Where(clause = "soft_delete = false")
 @Table(name = "testimonials")
 public class Testimonial {
     @Id
