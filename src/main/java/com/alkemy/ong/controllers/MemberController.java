@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(GlobalConstants.Endpoints.MEMBERS)
@@ -27,7 +28,7 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping
-    public ResponseEntity createMember(@RequestParam(value = "file") MultipartFile file, @ModelAttribute MemberDTORequest memberDTORequest){
+    public ResponseEntity createMember(@RequestParam(value = "file") MultipartFile file,@Valid @ModelAttribute MemberDTORequest memberDTORequest){
         try {
             return new ResponseEntity<>(memberService.create(file,memberDTORequest), HttpStatus.CREATED);
         } catch (Exception e) {

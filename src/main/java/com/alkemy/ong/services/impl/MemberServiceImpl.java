@@ -63,7 +63,7 @@ public class MemberServiceImpl implements MemberService {
 
         }
         this.membersRepository.delete(memberToDelete);
-        return "Successfulley deleted member with id "+id;
+        return "Successfully deleted member with id "+id;
     }
 
     private void deleteMemberImageFromCloudStorage(Member member)throws CloudStorageClientException, FileNotFoundOnCloudException{
