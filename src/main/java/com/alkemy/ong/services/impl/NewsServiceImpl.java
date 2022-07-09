@@ -1,21 +1,26 @@
 package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.CategoryDTO;
+import com.alkemy.ong.dto.DatedNewsDTO;
 import com.alkemy.ong.dto.NewsDTO;
+import com.alkemy.ong.dto.PageResultResponse;
 import com.alkemy.ong.entities.Category;
 import com.alkemy.ong.entities.News;
-import com.alkemy.ong.exception.CloudStorageClientException;
-import com.alkemy.ong.exception.CorruptedFileException;
-import com.alkemy.ong.exception.EntityImageProcessingException;
-import com.alkemy.ong.exception.FileNotFoundOnCloudException;
+import com.alkemy.ong.exception.*;
 import com.alkemy.ong.mappers.CategoryMapper;
 import com.alkemy.ong.mappers.NewsMapper;
+import com.alkemy.ong.mappers.PageResultResponseBuilder;
 import com.alkemy.ong.repositories.NewsRepository;
 import com.alkemy.ong.services.CategoriesService;
 import com.alkemy.ong.services.CategoryEntityProvider;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.NewsService;
+import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -95,6 +100,23 @@ public class NewsServiceImpl implements NewsService {
     }
     updatedNews.setImage(updatedImageUrl);
     return this.newsMapper.newsEntity2DTO(newsToUpdate);
+  }
+
+  @Override
+  public PageResultResponse<DatedNewsDTO> getAllNews(int pageNumber) throws PageIndexOutOfBoundsException {
+    if (pageNumber < 0) {
+      throw new PageIndexOutOfBoundsException("Page number must be positive.");
+    }
+    Pageable pageRequest = PageRequest.of(
+            pageNumber,
+            GlobalConstants.GLOBAL_PAGE_SIZE,
+            Sort.by(GlobalConstants.NEWS_SORT_ATTRIBUTE)
+    );
+    Page<News> springDataResultPage = this.newsRepository.findAll(pageRequest);
+    return new PageResultResponseBuilder<News, DatedNewsDTO>()
+            .from(springDataResultPage)
+            .mapWith(this.newsMapper::newsEntity2DatedDTO)
+            .build();
   }
 
   /**

@@ -70,6 +70,7 @@ public class CommentServiceImpl implements CommentService {
             if(checkPermissions(roles, commentFound.get().getId(), user.getId())){
                 commentRepository.deleteById(commentFound.get().getId());
                 return "Successfully deleted comment";
+
             }else{
                 throw new Exception("You don't have permissions to delete this comment");
             }

@@ -17,6 +17,7 @@ public abstract class GlobalConstants {
     public static final int GLOBAL_PAGE_SIZE = 10;
     public static final String PAGE_INDEX_PARAM = "page";
     public static final String CATEGORY_SORT_ATTRIBUTE = "name";
+    public static final String NEWS_SORT_ATTRIBUTE = "timestamp";
 
     public static abstract class Endpoints {
         public static final String LOGIN = "/auth/login";
