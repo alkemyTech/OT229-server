@@ -8,5 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface MemberService {
     MemberDTOResponse create(MemberDTORequest request) throws Exception;
+
+    MemberDTOResponse edit(MultipartFile file, MemberDTORequest request, String id) throws Exception;
 }
 
