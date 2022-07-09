@@ -3,7 +3,7 @@ package com.alkemy.ong.services.impl;
 import com.alkemy.ong.dto.CommentDTO;
 import com.alkemy.ong.entities.CommentEntity;
 import com.alkemy.ong.entities.User;
-import com.alkemy.ong.mappers.CommenttMapper;
+import com.alkemy.ong.mappers.CommentMapper;
 import com.alkemy.ong.repositories.CommentRepository;
 import com.alkemy.ong.security.service.JwtService;
 import com.alkemy.ong.services.CommentService;
@@ -21,7 +21,7 @@ public class CommentServiceImpl implements CommentService {
     CommentRepository commentRepository;
 
     @Autowired
-    CommenttMapper commenttMapper;
+    CommentMapper commentMapper;
 
     @Autowired
     JwtService jwtService;
@@ -48,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
                 commentFound.get().setBody(newCommentBody);
 
                 commentRepository.save(commentFound.get());
-                return commenttMapper.entity2DTO(commentFound.get());
+                return commentMapper.entity2DTO(commentFound.get());
             }else{
                 throw new Exception("You don't have permissions to edit this comment");
             }
