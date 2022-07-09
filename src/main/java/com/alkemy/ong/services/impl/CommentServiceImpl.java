@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -32,6 +33,16 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDTO save(CommentDTO commentDTO) throws Exception {
         return null;
+    }
+
+    @Override
+    public List<CommentDTO> commentList(String idPost) {
+        List<CommentEntity> commentsFound = commentRepository.findAllByNewsId(idPost);
+        List<CommentDTO> commentsToDTO = commentsFound.stream()
+                .map(commentMapper::entity2DTO)
+                .collect(Collectors.toList());
+
+        return commentsToDTO;
     }
 
     @Override
