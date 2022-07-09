@@ -20,7 +20,7 @@ public class CommentController {
     public ResponseEntity<?> updateComment(@PathVariable String id, @RequestParam(value = "commentBody", required = true) String commentBody,
                                            @RequestHeader("authorization") String token) throws Exception{
         try{
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(commentService.updateComment(id, commentBody, token));
+            return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(id, commentBody, token));
         }catch (EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }catch (Exception e){
