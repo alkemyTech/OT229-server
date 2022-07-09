@@ -5,6 +5,7 @@ public abstract class GlobalConstants {
     //  Default role names
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ROLE_USER = "ROLE_USER";
+    public static final String[] ALL_ROLES = {"ROLE_USER", "ROLE_ADMIN"};
 
     // Send email
     public static final String TEMPLATE_CONTACT = "CONTACT";
@@ -31,8 +32,8 @@ public abstract class GlobalConstants {
         public static final String ACTIVITIES = "/activities";
         public static final String SLIDES = "/slides";
         public static final String TESTIMONIALS="/testimonials";
-
         public static final String MEMBERS= "/members";
+        public static final String COMMENTS = "/comments";
 
     }
 
