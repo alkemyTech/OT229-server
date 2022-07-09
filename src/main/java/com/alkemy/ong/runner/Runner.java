@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -99,425 +100,198 @@ public class Runner implements CommandLineRunner {
             userRepository.save(user);
         }
 
+        CheckCreateAndSaveUser("Tomas",
+                "Tedeschini",
+                "tomastedeschini@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User1" ,
+                roleUserPrivileges);
 
+        CheckCreateAndSaveUser("Lucas",
+                "Gonzalez",
+                "lugasgonzalez@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User2" ,
+                roleUserPrivileges);
 
-        if (!userRepository.existsByEmail("tomastedeschini@gmail.com")) {
+        CheckCreateAndSaveUser("Matias",
+                "Ramirez",
+                "matiasramirez@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User3" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Pedro",
+                "Goyena",
+                "pedrogoyena@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User4" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Cristian",
+                "Castro",
+                "cristiancastro@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User5" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Gustavo",
+                "Alfaro",
+                "guistavoalfaro@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User6" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Juan",
+                "Minujin",
+                "juanminujin@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User7" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Esteban",
+                "Quito",
+                "estebanquito@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User8" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Javier",
+                "Ramirez",
+                "javierramirez@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User9" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Eladio",
+                "Carrion",
+                "eladiocarrion@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User10" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Ezequiel",
+                "Giussani",
+                "ezequielgiussani@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin1" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Franco",
+                "Roman",
+                "francoroman@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin2" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Ivan",
+                "Pizarro",
+                "ivanpizarro@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin3" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Brenda",
+                "Daffunchio",
+                "brendadaffunchio@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin4" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Camilo",
+                "Abarca",
+                "camiloabarca@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin5" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Fernando",
+                "Nesper",
+                "fernandonesper@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin6" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Guadalupe",
+                "Reboiro",
+                "guadalupereboiro@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin7" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Mariano",
+                "Vergara",
+                "marianovergara@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin8" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Juani",
+                "Santamarina",
+                "juanisantamarina@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin9" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Juan",
+                "Lopez",
+                "juanlopez@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin10" ,
+                rolesAdminPrivileges);
+
+    }
+
+    private void CheckCreateAndSaveUser(String firstName,
+                                        String lastName,
+                                        String mail,
+                                        String password,
+                                        String filePath,
+                                        String fileName,
+                                        Set<Role> privileges)
+            throws IOException, CloudStorageClientException, CorruptedFileException {
+
+        if (!userRepository.existsByEmail(mail)) {
             User user = new User();
 
-            user.setFirstName("Tomas");
-            user.setLastName("Tedeschini");
-            user.setEmail("tomastedeschini@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setEmail(mail);
+            user.setPassword(passwordEncoder.encode(password));
 
 
-            File file = new File("src/main/resources/images/userImage.png");
+            File file = new File(filePath);
             String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
             FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
+            MultipartFile multipartFile = new MockMultipartFile(fileName, file.getName(), mimeType, IOUtils.toByteArray(input));
 
             user.setPhoto(amazonS3Service.uploadFile(multipartFile));
 
-            user.setRoleId(roleUserPrivileges);
-
-            userRepository.save(user);
-        }
-
-        if (!userRepository.existsByEmail("lucasgonzalez@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Lucas");
-            user.setLastName("Gonzalez");
-            user.setEmail("lucasgonzalez@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(roleUserPrivileges);
-
-            userRepository.save(user);
-        }
-
-        if (!userRepository.existsByEmail("matiasramirez@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Matias");
-            user.setLastName("Ramirez");
-            user.setEmail("matiasramirez@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(roleUserPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("pedrogoyena@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Pedro");
-            user.setLastName("Goyena");
-            user.setEmail("pedrogoyena@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(roleUserPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("cristiancastro@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Cristian");
-            user.setLastName("Castro");
-            user.setEmail("cristiancastro@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(roleUserPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("gustavoalfaro@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Gustavo");
-            user.setLastName("Alfaro");
-            user.setEmail("gustavoalfaro@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(roleUserPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("juanminujin@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Juan");
-            user.setLastName("Minujin");
-            user.setEmail("juanminujin@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(roleUserPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("estebanquito@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Esteban");
-            user.setLastName("Quito");
-            user.setEmail("estebanquito@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(roleUserPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("eladiocarrion@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Eladio");
-            user.setLastName("Carrion");
-            user.setEmail("eladiocarrion@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(roleUserPrivileges);
+            user.setRoleId(privileges);
 
             userRepository.save(user);
 
         }
-
-        if (!userRepository.existsByEmail("ezequielgiussani@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Ezequiel");
-            user.setLastName("Giussani");
-            user.setEmail("ezequielgiussani@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(rolesAdminPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("francoroman@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Franco");
-            user.setLastName("Roman");
-            user.setEmail("francoroman@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(rolesAdminPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("ivanpizarro@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Ivan");
-            user.setLastName("Pizarro");
-            user.setEmail("ivanpizarro@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(rolesAdminPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("brendadaffunchio@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Brenda");
-            user.setLastName("Daffunchio");
-            user.setEmail("brendadaffunchio@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(rolesAdminPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("camiloabarca@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Camilo");
-            user.setLastName("Abarca");
-            user.setEmail("camiloabarca@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(rolesAdminPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("fernandonesper@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Fernando");
-            user.setLastName("Nesper");
-            user.setEmail("fernandonesper@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(rolesAdminPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("guadalupereboiro@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Guadalupe");
-            user.setLastName("Reboiro");
-            user.setEmail("guadalupereboiro@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(rolesAdminPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("marianovergara@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Mariano");
-            user.setLastName("Vergara");
-            user.setEmail("marianovergara@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(rolesAdminPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("juanisantamarina@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Juani");
-            user.setLastName("Santamarina");
-            user.setEmail("juanisantamarina@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(rolesAdminPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-        if (!userRepository.existsByEmail("juanlopez@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Juan");
-            user.setLastName("Lopez");
-            user.setEmail("juanlopez@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(rolesAdminPrivileges);
-
-            userRepository.save(user);
-
-        }
-
-
     }
 
 
