@@ -79,26 +79,7 @@ public class Runner implements CommandLineRunner {
 
     private void populateRolesUsersAndAdmins(Set<Role> roleUserPrivileges, Set<Role> rolesAdminPrivileges) throws IOException,
             CloudStorageClientException, CorruptedFileException {
-
-        if (!userRepository.existsByEmail("juanperez@gmail.com")) {
-            User user = new User();
-
-            user.setFirstName("Juan");
-            user.setLastName("Perez");
-            user.setEmail("juanperez@gmail.com");
-            user.setPassword(passwordEncoder.encode("1234"));
-
-            File file = new File("src/main/resources/images/userImage.png");
-            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
-            FileInputStream input = new FileInputStream(file);
-            MockMultipartFile multipartFile = new MockMultipartFile("User1", file.getName(), mimeType, IOUtils.toByteArray(input));
-
-            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
-
-            user.setRoleId(roleUserPrivileges);
-
-            userRepository.save(user);
-        }
+        
 
         CheckCreateAndSaveUser("Tomas",
                 "Tedeschini",
