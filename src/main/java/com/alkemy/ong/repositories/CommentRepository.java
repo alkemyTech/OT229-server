@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<CommentEntity,String> {
 
-    List<CommentEntity> findAllByNewsId(String newsId);
+    List<CommentEntity> findAllByNewsIdOrderByCreateDateAsc(String newsId);
 }

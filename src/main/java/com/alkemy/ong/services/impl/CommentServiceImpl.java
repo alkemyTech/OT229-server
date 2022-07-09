@@ -37,7 +37,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDTO> commentList(String idPost) {
-        List<CommentEntity> commentsFound = commentRepository.findAllByNewsId(idPost);
+        // Busco los comentarios ordenados del más viejo al más nuevo
+        List<CommentEntity> commentsFound = commentRepository.findAllByNewsIdOrderByCreateDateAsc(idPost);
+
         List<CommentDTO> commentsDTOList = commentsFound.stream()
                 .map(this.commentMapper::entity2DTO)
                 .collect(Collectors.toList());
