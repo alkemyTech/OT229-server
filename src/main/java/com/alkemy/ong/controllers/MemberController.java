@@ -1,9 +1,8 @@
 package com.alkemy.ong.controllers;
 
-import com.alkemy.ong.dto.DeleteEntityResponse;
-import com.alkemy.ong.dto.MemberDTO;
 import com.alkemy.ong.dto.MemberDTORequest;
 import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.services.MemberService;
 import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping(GlobalConstants.Endpoints.MEMBERS)
@@ -37,10 +35,9 @@ public class MemberController {
         }
     }
     @DeleteMapping
-    public ResponseEntity<?> deleteMember(@PathVariable String id)throws CloudStorageClientException {
+    public ResponseEntity<?> deleteMember(@PathVariable String id)throws CloudStorageClientException, FileNotFoundOnCloudException {
         try {
-            MemberDTO memberDTO = memberService.deleteMember(id);
-            return ResponseEntity.ok(new DeleteEntityResponse("Member successfully deleted.", memberDTO));
+            return new ResponseEntity<>(memberService.deleteMember(id),HttpStatus.NO_CONTENT);
         }catch (EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
