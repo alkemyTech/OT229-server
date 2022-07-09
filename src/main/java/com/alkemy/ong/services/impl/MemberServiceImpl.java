@@ -11,6 +11,7 @@ import com.alkemy.ong.mappers.MemberMapper;
 import com.alkemy.ong.repositories.MembersRepository;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.MemberService;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,16 +55,13 @@ public class MemberServiceImpl implements MemberService {
     }
     @Override
     @Transactional
-    public String deleteMember(String id) throws EntityNotFoundException,CloudStorageClientException,FileNotFoundOnCloudException {
-        Member memberToDelete = membersRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Member with the provided id not found."));
-        try{
-            this.deleteMemberImageFromCloudStorage(memberToDelete);
-        } catch (FileNotFoundOnCloudException e){
-
-        }
-        this.membersRepository.delete(memberToDelete);
-        return "Successfully deleted member with id "+id;
+    public String deleteMember(String id) throws NotFoundException,CloudStorageClientException,FileNotFoundOnCloudException {
+        Boolean exists = membersRepository.existsById(id);
+        if (!exists) throw new NotFoundException("Error: Member wih id: " +id+ " was not found");
+        Member member = membersRepository.getById(id);
+        deleteMemberImageFromCloudStorage(member);
+        membersRepository.deleteById(id);
+        return "Successfully deleted member with id" + id;
     }
 
     private void deleteMemberImageFromCloudStorage(Member member)throws CloudStorageClientException, FileNotFoundOnCloudException{
