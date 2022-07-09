@@ -5,6 +5,7 @@ import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.services.MemberService;
 import com.alkemy.ong.utility.GlobalConstants;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +37,10 @@ public class MemberController {
         }
     }
     @DeleteMapping
-    public ResponseEntity<?> deleteMember(@PathVariable String id)throws CloudStorageClientException, FileNotFoundOnCloudException {
+    public ResponseEntity<?> deleteMember(@RequestParam("id")String id)throws CloudStorageClientException, FileNotFoundOnCloudException {
         try {
             return new ResponseEntity<>(memberService.deleteMember(id),HttpStatus.NO_CONTENT);
-        }catch (EntityNotFoundException e){
+        }catch (NotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
