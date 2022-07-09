@@ -1,6 +1,5 @@
 package com.alkemy.ong.services.impl;
 
-import com.alkemy.ong.dto.MemberDTO;
 import com.alkemy.ong.dto.MemberDTORequest;
 import com.alkemy.ong.dto.MemberDTOResponse;
 import com.alkemy.ong.entities.Member;
@@ -55,7 +54,7 @@ public class MemberServiceImpl implements MemberService {
     }
     @Override
     @Transactional
-    public MemberDTO deleteMember(String id) throws EntityNotFoundException,CloudStorageClientException {
+    public String deleteMember(String id) throws EntityNotFoundException,CloudStorageClientException,FileNotFoundOnCloudException {
         Member memberToDelete = membersRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Member with the provided id not found."));
         try{
@@ -63,9 +62,8 @@ public class MemberServiceImpl implements MemberService {
         } catch (FileNotFoundOnCloudException e){
 
         }
-        MemberDTO memberDTO = this.memberMapper.memberEntity2DTOMember(memberToDelete);
         this.membersRepository.delete(memberToDelete);
-        return memberDTO;
+        return "Successfulley deleted member with id "+id;
     }
 
     private void deleteMemberImageFromCloudStorage(Member member)throws CloudStorageClientException, FileNotFoundOnCloudException{
