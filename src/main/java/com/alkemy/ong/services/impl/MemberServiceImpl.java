@@ -44,12 +44,12 @@ public class MemberServiceImpl implements MemberService {
         String regx = "^[\\p{L} .'-]+$";
         String name = request.getName();
         if (Pattern.matches(regx,name)) {
-            if (file != null && !file.isEmpty()){
-                request.setImage(cloudStorageService.uploadFile(file));
-            } else {
-                request.setImage(null);
-            }
             member = memberMapper.dtoRequest2MemberEntity(request);
+            if (file != null && !file.isEmpty()){
+                member.setImage(cloudStorageService.uploadFile(file));
+            } else {
+                member.setImage(null);
+            }
             membersRepository.save(member);
             return memberMapper.memberEntity2DTOResponse(member);
         } else {
