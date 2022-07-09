@@ -1,5 +1,6 @@
 package com.alkemy.ong.mappers;
 
+import com.alkemy.ong.dto.DatedNewsDTO;
 import com.alkemy.ong.dto.NewsDTO;
 import com.alkemy.ong.entities.News;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,17 @@ public class NewsMapper {
     newsToBeUpdated.setContent(updatedNews.getContent());
     newsToBeUpdated.setImage(updatedNews.getImage());
     newsToBeUpdated.setCategory(this.categoryMapper.categoryDTO2Entity(updatedNews.getCategory()));
+  }
+
+  public DatedNewsDTO newsEntity2DatedDTO(News entity) {
+    DatedNewsDTO dto = new DatedNewsDTO();
+    dto.setId(entity.getId());
+    dto.setName(entity.getName());
+    dto.setContent(entity.getContent());
+    dto.setImage(entity.getImage());
+    dto.setCategory(this.categoryMapper.categoryEntity2DTO(entity.getCategory()));
+    dto.setTimestamp( entity.getTimestamp().toString() );
+    return dto;
   }
 
 }
