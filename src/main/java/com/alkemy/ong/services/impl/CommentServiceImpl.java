@@ -38,11 +38,11 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentDTO> commentList(String idPost) {
         List<CommentEntity> commentsFound = commentRepository.findAllByNewsId(idPost);
-        List<CommentDTO> commentsToDTO = commentsFound.stream()
-                .map(commentMapper::entity2DTO)
+        List<CommentDTO> commentsDTOList = commentsFound.stream()
+                .map(this.commentMapper::entity2DTO)
                 .collect(Collectors.toList());
 
-        return commentsToDTO;
+        return commentsDTOList;
     }
 
     @Override
