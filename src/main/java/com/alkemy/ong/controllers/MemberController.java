@@ -29,7 +29,7 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping
-    public ResponseEntity createMember(@RequestParam(value = "file",required = false) MultipartFile file, @ModelAttribute MemberDTORequest memberDTORequest){
+    public ResponseEntity createMember(@RequestParam(value = "file") MultipartFile file, @ModelAttribute MemberDTORequest memberDTORequest){
         try {
             return new ResponseEntity<>(memberService.create(file,memberDTORequest), HttpStatus.CREATED);
         } catch (Exception e) {
