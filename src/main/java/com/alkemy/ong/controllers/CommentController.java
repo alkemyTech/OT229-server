@@ -16,6 +16,10 @@ public class CommentController {
     @Autowired
     CommentService commentService;
     
+    @GetMapping("/post/{id}")
+    public ResponseEntity<?> commentListOfAPost(@PathVariable String id){
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.commentList(id));
+    }
     
     @PutMapping("/{id}")
     public ResponseEntity<?> updateComment(@PathVariable String id, @RequestParam(value = "commentBody", required = true) String commentBody,
