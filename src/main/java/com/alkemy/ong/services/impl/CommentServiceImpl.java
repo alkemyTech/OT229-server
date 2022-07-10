@@ -40,6 +40,10 @@ public class CommentServiceImpl implements CommentService {
         // Busco los comentarios ordenados del más viejo al más nuevo
         List<CommentEntity> commentsFound = commentRepository.findAllByNewsIdOrderByCreateDateAsc(idPost);
 
+        if(commentsFound.isEmpty()){
+            throw new EntityNotFoundException("Post with the provided ID not present");
+        }
+
         List<CommentDTO> commentsDTOList = commentsFound.stream()
                 .map(this.commentMapper::entity2DTO)
                 .collect(Collectors.toList());

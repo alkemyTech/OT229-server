@@ -18,9 +18,13 @@ public class CommentController {
     
     @GetMapping("/post/{id}")
     public ResponseEntity<?> commentListOfAPost(@PathVariable String id){
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.commentList(id));
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(commentService.commentList(id));
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
-    
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateComment(@PathVariable String id, @RequestParam(value = "commentBody", required = true) String commentBody,
                                            @RequestHeader("authorization") String token) throws Exception{
