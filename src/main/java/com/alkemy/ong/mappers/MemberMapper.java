@@ -11,7 +11,6 @@ public class MemberMapper {
     public Member dtoRequest2MemberEntity(MemberDTORequest memberDTORequest){
         Member member = new Member();
         member.setName(memberDTORequest.getName());
-        member.setImage(memberDTORequest.getImage());
         member.setDescription(memberDTORequest.getDescription());
         member.setFacebookUrl(memberDTORequest.getFacebookUrl());
         member.setInstagramUrl(memberDTORequest.getInstagramUrl());

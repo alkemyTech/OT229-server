@@ -21,8 +21,6 @@ public class MemberDTORequest {
     private String instagramUrl;
 
     private String linkedinUrl;
-    @NotEmpty(message = "Image not provided")
-    private String image;
 
     private String description;
 }

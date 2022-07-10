@@ -13,12 +13,17 @@ import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.MemberService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Service
@@ -39,12 +44,12 @@ public class MemberServiceImpl implements MemberService {
         String regx = "^[\\p{L} .'-]+$";
         String name = request.getName();
         if (Pattern.matches(regx,name)) {
-            if (file != null && !file.isEmpty()){
-                request.setImage(cloudStorageService.uploadFile(file));
-            } else {
-                request.setImage(null);
-            }
             member = memberMapper.dtoRequest2MemberEntity(request);
+            if (file != null && !file.isEmpty()){
+                member.setImage(cloudStorageService.uploadFile(file));
+            } else {
+                member.setImage(null);
+            }
             membersRepository.save(member);
             return memberMapper.memberEntity2DTOResponse(member);
         } else {
@@ -75,5 +80,13 @@ public class MemberServiceImpl implements MemberService {
                 }
             }
         }
+    }
+    public List<MemberDTOResponse> getAllMembers(){
+        List <MemberDTOResponse> memberDTOResponses = new LinkedList<>();
+        for (Member member: membersRepository.findAll()){
+            memberDTOResponses.add(memberMapper.memberEntity2DTOResponse(member));
+        }
+        memberDTOResponses.sort(Comparator.comparing(MemberDTOResponse::getName));
+        return memberDTOResponses;
     }
 }
