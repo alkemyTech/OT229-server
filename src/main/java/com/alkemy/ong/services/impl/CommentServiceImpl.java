@@ -2,11 +2,14 @@ package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.CommentDTO;
 import com.alkemy.ong.entities.CommentEntity;
+import com.alkemy.ong.entities.News;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.CommentMapper;
 import com.alkemy.ong.repositories.CommentRepository;
 import com.alkemy.ong.security.service.JwtService;
 import com.alkemy.ong.services.CommentService;
+import com.alkemy.ong.services.NewsService;
+import com.alkemy.ong.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +31,10 @@ public class CommentServiceImpl implements CommentService {
     JwtService jwtService;
 
     @Autowired
-    UserServiceImpl userService;
+    UserService userService;
+
+    @Autowired
+    NewsService newsService;
 
     @Override
     public CommentDTO save(CommentDTO commentDTO) throws Exception {
@@ -37,12 +43,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDTO> commentList(String idPost) {
-        // Busco los comentarios ordenados del más viejo al más nuevo
-        List<CommentEntity> commentsFound = commentRepository.findAllByNewsIdOrderByCreateDateAsc(idPost);
-
-        if(commentsFound.isEmpty()){
+        boolean existPost = newsService.existNew(idPost);
+        
+        if(!existPost){
             throw new EntityNotFoundException("Post with the provided ID not present");
         }
+
+        // Busco los comentarios ordenados del más viejo al más nuevo
+        List<CommentEntity> commentsFound = commentRepository.findAllByNewsIdOrderByCreateDateAsc(idPost);
 
         List<CommentDTO> commentsDTOList = commentsFound.stream()
                 .map(this.commentMapper::entity2DTO)

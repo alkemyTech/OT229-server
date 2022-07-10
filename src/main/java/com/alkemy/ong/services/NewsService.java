@@ -15,6 +15,8 @@ public interface NewsService {
 
   NewsDTO findById(String id);
 
+  boolean existNew(String id);
+
   /**
    * Deletes a news entry from the persistent storage.
    *
