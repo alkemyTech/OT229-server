@@ -16,6 +16,7 @@ public class CommentController {
     @Autowired
     CommentService commentService;
     
+    
     @GetMapping("/post/{id}")
     public ResponseEntity<?> commentListOfAPost(@PathVariable String id){
         try{
