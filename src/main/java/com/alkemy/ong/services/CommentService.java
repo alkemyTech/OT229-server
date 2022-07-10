@@ -5,5 +5,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface CommentService {
-  public CommentDTO save (CommentDTO commentDTO) throws Exception;
+
+    public CommentDTO save (CommentDTO commentDTO) throws Exception;
+
+    CommentDTO updateComment(String idComentary, String token, String newCommentBody) throws Exception;
+    
+    String deleteComment(String idComentary, String token) throws Exception;
 }

@@ -2,20 +2,28 @@ package com.alkemy.ong.runner;
 
 import com.alkemy.ong.entities.ActivityEntity;
 import com.alkemy.ong.entities.Organization;
+import com.alkemy.ong.entities.Role;
+import com.alkemy.ong.entities.User;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.repositories.ActivityRepository;
 import com.alkemy.ong.repositories.OrganizationsRepository;
+import com.alkemy.ong.repositories.RoleRepository;
+import com.alkemy.ong.repositories.UserRepository;
 import com.alkemy.ong.services.CloudStorageService;
 import com.amazonaws.util.IOUtils;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
+import org.springframework.web.multipart.MultipartFile;
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Component
 public class Runner implements CommandLineRunner {
@@ -24,12 +32,249 @@ public class Runner implements CommandLineRunner {
     private final CloudStorageService amazonS3Service;
     private final OrganizationsRepository organizationsRepository;
     private final ActivityRepository activityRepository;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
         polulateOrganization();
         populateActivities();
+        createRolesUsersAndAdmins();
     }
+
+    private void createRolesUsersAndAdmins() throws CloudStorageClientException, CorruptedFileException,
+            IOException {
+
+        Set<Role> roleUserPrivileges = new LinkedHashSet<>();
+        Set<Role> rolesAdminPrivileges = new LinkedHashSet<>();
+
+
+        Role role = new Role();
+        if (!roleRepository.existsByName("ROLE_USER")) {
+
+            role.setName("ROLE_USER");
+            role.setDescription("Este rol es para los usuarios comunes");
+            role = roleRepository.save(role);
+        } else {
+            role = roleRepository.findByName("ROLE_USER").get();
+        }
+        roleUserPrivileges.add(role);
+        rolesAdminPrivileges.add(role);
+
+        Role role2 = new Role();
+
+        if (!roleRepository.existsByName("ROLE_ADMIN")) {
+            role2.setName("ROLE_ADMIN");
+            role2.setDescription("Este rol es para los ADMINISTRADORES");
+            role2 = roleRepository.save(role2);
+        } else {
+            role2 = roleRepository.findByName("ROLE_ADMIN").get();
+        }
+
+        rolesAdminPrivileges.add(role2);
+
+        populateRolesUsersAndAdmins(roleUserPrivileges,rolesAdminPrivileges);
+    }
+
+    private void populateRolesUsersAndAdmins(Set<Role> roleUserPrivileges, Set<Role> rolesAdminPrivileges) throws IOException,
+            CloudStorageClientException, CorruptedFileException {
+        
+
+        CheckCreateAndSaveUser("Tomas",
+                "Tedeschini",
+                "tomastedeschini@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User1" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Lucas",
+                "Gonzalez",
+                "lugasgonzalez@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User2" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Matias",
+                "Ramirez",
+                "matiasramirez@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User3" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Pedro",
+                "Goyena",
+                "pedrogoyena@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User4" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Cristian",
+                "Castro",
+                "cristiancastro@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User5" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Gustavo",
+                "Alfaro",
+                "guistavoalfaro@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User6" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Juan",
+                "Minujin",
+                "juanminujin@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User7" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Esteban",
+                "Quito",
+                "estebanquito@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User8" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Javier",
+                "Ramirez",
+                "javierramirez@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User9" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Eladio",
+                "Carrion",
+                "eladiocarrion@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "User10" ,
+                roleUserPrivileges);
+
+        CheckCreateAndSaveUser("Ezequiel",
+                "Giussani",
+                "ezequielgiussani@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin1" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Franco",
+                "Roman",
+                "francoroman@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin2" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Ivan",
+                "Pizarro",
+                "ivanpizarro@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin3" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Brenda",
+                "Daffunchio",
+                "brendadaffunchio@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin4" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Camilo",
+                "Abarca",
+                "camiloabarca@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin5" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Fernando",
+                "Nesper",
+                "fernandonesper@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin6" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Guadalupe",
+                "Reboiro",
+                "guadalupereboiro@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin7" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Mariano",
+                "Vergara",
+                "marianovergara@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin8" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Juani",
+                "Santamarina",
+                "juanisantamarina@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin9" ,
+                rolesAdminPrivileges);
+
+        CheckCreateAndSaveUser("Juan",
+                "Lopez",
+                "juanlopez@gmail.com",
+                "1234",
+                "src/main/resources/images/userImage.png",
+                "Admin10" ,
+                rolesAdminPrivileges);
+
+    }
+
+    private void CheckCreateAndSaveUser(String firstName,
+                                        String lastName,
+                                        String mail,
+                                        String password,
+                                        String filePath,
+                                        String fileName,
+                                        Set<Role> privileges)
+            throws IOException, CloudStorageClientException, CorruptedFileException {
+
+        if (!userRepository.existsByEmail(mail)) {
+            User user = new User();
+
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setEmail(mail);
+            user.setPassword(passwordEncoder.encode(password));
+
+
+            File file = new File(filePath);
+            String mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
+            FileInputStream input = new FileInputStream(file);
+            MultipartFile multipartFile = new MockMultipartFile(fileName, file.getName(), mimeType, IOUtils.toByteArray(input));
+
+            user.setPhoto(amazonS3Service.uploadFile(multipartFile));
+
+            user.setRoleId(privileges);
+
+            userRepository.save(user);
+
+        }
+    }
+
 
     private void populateActivities() throws IOException, CloudStorageClientException, CorruptedFileException {
         ActivityEntity[] activities = new ActivityEntity[BASIC_ACTIVITIES_AMMOUNT];
@@ -53,13 +298,13 @@ public class Runner implements CommandLineRunner {
                 "talleres de lunes a jueves de 10 a 12 horas y de 14 a 16 horas en el " + "\n" +
                 "contraturno. Los sabados tambien se realiza el taller para niños y niñas que" + "\n" +
                 " asisten a la escuela doble turno. Tenemos un espacio especial para los del " + "\n" +
-                        "1er grado 2 veces por semana ya que ellos necesitan atencion especial!" + "\n" +
-                        "Actualmente se encuentran inscriptos a este programa 150 niños y niñas de" + "\n" +
-                        " 6 a 15 años. ESte taller esta pensado para ayudar a los alumnos con el" + "\n" +
-                        "Material que traen de la escuela, tambien tenemos una docente que les da" + "\n" +
-                        "clases de lengua y matematica con una planificacion propia que armamos" + "\n" +
-                        "en Manos para nivelar a los niños y que vayan con mas herramientas a la " + "\n" +
-                        "escuela.");
+                "1er grado 2 veces por semana ya que ellos necesitan atencion especial!" + "\n" +
+                "Actualmente se encuentran inscriptos a este programa 150 niños y niñas de" + "\n" +
+                " 6 a 15 años. ESte taller esta pensado para ayudar a los alumnos con el" + "\n" +
+                "Material que traen de la escuela, tambien tenemos una docente que les da" + "\n" +
+                "clases de lengua y matematica con una planificacion propia que armamos" + "\n" +
+                "en Manos para nivelar a los niños y que vayan con mas herramientas a la " + "\n" +
+                "escuela.");
         file = new File("src/main/resources/images/apoyo-escolar-primario.jpg");
         mimeType = new MimetypesFileTypeMap().getContentType(file.getName());
         input = new FileInputStream(file);
@@ -118,11 +363,11 @@ public class Runner implements CommandLineRunner {
         multipartFile = new MockMultipartFile("tutorias", file.getName(), mimeType, IOUtils.toByteArray(input));
         activities[3].setImage(amazonS3Service.uploadFile(multipartFile));
 
-        compareAndLoad(activities);
+        compareActivitiesAndLoad(activities);
     }
 
-    private void compareAndLoad(ActivityEntity[] activities) {
-        for(int i = 0; i < BASIC_ACTIVITIES_AMMOUNT ; i++) {
+    private void compareActivitiesAndLoad(ActivityEntity[] activities) {
+        for (int i = 0; i < BASIC_ACTIVITIES_AMMOUNT; i++) {
             if (!activityRepository.existsByName(activities[i].getName())) {
                 activityRepository.save(activities[i]);
             }
@@ -172,9 +417,18 @@ public class Runner implements CommandLineRunner {
         }
     }
 
-    public Runner(OrganizationsRepository organizationsRepository, CloudStorageService amazonS3Service, ActivityRepository activityRepository) {
+    public Runner(OrganizationsRepository organizationsRepository,
+                  CloudStorageService amazonS3Service,
+                  ActivityRepository activityRepository,
+                  UserRepository userRepository,
+                  RoleRepository roleRepository,
+                  PasswordEncoder passwordEncoder) {
+
         this.organizationsRepository = organizationsRepository;
         this.activityRepository = activityRepository;
         this.amazonS3Service = amazonS3Service;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 }

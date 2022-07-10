@@ -21,13 +21,13 @@ public class CommentEntity {
   @Column(name = "id")
   private String id;
 
-  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
   @JoinColumn(name = "user_id", insertable = false, updatable = false)
   private User user;
   @Column(name = "user_id", nullable = false)
   private String userId;
 
-  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
   @JoinColumn(name = "news_id", insertable = false, updatable = false)
   private News news;
   @Column(name = "news_id", nullable = false)
