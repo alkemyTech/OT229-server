@@ -15,7 +15,20 @@ public class CommentController {
 
     @Autowired
     CommentService commentService;
-
+    
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateComment(@PathVariable String id, @RequestParam(value = "commentBody", required = true) String commentBody,
+                                           @RequestHeader("authorization") String token) throws Exception{
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(id, commentBody, token));
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+    }
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteComment(@PathVariable String id, @RequestHeader("authorization") String token) throws Exception {
         try{

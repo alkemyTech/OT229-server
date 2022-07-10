@@ -2,10 +2,12 @@ package com.alkemy.ong.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
 @Getter
 @Setter
+@Accessors(chain = true)
 public class CommentDTO {
   private String id;
   @NotNull(message ="User is mandatory")
