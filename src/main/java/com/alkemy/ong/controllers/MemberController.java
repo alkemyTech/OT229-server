@@ -46,7 +46,7 @@ public class MemberController {
         }
     }
     @GetMapping
-    public ResponseEntity<?> getAllMembers(@RequestParam(value = GlobalConstants.PAGE_INDEX_PARAM) int page) throws PageIndexOutOfBoundsException {
+    public ResponseEntity<?> getAllMembers() {
         return ResponseEntity.ok(this.memberService.getAllMembers());
     }
 }
