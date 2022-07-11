@@ -10,7 +10,7 @@ public interface CommentService {
 
     public CommentDTO save (CommentDTO commentDTO) throws Exception;
 
-    List<CommentDTO> commentList(String idPost);
+    List<CommentDTO> commentList(String idPost) throws Exception;
 
     CommentDTO updateComment(String idComentary, String token, String newCommentBody) throws Exception;
     

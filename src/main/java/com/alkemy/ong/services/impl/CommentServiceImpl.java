@@ -42,9 +42,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDTO> commentList(String idPost) {
+    public List<CommentDTO> commentList(String idPost) throws Exception{
         boolean existPost = newsService.existNew(idPost);
-        
+
         if(!existPost){
             throw new EntityNotFoundException("Post with the provided ID not present");
         }
@@ -69,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
             String userName = jwtService.getUsername(token); // El username del token es el correo
             User user = userService.getUserByEmail(userName).get();
 
-            if(checkPermissions(roles, commentFound.get().getId(), user.getId())){
+            if(checkPermissions(roles, commentFound.get().getUserId(), user.getId())){
                 commentFound.get().setBody(newCommentBody);
 
                 commentRepository.save(commentFound.get());
@@ -92,7 +92,7 @@ public class CommentServiceImpl implements CommentService {
             String userName = jwtService.getUsername(token); // El username del token es el correo
             User user = userService.getUserByEmail(userName).get();
 
-            if(checkPermissions(roles, commentFound.get().getId(), user.getId())){
+            if(checkPermissions(roles, commentFound.get().getUserId(), user.getId())){
                 commentRepository.deleteById(commentFound.get().getId());
                 return "Successfully deleted comment";
 
