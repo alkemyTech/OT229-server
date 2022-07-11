@@ -1,6 +1,7 @@
 package com.alkemy.ong.services;
 
 import com.alkemy.ong.dto.CommentDTO;
+import com.alkemy.ong.dto.CommentDTOList;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface CommentService {
     CommentDTO updateComment(String idComentary, String token, String newCommentBody) throws Exception;
     
     String deleteComment(String idComentary, String token) throws Exception;
+
+    List<CommentDTOList>getAll();
 }

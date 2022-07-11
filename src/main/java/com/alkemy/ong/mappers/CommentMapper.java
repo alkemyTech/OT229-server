@@ -1,6 +1,7 @@
 package com.alkemy.ong.mappers;
 
 import com.alkemy.ong.dto.CommentDTO;
+import com.alkemy.ong.dto.CommentDTOList;
 import com.alkemy.ong.entities.CommentEntity;
 import org.springframework.stereotype.Component;
 
@@ -12,5 +13,8 @@ public class CommentMapper {
                 .setNewsId(entity.getNewsId())
                 .setUserId(entity.getUserId())
                 .setBody(entity.getBody());
+    }
+    public CommentDTOList entity2DTOList(CommentEntity entity){
+        return new CommentDTOList().setBody(entity.getBody());
     }
 }

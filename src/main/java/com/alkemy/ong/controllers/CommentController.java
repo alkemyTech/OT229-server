@@ -47,4 +47,9 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
+
+    @GetMapping(GlobalConstants.Endpoints.COMMENTS)
+    public ResponseEntity<?> getAllComments(){
+        return new ResponseEntity<>(commentService.getAll(),HttpStatus.OK);
+    }
 }
