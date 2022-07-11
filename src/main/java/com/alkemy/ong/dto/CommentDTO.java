@@ -11,9 +11,9 @@ import javax.validation.constraints.NotNull;
 public class CommentDTO {
   private String id;
   @NotNull(message ="User is mandatory")
-  private String userId;
+  private String user_id;
   @NotNull(message = "News is mandatory")
-  private String newsId;
+  private String post_id;
   @NotNull(message = "Body is mandatory")
   private String body;
 
