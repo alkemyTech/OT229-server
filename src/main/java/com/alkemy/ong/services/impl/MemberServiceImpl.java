@@ -28,6 +28,7 @@ import javax.transaction.Transactional;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -110,5 +111,35 @@ public class MemberServiceImpl implements MemberService {
                 .mapWith(this.memberMapper::memberEntity2DTOResponse)
                 .build();
     }
+
+    @Override
+    public MemberDTOResponse edit(MultipartFile file, MemberDTORequest request, String id) throws MemberNotFoundException, RuntimeException, Exception {
+        String regx = "^[\\p{L} .'-]+$";
+        String name = request.getName();
+
+        if (!Pattern.matches(regx, name)) {
+            throw new RuntimeException("Name format invalid");
+        }
+
+        Optional<Member> memberFound = membersRepository.findById(id);
+
+        if (!memberFound.isPresent()) {
+            throw new MemberNotFoundException("Member with the provided ID was not found over the system");
+        }
+
+        if (file != null && !file.isEmpty()) {
+            request.setImage(cloudStorageService.uploadFile(file));
+        } else {
+            request.setImage(null);
+        }
+
+        Member modifiedEntity = memberMapper.editEntity(memberFound.get(), request);
+        membersRepository.save(modifiedEntity);
+        MemberDTOResponse response = memberMapper.memberEntity2DTOResponse(modifiedEntity);
+
+        return response;
+    }
+
+
 
 }

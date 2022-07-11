@@ -30,4 +30,15 @@ public class MemberMapper {
         return memberDTOResponse;
 
     }
+
+    public Member editEntity (Member entity, MemberDTORequest request) {
+        entity.setImage(request.getImage());
+        entity.setDescription(request.getDescription());
+        entity.setLinkedinUrl(request.getLinkedinUrl());
+        entity.setInstagramUrl(request.getInstagramUrl());
+        entity.setFacebookUrl(request.getFacebookUrl());
+        entity.setName(request.getName());
+
+        return entity;
+    }
 }

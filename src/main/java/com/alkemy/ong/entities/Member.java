@@ -35,7 +35,7 @@ public class Member {
     @Column(name = "linkedinUrl")
     private String linkedinUrl;
 
-    @Column(name = "image", nullable = false)
+    @Column(name = "image")
     private String image;
 
     @Column(name = "description")

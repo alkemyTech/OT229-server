@@ -23,4 +23,6 @@ public class MemberDTORequest {
     private String linkedinUrl;
 
     private String description;
+
+    private String image;
 }

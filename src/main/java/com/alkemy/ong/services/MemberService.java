@@ -3,10 +3,7 @@ package com.alkemy.ong.services;
 import com.alkemy.ong.dto.MemberDTORequest;
 import com.alkemy.ong.dto.MemberDTOResponse;
 import com.alkemy.ong.dto.PageResultResponse;
-import com.alkemy.ong.exception.CloudStorageClientException;
-import com.alkemy.ong.exception.CorruptedFileException;
-import com.alkemy.ong.exception.FileNotFoundOnCloudException;
-import com.alkemy.ong.exception.PageIndexOutOfBoundsException;
+import com.alkemy.ong.exception.*;
 import javassist.NotFoundException;
 import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
@@ -29,6 +26,8 @@ public interface MemberService {
      * @throws PageIndexOutOfBoundsException    if the index is not a positive integer.
      */
     PageResultResponse<MemberDTOResponse> getAllMembers(int pageNumber) throws PageIndexOutOfBoundsException;
+
+    MemberDTOResponse edit(MultipartFile file, MemberDTORequest request, String id) throws MemberNotFoundException, Exception;
 
 }
 
