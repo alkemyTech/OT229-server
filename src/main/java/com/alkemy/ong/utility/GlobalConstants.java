@@ -18,6 +18,7 @@ public abstract class GlobalConstants {
     public static final String PAGE_INDEX_PARAM = "page";
     public static final String CATEGORY_SORT_ATTRIBUTE = "name";
     public static final String NEWS_SORT_ATTRIBUTE = "timestamp";
+    public static final String MEMBERS_SORT_ATTRIBUTE = "name";
 
     public static abstract class Endpoints {
         public static final String LOGIN = "/auth/login";
@@ -38,7 +39,7 @@ public abstract class GlobalConstants {
     }
 
     public static abstract class EndpointsRoutes{
-        public static final String[] USER_GET = {"/auth/me", "/organization/public", "/post/{id}/comments", "/news/list"};
+        public static final String[] USER_GET = {"/auth/me", "/organization/public", "/post/{id}/comments", "/news/list", Endpoints.CATEGORIES, Endpoints.NEWS, Endpoints.MEMBERS};
         public static final String[] USER_POST = {"/comments", "/contacts", "/members"};
         public static final String[] USER_PUT = {"/comments/{id}", "/members/{id}", "/users/{id}"};
         public static final String[] USER_DELETE = {"/comments/{id}", "/users/{id}"};

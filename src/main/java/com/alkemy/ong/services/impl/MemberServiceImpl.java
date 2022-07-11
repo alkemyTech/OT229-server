@@ -2,17 +2,21 @@ package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.MemberDTORequest;
 import com.alkemy.ong.dto.MemberDTOResponse;
+import com.alkemy.ong.dto.PageResultResponse;
 import com.alkemy.ong.entities.Member;
-import com.alkemy.ong.exception.CloudStorageClientException;
-import com.alkemy.ong.exception.CorruptedFileException;
-import com.alkemy.ong.exception.EntityImageProcessingException;
-import com.alkemy.ong.exception.FileNotFoundOnCloudException;
+import com.alkemy.ong.exception.*;
 import com.alkemy.ong.mappers.MemberMapper;
+import com.alkemy.ong.mappers.PageResultResponseBuilder;
 import com.alkemy.ong.repositories.MembersRepository;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.MemberService;
+import com.alkemy.ong.utility.GlobalConstants;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -89,4 +93,22 @@ public class MemberServiceImpl implements MemberService {
         memberDTOResponses.sort(Comparator.comparing(MemberDTOResponse::getName));
         return memberDTOResponses;
     }
+
+    @Override
+    public PageResultResponse<MemberDTOResponse> getAllMembers(int pageNumber) throws PageIndexOutOfBoundsException {
+        if (pageNumber < 0) {
+            throw new PageIndexOutOfBoundsException("Page number must be positive");
+        }
+        Pageable pageRequest = PageRequest.of(
+                pageNumber,
+                GlobalConstants.GLOBAL_PAGE_SIZE,
+                Sort.by(GlobalConstants.MEMBERS_SORT_ATTRIBUTE)
+        );
+        Page<Member> springDataResultPage = this.membersRepository.findAll(pageRequest);
+        return new PageResultResponseBuilder<Member, MemberDTOResponse>()
+                .from(springDataResultPage)
+                .mapWith(this.memberMapper::memberEntity2DTOResponse)
+                .build();
+    }
+
 }
