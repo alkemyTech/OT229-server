@@ -1,5 +1,6 @@
 package com.alkemy.ong.controllers;
 
+import com.alkemy.ong.dto.CommentDTO;
 import com.alkemy.ong.services.CommentService;
 import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,13 +9,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
 
 @RestController
 public class CommentController {
 
     @Autowired
     CommentService commentService;
-    
+
+    @PostMapping(GlobalConstants.Endpoints.COMMENTS)
+    public ResponseEntity<CommentDTO> save (@Valid @RequestBody CommentDTO commentDTO)throws Exception{
+        CommentDTO comment = commentService.save(commentDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(comment);
+    }
     
     @GetMapping("/post/{id}/" + GlobalConstants.Endpoints.COMMENTS)
     public ResponseEntity<?> commentListOfAPost(@PathVariable String id) throws Exception {
@@ -47,4 +54,5 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
+
 }

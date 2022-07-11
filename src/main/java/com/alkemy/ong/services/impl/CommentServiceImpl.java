@@ -38,7 +38,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDTO save(CommentDTO commentDTO) throws Exception {
-        return null;
+        CommentEntity newComment = commentMapper.commentDto2Entity(commentDTO);
+        CommentEntity commentSaved = commentRepository.save(newComment);
+        CommentDTO result = commentMapper.commentEntity2dto(commentSaved);
+        return result;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class CommentServiceImpl implements CommentService {
         List<CommentEntity> commentsFound = commentRepository.findAllByNewsIdOrderByCreateDateAsc(idPost);
 
         List<CommentDTO> commentsDTOList = commentsFound.stream()
-                .map(this.commentMapper::entity2DTO)
+                .map(this.commentMapper::commentEntity2dto)
                 .collect(Collectors.toList());
 
         return commentsDTOList;
@@ -73,7 +76,7 @@ public class CommentServiceImpl implements CommentService {
                 commentFound.get().setBody(newCommentBody);
 
                 commentRepository.save(commentFound.get());
-                return commentMapper.entity2DTO(commentFound.get());
+                return commentMapper.commentEntity2dto(commentFound.get());
             }else{
                 throw new Exception("You don't have permissions to edit this comment");
             }
@@ -107,4 +110,5 @@ public class CommentServiceImpl implements CommentService {
     private boolean checkPermissions(List<String> roles, String idComment, String idUser){
         return roles.contains("ROLE_ADMIN") || idComment.equals(idUser) ? true : false;
     }
+
 }
