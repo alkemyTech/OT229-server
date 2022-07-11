@@ -1,8 +1,8 @@
 package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.CommentDTO;
+import com.alkemy.ong.dto.CommentDTOList;
 import com.alkemy.ong.entities.CommentEntity;
-import com.alkemy.ong.entities.News;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.CommentMapper;
 import com.alkemy.ong.repositories.CommentRepository;
@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -105,6 +107,18 @@ public class CommentServiceImpl implements CommentService {
         }else{
             throw new EntityNotFoundException("Comment with the provided ID not present");
         }
+    }
+
+    @Override
+    public List<CommentDTOList> getAll() {
+
+        List<CommentDTOList> commentDTOS = new LinkedList<>();
+        for (CommentEntity comment : commentRepository.findAllByOrderByCreateDateDesc()) {
+            commentDTOS.add(commentMapper.entity2DTOList(comment));
+        }
+
+        return commentDTOS;
+
     }
 
     private boolean checkPermissions(List<String> roles, String idComment, String idUser){

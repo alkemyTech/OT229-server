@@ -55,4 +55,9 @@ public class CommentController {
         }
     }
 
+    @GetMapping(GlobalConstants.Endpoints.COMMENTS)
+    public ResponseEntity<?> getAllComments(){
+        return new ResponseEntity<>(commentService.getAll(),HttpStatus.OK);
+    }
+
 }
