@@ -39,7 +39,7 @@ public abstract class GlobalConstants {
     }
 
     public static abstract class EndpointsRoutes{
-        public static final String[] USER_GET = {"/auth/me", "/organization/public", "/post/{id}/comments", "/news/list"};
+        public static final String[] USER_GET = {"/auth/me", "/organization/public", "/post/{id}/comments", "/news/list", Endpoints.CATEGORIES, Endpoints.NEWS, Endpoints.MEMBERS};
         public static final String[] USER_POST = {"/comments", "/contacts", "/members"};
         public static final String[] USER_PUT = {"/comments/{id}", "/members/{id}", "/users/{id}"};
         public static final String[] USER_DELETE = {"/comments/{id}", "/users/{id}"};
