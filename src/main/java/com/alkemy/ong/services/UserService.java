@@ -27,4 +27,6 @@ public interface UserService {
   List<UserDTO> getAll();
   UserDTO getMe(String jwt) throws Exception;
 
+  boolean existsById(String id);
+
 }

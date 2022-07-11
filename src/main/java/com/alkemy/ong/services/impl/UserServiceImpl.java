@@ -145,4 +145,9 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public boolean existsById(String id) {
+        return this.userRepo.existsById(id);
+    }
+
 }
