@@ -64,6 +64,11 @@ public class NewsServiceImpl implements NewsService {
     return newsMapper.newsEntity2DTO(news.get());
   }
 
+  @Override
+  public boolean existNew(String id) {
+    return newsRepository.existsById(id);
+  }
+
   @Transactional
   @Override
   public NewsDTO deleteNews(String id) throws EntityNotFoundException, CloudStorageClientException {

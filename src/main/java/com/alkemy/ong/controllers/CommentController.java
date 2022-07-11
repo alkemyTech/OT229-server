@@ -10,14 +10,22 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
 
 @RestController
-@RequestMapping(GlobalConstants.Endpoints.COMMENTS)
 public class CommentController {
 
     @Autowired
     CommentService commentService;
     
     
-    @PutMapping("/{id}")
+    @GetMapping("/post/{id}/" + GlobalConstants.Endpoints.COMMENTS)
+    public ResponseEntity<?> commentListOfAPost(@PathVariable String id) throws Exception {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(commentService.commentList(id));
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PutMapping(GlobalConstants.Endpoints.COMMENTS + "/{id}")
     public ResponseEntity<?> updateComment(@PathVariable String id, @RequestParam(value = "commentBody", required = true) String commentBody,
                                            @RequestHeader("authorization") String token) throws Exception{
         try{
@@ -29,7 +37,7 @@ public class CommentController {
         }
     }
     
-    @DeleteMapping("/{id}")
+    @DeleteMapping(GlobalConstants.Endpoints.COMMENTS + "/{id}")
     public ResponseEntity<?> deleteComment(@PathVariable String id, @RequestHeader("authorization") String token) throws Exception {
         try{
             return ResponseEntity.status(HttpStatus.OK).body(commentService.deleteComment(id, token));
