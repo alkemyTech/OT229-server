@@ -6,6 +6,7 @@ import com.alkemy.ong.entities.CommentEntity;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.CommentMapper;
 import com.alkemy.ong.repositories.CommentRepository;
+import com.alkemy.ong.security.service.AuthenticationService;
 import com.alkemy.ong.security.service.JwtService;
 import com.alkemy.ong.services.CommentService;
 import com.alkemy.ong.services.NewsService;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -38,8 +38,20 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     NewsService newsService;
 
+    @Autowired
+    AuthenticationService authenticationService;
+
     @Override
-    public CommentDTO save(CommentDTO commentDTO) throws Exception {
+    public CommentDTO save(CommentDTO commentDTO) throws EntityNotFoundException, IllegalArgumentException {
+        if ( ! this.userService.existsById(commentDTO.getUser_id()) ) {
+            throw new EntityNotFoundException("Associated User not found");
+        }
+        if ( ! this.authenticationService.authUserMatchesId(commentDTO.getUser_id()) ) {
+            throw new IllegalArgumentException("The provided user id doesn't match the currently authenticated user.");
+        }
+        if ( ! this.newsService.existNew(commentDTO.getPost_id()) ) {
+            throw new EntityNotFoundException("Associated news article not found");
+        }
         CommentEntity newComment = commentMapper.dto2Entity(commentDTO);
         CommentEntity commentSaved = commentRepository.save(newComment);
         CommentDTO result = commentMapper.entity2DTO(commentSaved);
