@@ -92,7 +92,7 @@ public class CommentServiceImpl implements CommentService {
             if(checkPermissions(roles, commentFound.get().getUserId(), user.getId())){
                 commentFound.get().setBody(newCommentBody);
 
-                //commentRepository.save(commentFound.get());
+                commentRepository.save(commentFound.get());
                 return commentMapper.entity2DTO(commentFound.get());
             }else{
                 throw new Exception("You don't have permissions to edit this comment");
@@ -115,7 +115,7 @@ public class CommentServiceImpl implements CommentService {
             User user = userService.getUserByEmail(userName).get();
 
             if(checkPermissions(roles, commentFound.get().getUserId(), user.getId())){
-                //commentRepository.deleteById(commentFound.get().getId());
+                commentRepository.deleteById(commentFound.get().getId());
                 return "Successfully deleted comment";
 
             }else{
