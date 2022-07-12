@@ -88,10 +88,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public User getAuthenticatedUserEntity() throws IllegalStateException{
+    public Optional<User> getAuthenticatedUserEntity() throws IllegalStateException{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            return null;
+            return Optional.empty();
         }
 
         String authUserEmail;
@@ -105,6 +105,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User authUser = this.userService.getUserByEmail(authUserEmail)
                 .orElseThrow(() -> new IllegalStateException("A user is authenticated but can't be retrieved from the database."));
 
-        return authUser;
+        return Optional.of(authUser);
     }
 }

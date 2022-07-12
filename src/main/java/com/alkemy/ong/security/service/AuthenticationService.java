@@ -42,5 +42,5 @@ public interface AuthenticationService {
      */
     boolean authUserMatchesId(String id) throws IllegalStateException;
 
-    User getAuthenticatedUserEntity() throws IllegalStateException;
+    Optional<User> getAuthenticatedUserEntity() throws IllegalStateException;
 }

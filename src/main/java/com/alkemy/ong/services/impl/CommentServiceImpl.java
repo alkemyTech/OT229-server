@@ -3,6 +3,7 @@ package com.alkemy.ong.services.impl;
 import com.alkemy.ong.dto.CommentDTO;
 import com.alkemy.ong.dto.CommentDTOList;
 import com.alkemy.ong.entities.CommentEntity;
+import com.alkemy.ong.entities.Role;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.CommentMapper;
 import com.alkemy.ong.repositories.CommentRepository;
@@ -78,15 +79,9 @@ public class CommentServiceImpl implements CommentService {
             throw new EntityNotFoundException("Comment with the provided ID not present");
         }
 
-        User userAuth = authenticationService.getAuthenticatedUserEntity();
+        User userAuth = authenticationService.getAuthenticatedUserEntity().get();
 
-        List<String> roles = userAuth.getRoleId().stream()
-                .filter((role -> role.getName().equals("ROLE_ADMIN")))
-                .map(String::valueOf)
-                .collect(Collectors.toList());
-
-        // Si el tamaño de la lista de roles es mayor a 0, significa que el usuario es administrador
-        if(checkPermissions(roles.size(), commentFound.get().getUserId(), userAuth.getId())){
+        if(checkPermissions(userAuth.getRoleId(), idComentary, userAuth.getId())){
             commentFound.get().setBody(newCommentBody);
             commentRepository.save(commentFound.get());
             return commentMapper.entity2DTO(commentFound.get());
@@ -103,15 +98,9 @@ public class CommentServiceImpl implements CommentService {
             throw new EntityNotFoundException("Comment with the provided ID not present");
         }
 
-        User userAuth = authenticationService.getAuthenticatedUserEntity();
+        User userAuth = authenticationService.getAuthenticatedUserEntity().get();
 
-        List<String> roles = userAuth.getRoleId().stream()
-                .filter((role -> role.getName().equals("ROLE_ADMIN")))
-                .map(String::valueOf)
-                .collect(Collectors.toList());
-
-        // Si el tamaño de la lista de roles es mayor a 0, significa que el usuario es administrador
-        if(checkPermissions(roles.size(), commentFound.get().getUserId(), userAuth.getId())){
+        if(checkPermissions(userAuth.getRoleId(), idComentary, userAuth.getId())){
             commentRepository.deleteById(commentFound.get().getId());
             return "Successfully deleted comment";
         }else{
@@ -131,7 +120,12 @@ public class CommentServiceImpl implements CommentService {
 
     }
 
-    private boolean checkPermissions(int sizeList, String idComment, String idUser){
-        return sizeList > 0 || idComment.equals(idUser) ? true : false;
+    private boolean checkPermissions(Set<Role> roles, String idComment, String idUser){
+        boolean isAdmin = roles.stream()
+                .filter(role -> role.getName().equals("ROLE_ADMIN"))
+                .findFirst()
+                .isPresent();
+
+        return isAdmin || idComment.equals(idUser);
     }
 }
