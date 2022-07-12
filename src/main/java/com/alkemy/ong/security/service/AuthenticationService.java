@@ -1,8 +1,11 @@
 package com.alkemy.ong.security.service;
 
+import com.alkemy.ong.entities.User;
 import com.alkemy.ong.security.payload.LoginResponse;
 import org.springframework.security.core.AuthenticationException;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -39,4 +42,5 @@ public interface AuthenticationService {
      */
     boolean authUserMatchesId(String id) throws IllegalStateException;
 
+    User getAuthenticatedUserEntity() throws IllegalStateException;
 }
