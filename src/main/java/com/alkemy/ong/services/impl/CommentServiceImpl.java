@@ -12,12 +12,12 @@ import com.alkemy.ong.services.CommentService;
 import com.alkemy.ong.services.NewsService;
 import com.alkemy.ong.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -77,19 +77,22 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDTO updateComment(String idComentary, String newCommentBody, String token) throws Exception {
+    public CommentDTO updateComment(String idComentary, String newCommentBody) throws Exception {
         Optional<CommentEntity> commentFound = commentRepository.findById(idComentary);
 
         if(commentFound.isPresent()){
-            List<String> roles = jwtService.getRoles(token);
 
-            String userName = jwtService.getUsername(token); // El username del token es el correo
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+            List<String> roles = getRolesFromAuth(auth);
+            String userName = getUserNameFromAuth(auth);
+
             User user = userService.getUserByEmail(userName).get();
 
             if(checkPermissions(roles, commentFound.get().getUserId(), user.getId())){
                 commentFound.get().setBody(newCommentBody);
 
-                commentRepository.save(commentFound.get());
+                //commentRepository.save(commentFound.get());
                 return commentMapper.entity2DTO(commentFound.get());
             }else{
                 throw new Exception("You don't have permissions to edit this comment");
@@ -100,17 +103,19 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public String deleteComment(String idComentary, String token) throws Exception {
+    public String deleteComment(String idComentary) throws Exception {
         Optional<CommentEntity> commentFound = commentRepository.findById(idComentary);
 
         if(commentFound.isPresent()){
-            List<String> roles = jwtService.getRoles(token);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-            String userName = jwtService.getUsername(token); // El username del token es el correo
+            List<String> roles = getRolesFromAuth(auth);
+            String userName = getUserNameFromAuth(auth);
+
             User user = userService.getUserByEmail(userName).get();
 
             if(checkPermissions(roles, commentFound.get().getUserId(), user.getId())){
-                commentRepository.deleteById(commentFound.get().getId());
+                //commentRepository.deleteById(commentFound.get().getId());
                 return "Successfully deleted comment";
 
             }else{
@@ -135,6 +140,19 @@ public class CommentServiceImpl implements CommentService {
 
     private boolean checkPermissions(List<String> roles, String idComment, String idUser){
         return roles.contains("ROLE_ADMIN") || idComment.equals(idUser) ? true : false;
+    }
+
+    private List<String> getRolesFromAuth(Authentication auth){
+        List<String> roles = auth.getAuthorities().stream()
+                .map(String::valueOf)
+                .collect(Collectors.toList());
+
+        return roles;
+    }
+
+    private String getUserNameFromAuth(Authentication auth){
+        // El el getName devuelve el correo que está en el token
+        return auth.getName();
     }
 
 }
