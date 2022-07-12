@@ -121,10 +121,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private boolean checkPermissions(Set<Role> roles, String idComment, String idUser){
-        boolean isAdmin = roles.stream()
-                .filter(role -> role.getName().equals("ROLE_ADMIN"))
-                .findFirst()
-                .isPresent();
+        boolean isAdmin = roles.stream().
+                anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
 
         return isAdmin || idComment.equals(idUser);
     }
