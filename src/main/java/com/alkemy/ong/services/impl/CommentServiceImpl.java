@@ -11,8 +11,6 @@ import com.alkemy.ong.services.CommentService;
 import com.alkemy.ong.services.NewsService;
 import com.alkemy.ong.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -76,25 +74,24 @@ public class CommentServiceImpl implements CommentService {
     public CommentDTO updateComment(String idComentary, String newCommentBody) throws Exception {
         Optional<CommentEntity> commentFound = commentRepository.findById(idComentary);
 
-        if(commentFound.isPresent()){
-
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-            List<String> roles = getRolesFromAuth(auth);
-            String userName = getUserNameFromAuth(auth);
-
-            User user = userService.getUserByEmail(userName).get();
-
-            if(checkPermissions(roles, commentFound.get().getUserId(), user.getId())){
-                commentFound.get().setBody(newCommentBody);
-
-                commentRepository.save(commentFound.get());
-                return commentMapper.entity2DTO(commentFound.get());
-            }else{
-                throw new Exception("You don't have permissions to edit this comment");
-            }
-        }else{
+        if(!commentFound.isPresent()){
             throw new EntityNotFoundException("Comment with the provided ID not present");
+        }
+
+        User userAuth = authenticationService.getAuthenticatedUserEntity();
+
+        List<String> roles = userAuth.getRoleId().stream()
+                .filter((role -> role.getName().equals("ROLE_ADMIN")))
+                .map(String::valueOf)
+                .collect(Collectors.toList());
+
+        // Si el tamaño de la lista de roles es mayor a 0, significa que el usuario es administrador
+        if(checkPermissions(roles.size(), commentFound.get().getUserId(), userAuth.getId())){
+            commentFound.get().setBody(newCommentBody);
+            commentRepository.save(commentFound.get());
+            return commentMapper.entity2DTO(commentFound.get());
+        }else{
+            throw new Exception("You don't have permissions to edit this comment");
         }
     }
 
@@ -102,23 +99,23 @@ public class CommentServiceImpl implements CommentService {
     public String deleteComment(String idComentary) throws Exception {
         Optional<CommentEntity> commentFound = commentRepository.findById(idComentary);
 
-        if(commentFound.isPresent()){
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-            List<String> roles = getRolesFromAuth(auth);
-            String userName = getUserNameFromAuth(auth);
-
-            User user = userService.getUserByEmail(userName).get();
-
-            if(checkPermissions(roles, commentFound.get().getUserId(), user.getId())){
-                commentRepository.deleteById(commentFound.get().getId());
-                return "Successfully deleted comment";
-
-            }else{
-                throw new Exception("You don't have permissions to delete this comment");
-            }
-        }else{
+        if(!commentFound.isPresent()){
             throw new EntityNotFoundException("Comment with the provided ID not present");
+        }
+
+        User userAuth = authenticationService.getAuthenticatedUserEntity();
+
+        List<String> roles = userAuth.getRoleId().stream()
+                .filter((role -> role.getName().equals("ROLE_ADMIN")))
+                .map(String::valueOf)
+                .collect(Collectors.toList());
+
+        // Si el tamaño de la lista de roles es mayor a 0, significa que el usuario es administrador
+        if(checkPermissions(roles.size(), commentFound.get().getUserId(), userAuth.getId())){
+            commentRepository.deleteById(commentFound.get().getId());
+            return "Successfully deleted comment";
+        }else{
+            throw new Exception("You don't have permissions to delete this comment");
         }
     }
 
@@ -134,21 +131,7 @@ public class CommentServiceImpl implements CommentService {
 
     }
 
-    private boolean checkPermissions(List<String> roles, String idComment, String idUser){
-        return roles.contains("ROLE_ADMIN") || idComment.equals(idUser) ? true : false;
+    private boolean checkPermissions(int sizeList, String idComment, String idUser){
+        return sizeList > 0 || idComment.equals(idUser) ? true : false;
     }
-
-    private List<String> getRolesFromAuth(Authentication auth){
-        List<String> roles = auth.getAuthorities().stream()
-                .map(String::valueOf)
-                .collect(Collectors.toList());
-
-        return roles;
-    }
-
-    private String getUserNameFromAuth(Authentication auth){
-        // El el getName devuelve el correo que está en el token
-        return auth.getName();
-    }
-
 }
