@@ -82,7 +82,7 @@ public class CommentServiceImpl implements CommentService {
         Optional<User> userAuthOptional = authenticationService.getAuthenticatedUserEntity();
 
         if(userAuthOptional.isEmpty()){
-            throw new RuntimeException("Authentication failed");
+            throw new Exception("You don't have permissions to edit this comment");
         }
 
         User userAuth = userAuthOptional.get();
@@ -107,7 +107,7 @@ public class CommentServiceImpl implements CommentService {
         Optional<User> userAuthOptional = authenticationService.getAuthenticatedUserEntity();
 
         if(userAuthOptional.isEmpty()){
-            throw new RuntimeException("Authentication failed");
+            throw new Exception("You don't have permissions to edit this comment");
         }
 
         User userAuth = userAuthOptional.get();
