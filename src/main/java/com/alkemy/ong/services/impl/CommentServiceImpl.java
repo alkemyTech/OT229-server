@@ -75,13 +75,19 @@ public class CommentServiceImpl implements CommentService {
     public CommentDTO updateComment(String idComentary, String newCommentBody) throws Exception {
         Optional<CommentEntity> commentFound = commentRepository.findById(idComentary);
 
-        if(!commentFound.isPresent()){
+        if(commentFound.isEmpty()){
             throw new EntityNotFoundException("Comment with the provided ID not present");
         }
 
-        User userAuth = authenticationService.getAuthenticatedUserEntity().get();
+        Optional<User> userAuthOptional = authenticationService.getAuthenticatedUserEntity();
 
-        if(checkPermissions(userAuth.getRoleId(), idComentary, userAuth.getId())){
+        if(userAuthOptional.isEmpty()){
+            throw new RuntimeException("Authentication failed");
+        }
+
+        User userAuth = userAuthOptional.get();
+
+        if(checkPermissions(userAuth.getRoleId(), commentFound.get().getUserId(), userAuth.getId())){
             commentFound.get().setBody(newCommentBody);
             commentRepository.save(commentFound.get());
             return commentMapper.entity2DTO(commentFound.get());
@@ -94,13 +100,19 @@ public class CommentServiceImpl implements CommentService {
     public String deleteComment(String idComentary) throws Exception {
         Optional<CommentEntity> commentFound = commentRepository.findById(idComentary);
 
-        if(!commentFound.isPresent()){
+        if(commentFound.isEmpty()){
             throw new EntityNotFoundException("Comment with the provided ID not present");
         }
 
-        User userAuth = authenticationService.getAuthenticatedUserEntity().get();
+        Optional<User> userAuthOptional = authenticationService.getAuthenticatedUserEntity();
 
-        if(checkPermissions(userAuth.getRoleId(), idComentary, userAuth.getId())){
+        if(userAuthOptional.isEmpty()){
+            throw new RuntimeException("Authentication failed");
+        }
+
+        User userAuth = userAuthOptional.get();
+
+        if(checkPermissions(userAuth.getRoleId(), commentFound.get().getUserId(), userAuth.getId())){
             commentRepository.deleteById(commentFound.get().getId());
             return "Successfully deleted comment";
         }else{
