@@ -29,4 +29,14 @@ public interface AuthenticationService {
      */
     Optional<LoginResponse> getAuthenticatedUser() throws IllegalStateException;
 
+    /**
+     * Confirms whether the provided id matches the id from the currently authenticated User.
+     *
+     * @param id    the id to be compared.
+     * @return  <code>true</code> if the ids match, <code>false</code> otherwise.
+     * @throws IllegalStateException if a user is currently authenticated in the security context but its
+     *                               corresponding entity can't be retrieved from the database.
+     */
+    boolean authUserMatchesId(String id) throws IllegalStateException;
+
 }
