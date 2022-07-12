@@ -15,7 +15,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -83,4 +87,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return authUser.getId().equals(id);
     }
 
+    @Override
+    public User getAuthenticatedUserEntity() throws IllegalStateException{
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return null;
+        }
+
+        String authUserEmail;
+        try{
+            authUserEmail = ((org.springframework.security.core.userdetails.User) authentication.getPrincipal())
+                .getUsername();
+        } catch (ClassCastException e) {
+            authUserEmail = (String) authentication.getPrincipal();
+        }
+
+        User authUser = this.userService.getUserByEmail(authUserEmail)
+                .orElseThrow(() -> new IllegalStateException("A user is authenticated but can't be retrieved from the database."));
+
+        return authUser;
+    }
 }

@@ -22,9 +22,9 @@ public interface CommentService {
 
     List<CommentDTO> commentList(String idPost) throws Exception;
 
-    CommentDTO updateComment(String idComentary, String token, String newCommentBody) throws Exception;
+    CommentDTO updateComment(String idComentary, String newCommentBody) throws Exception;
     
-    String deleteComment(String idComentary, String token) throws Exception;
+    String deleteComment(String idComentary) throws Exception;
 
     List<CommentDTOList>getAll();
 }

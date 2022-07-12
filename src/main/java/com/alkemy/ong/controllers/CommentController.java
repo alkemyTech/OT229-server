@@ -39,10 +39,9 @@ public class CommentController {
     }
 
     @PutMapping(GlobalConstants.Endpoints.COMMENTS + "/{id}")
-    public ResponseEntity<?> updateComment(@PathVariable String id, @RequestParam(value = "commentBody", required = true) String commentBody,
-                                           @RequestHeader("authorization") String token) throws Exception{
+    public ResponseEntity<?> updateComment(@PathVariable String id, @RequestParam(value = "commentBody", required = true) String commentBody) throws Exception{
         try{
-            return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(id, commentBody, token));
+            return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(id, commentBody));
         }catch (EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }catch (Exception e){
@@ -51,9 +50,9 @@ public class CommentController {
     }
     
     @DeleteMapping(GlobalConstants.Endpoints.COMMENTS + "/{id}")
-    public ResponseEntity<?> deleteComment(@PathVariable String id, @RequestHeader("authorization") String token) throws Exception {
+    public ResponseEntity<?> deleteComment(@PathVariable String id) throws Exception {
         try{
-            return ResponseEntity.status(HttpStatus.OK).body(commentService.deleteComment(id, token));
+            return ResponseEntity.status(HttpStatus.OK).body(commentService.deleteComment(id));
         }catch (EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }catch (Exception e){
