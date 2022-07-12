@@ -7,7 +7,6 @@ import com.alkemy.ong.entities.User;
 import com.alkemy.ong.mappers.CommentMapper;
 import com.alkemy.ong.repositories.CommentRepository;
 import com.alkemy.ong.security.service.AuthenticationService;
-import com.alkemy.ong.security.service.JwtService;
 import com.alkemy.ong.services.CommentService;
 import com.alkemy.ong.services.NewsService;
 import com.alkemy.ong.services.UserService;
@@ -28,9 +27,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Autowired
     CommentMapper commentMapper;
-
-    @Autowired
-    JwtService jwtService;
 
     @Autowired
     UserService userService;
