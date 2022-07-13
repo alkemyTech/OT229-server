@@ -1,5 +1,6 @@
 package com.alkemy.ong.security.configuration;
 
+import com.alkemy.ong.configuration.SwaggerConfiguration;
 import com.alkemy.ong.security.filter.JwtAuthorizationFilter;
 import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final SwaggerConfiguration swaggerConfiguration;
 
     @Autowired
-    public SecurityConfiguration(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public SecurityConfiguration(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder, SwaggerConfiguration swaggerConfiguration) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
+        this.swaggerConfiguration = swaggerConfiguration;
     }
 
     @Override
@@ -57,10 +60,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                 // Routes to register and login
                                 .antMatchers(
                                         GlobalConstants.Endpoints.REGISTER,
-                                        GlobalConstants.Endpoints.LOGIN
+                                        GlobalConstants.Endpoints.LOGIN,
+                                        this.swaggerConfiguration.getExtendedPath(),
+                                        this.swaggerConfiguration.getExtendedHtmlPath()
                                 ).permitAll()
-
-
 
                                 // Permitted access to a USER
                                 .antMatchers(HttpMethod.GET, GlobalConstants.EndpointsRoutes.USER_GET).hasAnyAuthority(GlobalConstants.ALL_ROLES)
@@ -78,8 +81,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         
                 ).addFilter(jwtAuthorizationFilter());
 
-
-
     }
 
     @Bean
@@ -92,4 +93,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception{
         return new JwtAuthorizationFilter(this.authenticationManager());
     }
+
 }
