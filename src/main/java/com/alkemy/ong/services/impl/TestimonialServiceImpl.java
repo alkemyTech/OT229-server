@@ -58,7 +58,7 @@ public class TestimonialServiceImpl implements TestimonialService {
     @Override
     public String delete(String id) throws NotFoundException, CloudStorageClientException, FileNotFoundOnCloudException {
        Boolean exists = repository.existsById(id);
-        if(!exists)throw new NotFoundException("Error: Testimonial with id \" + id + \" was not found\"");
+        if(!exists)throw new NotFoundException("Error: Testimonial with id " + id + " was not found");
        Testimonial testimonial=repository.getById(id);
        deleteTestimonialImageFromCloudStorage(testimonial);
        repository.deleteById(id);
