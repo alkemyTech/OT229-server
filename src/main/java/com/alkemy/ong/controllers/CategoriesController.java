@@ -23,7 +23,7 @@ public class CategoriesController {
     @Autowired
     private CategoriesService categoriesService;
 
-    @Operation(summary = "Get details from an activity")
+    @Operation(summary = "Get details from a category")
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200",description = "Returns details from a category",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))}),
@@ -62,7 +62,7 @@ public class CategoriesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(modifiedDTO);
     }
 
-    @Operation(summary = "Update an activity")
+    @Operation(summary = "Update a category")
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200",description = "Returns an updated category",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))}),
