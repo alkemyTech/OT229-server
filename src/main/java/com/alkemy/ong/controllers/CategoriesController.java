@@ -4,6 +4,11 @@ import com.alkemy.ong.dto.*;
 import com.alkemy.ong.exception.PageIndexOutOfBoundsException;
 import com.alkemy.ong.services.CategoriesService;
 import com.alkemy.ong.utility.GlobalConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +23,13 @@ public class CategoriesController {
     @Autowired
     private CategoriesService categoriesService;
 
+    @Operation(summary = "Get details from a slide")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200",description = "Returns details from a detail",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))}),
+                    @ApiResponse(responseCode = "404",description = "Category not found",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = String.class))})
+            }
+    )
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
         CategoryDTO dto = null;
