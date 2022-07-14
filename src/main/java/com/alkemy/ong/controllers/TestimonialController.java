@@ -1,6 +1,7 @@
 package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.dto.TestimonialDTORequest;
+import com.alkemy.ong.dto.TestimonialDTOResponse;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.FileNotFoundOnCloudException;
@@ -32,12 +33,12 @@ public class TestimonialController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201",description = "Testimonial successfully created",
         content = {
-            @Content(mediaType = "application/json", schema=@Schema(implementation =  TestimonialDTORequest.class))
+            @Content(mediaType = "application/json", schema=@Schema(implementation =  TestimonialDTOResponse.class))
         }),
-            /*@ApiResponse(responseCode="404", description = "Testimonial could not be created",
+            @ApiResponse(responseCode="404", description = "Testimonial could not be created",
                 content = {
                 @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
-            })*/
+            })
     })
     @PostMapping
     public ResponseEntity<?> createTestimonial(@Valid @ModelAttribute TestimonialDTORequest request,
@@ -49,7 +50,7 @@ public class TestimonialController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Testimonial successfully updated",
             content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = TestimonialDTORequest.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = TestimonialDTOResponse.class))
             }),
         @ApiResponse(responseCode = "404", description = "Testimonial not found",
             content = {
@@ -72,7 +73,7 @@ public class TestimonialController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Testimonial successfully deleted",
             content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = TestimonialDTORequest.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = TestimonialDTOResponse.class))
             }),
         @ApiResponse(responseCode = "404", description = "Testimonial not found",
             content = {
