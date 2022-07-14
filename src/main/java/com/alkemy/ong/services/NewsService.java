@@ -2,6 +2,7 @@ package com.alkemy.ong.services;
 
 import com.alkemy.ong.dto.DatedNewsDTO;
 import com.alkemy.ong.dto.NewsDTO;
+import com.alkemy.ong.dto.NewsDTORequest;
 import com.alkemy.ong.dto.PageResultResponse;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
@@ -12,6 +13,7 @@ import javax.persistence.EntityNotFoundException;
 
 public interface NewsService {
   NewsDTO save (MultipartFile file, NewsDTO news) throws CloudStorageClientException, CorruptedFileException;
+  NewsDTO save (NewsDTORequest news) throws CloudStorageClientException, CorruptedFileException;
 
   NewsDTO findById(String id);
 
@@ -41,6 +43,20 @@ public interface NewsService {
    * @throws IllegalArgumentException if the News' Category to be updated is present but has an invalid name.
    */
   NewsDTO updateNews(String id, MultipartFile image, NewsDTO updatedNews) throws EntityNotFoundException, IllegalArgumentException, CloudStorageClientException, CorruptedFileException;
+
+  /**
+   * Updates a News entry.
+   *
+   * @param id  the id of the News to be edited.
+   * @param updatedNews the DTO with the updated fields of the News. The Entity whole Entity is updated from these values,
+   *                    so every field must be present, not just the updated ones, with the exception of the encoded file.
+   * @return  an dto with the info from the updated entity.
+   * @throws EntityNotFoundException  if an entity with the provided id can't be found.
+   * @throws CorruptedFileException  if there was a problem with the file attached.
+   * @throws CloudStorageClientException  if there was a problem with the cloud storage service.
+   * @throws IllegalArgumentException if the News' Category to be updated is present but has an invalid name.
+   */
+  NewsDTO updateNews(String id, NewsDTORequest updatedNews) throws EntityNotFoundException, IllegalArgumentException, CloudStorageClientException, CorruptedFileException;
 
   /**
    * Performs a paginated search for all the News entries in the database and returns them alongside the urls
