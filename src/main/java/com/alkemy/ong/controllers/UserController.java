@@ -46,9 +46,9 @@ public class UserController {
 
 
  @PutMapping
-    public ResponseEntity<?> updateUser(@RequestParam(value = "file", required = false) MultipartFile multipartfile,@Valid @ModelAttribute UserDTORequest userDTORequest) throws CloudStorageClientException, CorruptedFileException {
+    public ResponseEntity<?> updateUser(@Valid @RequestBody UserDTORequest userDTORequest) throws CloudStorageClientException, CorruptedFileException {
         try {
-            return new ResponseEntity<>(userService.updateUser(multipartfile, userDTORequest), HttpStatus.OK);
+            return new ResponseEntity<>(userService.updateUser(userDTORequest), HttpStatus.OK);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }catch (Exception e){
