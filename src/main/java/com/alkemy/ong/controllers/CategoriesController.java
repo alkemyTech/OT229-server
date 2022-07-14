@@ -91,7 +91,14 @@ public class CategoriesController {
         return ResponseEntity.ok(this.categoriesService.getAllCategoryNames(page));
     }
 
-    @DeleteMapping("{/id}")
+    @Operation(summary = "Delete a category")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200",description = "Just return an ok state"),
+                    @ApiResponse(responseCode = "404",description = "Category with the provided ID not found",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = String.class))})
+            }
+    )
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id){
         try {
             categoriesService.deleteCategory(id);
