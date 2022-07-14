@@ -42,6 +42,14 @@ public class CategoriesController {
         return ResponseEntity.ok().body(dto);
     }
 
+    @Operation(summary = "Create a category ")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "201",description = "Create and save a category",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))}),
+                    @ApiResponse(responseCode = "400",description = "Category with the provided name it already exists in the system",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = String.class))})
+
+            }
+    )
     @PostMapping()
     public ResponseEntity<?> save(@Valid @RequestBody CategoryDTO dto) {
         CategoryDTO modifiedDTO = null;
