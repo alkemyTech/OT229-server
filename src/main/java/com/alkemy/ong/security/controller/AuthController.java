@@ -8,6 +8,7 @@ import com.alkemy.ong.security.service.AuthenticationService;
 import com.alkemy.ong.services.UserService;
 import com.alkemy.ong.utility.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class AuthController {
           }
     }
 
-    @PostMapping(GlobalConstants.Endpoints.LOGIN)
+    @PostMapping(value = GlobalConstants.Endpoints.LOGIN, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<?> login(@Valid LoginRequest loginForm) {
 
         try {
