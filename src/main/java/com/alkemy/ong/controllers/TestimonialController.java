@@ -6,12 +6,13 @@ import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.services.TestimonialService;
 import com.alkemy.ong.utility.GlobalConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -22,22 +23,26 @@ public class TestimonialController {
     @Autowired
     private TestimonialService service;
 
+    @Operation(summary = "Crear un testimonial", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
-    public ResponseEntity<?> createTestimonial(@Valid @ModelAttribute TestimonialDTORequest request,
-                                               @RequestParam("file") MultipartFile file) throws CloudStorageClientException, CorruptedFileException {
-        return new ResponseEntity<>(service.create(file,request), HttpStatus.CREATED);
+    public ResponseEntity<?> createTestimonial(@Valid @RequestBody TestimonialDTORequest request) throws CloudStorageClientException, CorruptedFileException {
+
+        return new ResponseEntity<>(service.create(request), HttpStatus.CREATED);
+
     }
+
+    @Operation(summary = "Actualizar un testimonial", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping
-    public ResponseEntity<?> updateTestimonial(@Valid @ModelAttribute TestimonialDTORequest request,
-                                               @RequestParam(value = "file", required = false) MultipartFile file,
+    public ResponseEntity<?> updateTestimonial(@Valid @RequestBody TestimonialDTORequest request,
                                                @RequestParam("id")String id) throws CloudStorageClientException, CorruptedFileException {
        try{
-           return new ResponseEntity<>(service.update(id,file,request), HttpStatus.OK);
+           return new ResponseEntity<>(service.update(id,request), HttpStatus.OK);
        } catch (NotFoundException e) {
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
        }
 
     }
+
     @DeleteMapping
     public ResponseEntity<?>deleteTestimonial(@RequestParam("id")String id)throws CloudStorageClientException, FileNotFoundOnCloudException {
 
@@ -47,4 +52,5 @@ public class TestimonialController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 }

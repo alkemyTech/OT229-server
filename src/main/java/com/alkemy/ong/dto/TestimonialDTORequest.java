@@ -19,4 +19,6 @@ public class TestimonialDTORequest {
     @NotEmpty(message = "Content not provided")
     private String content;
 
+    private EncodedImageDTO encoded_image;
+
 }
