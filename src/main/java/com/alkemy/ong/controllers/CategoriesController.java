@@ -23,10 +23,10 @@ public class CategoriesController {
     @Autowired
     private CategoriesService categoriesService;
 
-    @Operation(summary = "Get details from a slide")
+    @Operation(summary = "Get details from an activity")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200",description = "Returns details from a detail",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))}),
+                    @ApiResponse(responseCode = "200",description = "Returns details from a category",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))}),
                     @ApiResponse(responseCode = "404",description = "Category not found",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = String.class))})
             }
     )
