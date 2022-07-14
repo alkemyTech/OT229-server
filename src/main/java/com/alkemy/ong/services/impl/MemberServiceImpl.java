@@ -63,6 +63,31 @@ public class MemberServiceImpl implements MemberService {
         }
 
     }
+
+    @Override
+    public MemberDTOResponse create(MemberDTORequest request) throws CloudStorageClientException, CorruptedFileException {
+        Member member;
+        //Este regx es para validar el formato name
+        String regx = "^[\\p{L} .'-]+$";
+        String name = request.getName();
+        if (Pattern.matches(regx,name)) {
+            member = memberMapper.dtoRequest2MemberEntity(request);
+            if (request.getEncoded_image() != null){
+                member.setImage(cloudStorageService.uploadBase64File(
+                        request.getEncoded_image().getEncoded_string(),
+                        request.getEncoded_image().getFile_name()
+                ));
+            } else {
+                member.setImage(null);
+            }
+            membersRepository.save(member);
+            return memberMapper.memberEntity2DTOResponse(member);
+        } else {
+            //Utilice este metodo para validar el String
+            throw new RuntimeException("Formato de Nombre invalido");
+        }
+    }
+
     @Override
     @Transactional
     public String deleteMember(String id) throws NotFoundException,CloudStorageClientException,FileNotFoundOnCloudException {
@@ -140,6 +165,36 @@ public class MemberServiceImpl implements MemberService {
         return response;
     }
 
+    @Override
+    public MemberDTOResponse edit(MemberDTORequest request, String id) throws MemberNotFoundException, Exception {
+        String regx = "^[\\p{L} .'-]+$";
+        String name = request.getName();
+
+        if (!Pattern.matches(regx, name)) {
+            throw new RuntimeException("Name format invalid");
+        }
+
+        Optional<Member> memberFound = membersRepository.findById(id);
+
+        if (!memberFound.isPresent()) {
+            throw new MemberNotFoundException("Member with the provided ID was not found over the system");
+        }
+
+        if (request.getEncoded_image() != null) {
+            request.setImage(cloudStorageService.uploadBase64File(
+                    request.getEncoded_image().getEncoded_string(),
+                    request.getEncoded_image().getFile_name()
+            ));
+        } else {
+            request.setImage(null);
+        }
+
+        Member modifiedEntity = memberMapper.editEntity(memberFound.get(), request);
+        membersRepository.save(modifiedEntity);
+        MemberDTOResponse response = memberMapper.memberEntity2DTOResponse(modifiedEntity);
+
+        return response;
+    }
 
 
 }
