@@ -80,7 +80,12 @@ public class CategoriesController {
         return ResponseEntity.status(HttpStatus.OK).body(modifiedDTO);
 
     }
-
+    @Operation(summary = "Get a list of categories")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200",description = "Returns a list of categories with their details",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))})
+            }
+    )
     @GetMapping
     public ResponseEntity<?> getCategoryList(@RequestParam(value = GlobalConstants.PAGE_INDEX_PARAM) int page) throws PageIndexOutOfBoundsException {
         return ResponseEntity.ok(this.categoriesService.getAllCategoryNames(page));
