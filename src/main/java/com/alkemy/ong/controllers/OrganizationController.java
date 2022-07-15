@@ -1,9 +1,6 @@
 package com.alkemy.ong.controllers;
 
-import com.alkemy.ong.dto.OrganizationDTO;
-import com.alkemy.ong.dto.OrganizationInfoResponse;
-import com.alkemy.ong.dto.ReducedOrganizationDTO;
-import com.alkemy.ong.dto.SlidesEntityDTO;
+import com.alkemy.ong.dto.*;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.services.OrganizationService;
@@ -13,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -44,11 +41,10 @@ public class OrganizationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> updateOrganization(@RequestParam(value = "file", required = false) MultipartFile image,
-                                                              @ModelAttribute OrganizationDTO organizationDTO) throws CloudStorageClientException, CorruptedFileException {
+    public ResponseEntity<?> updateOrganization(@Valid @RequestBody OrganizationDTORequest organizationDTO) throws CloudStorageClientException, CorruptedFileException {
 
         try{
-            OrganizationDTO org = organizationService.updateOrganization(image, organizationDTO);
+            OrganizationDTO org = organizationService.updateOrganization(organizationDTO);
 
             return ResponseEntity.ok().body(org);
         }catch (RuntimeException e){

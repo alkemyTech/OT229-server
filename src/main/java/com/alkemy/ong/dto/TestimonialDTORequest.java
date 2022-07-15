@@ -1,5 +1,6 @@
 package com.alkemy.ong.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +14,15 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 public class TestimonialDTORequest {
 
+    @Schema(description = "The name of the testimonial", example = "Juan testimonial", required = true)
     @NotEmpty(message = "Name not provided")
     private String name;
 
+    @Schema(description = "Complete description of the testimonial", example = "This ong experience...")
     @NotEmpty(message = "Content not provided")
     private String content;
+
+    @Schema(description = "Associated image encoded using base64")
+    private EncodedImageDTO encoded_image;
 
 }

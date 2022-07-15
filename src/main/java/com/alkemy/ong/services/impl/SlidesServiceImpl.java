@@ -2,6 +2,7 @@ package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.ReducedSlideDTO;
 import com.alkemy.ong.dto.SlidesEntityDTO;
+import com.alkemy.ong.dto.SlidesEntityDTORequest;
 import com.alkemy.ong.entities.SlidesEntity;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
@@ -75,6 +76,22 @@ public class SlidesServiceImpl implements SlidesService {
     }
 
     @Override
+    public SlidesEntityDTO create(SlidesEntityDTORequest slide) throws CloudStorageClientException, CorruptedFileException {
+        SlidesEntity entity=this.slidesMapper.dtoToEntity(slide);
+        if (entity.getSlideOrder()==null) {
+            entity.setSlideOrder(slideRepository.getLastOrder(entity.getOrganizationId())+1);
+        }
+        if (slide.getEncoded_image() != null) {
+            slide.setImageUrl(cloudStorageService.uploadBase64File(
+                    slide.getEncoded_image().getEncoded_string(),
+                    slide.getEncoded_image().getFile_name()
+            ));
+        }
+        SlidesEntity entitySaved=this.slideRepository.save(entity);
+        return this.slidesMapper.entityToDto(entitySaved);
+    }
+
+    @Override
     public SlidesEntityDTO deleteSlide(String id) throws EntityNotFoundException, CloudStorageClientException, FileNotFoundOnCloudException {
         SlidesEntity slide = slideRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Slide with the provided id not found."));
         SlidesEntityDTO dto = this.slidesMapper.entityToDto(slide);
@@ -92,6 +109,19 @@ public class SlidesServiceImpl implements SlidesService {
             newImage=cloudStorageService.uploadFile(file);
         }
         slide.setImageUrl(newImage);
+        return this.slidesMapper.entityToDto(entity);
+    }
+
+    @Override
+    public SlidesEntityDTO updateSlide(String id, SlidesEntityDTORequest slide) throws EntityNotFoundException, IllegalArgumentException, CloudStorageClientException, CorruptedFileException {
+        SlidesEntity entity = this.slideRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Slide whit the provide id not found"));
+        this.slidesMapper.UpdateSlide(entity,slide);
+        if (slide.getEncoded_image() != null) {
+            slide.setImageUrl(cloudStorageService.uploadBase64File(
+                    slide.getEncoded_image().getEncoded_string(),
+                    slide.getEncoded_image().getFile_name()
+            ));
+        }
         return this.slidesMapper.entityToDto(entity);
     }
 

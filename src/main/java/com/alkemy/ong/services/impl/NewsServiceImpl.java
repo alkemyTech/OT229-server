@@ -1,9 +1,6 @@
 package com.alkemy.ong.services.impl;
 
-import com.alkemy.ong.dto.CategoryDTO;
-import com.alkemy.ong.dto.DatedNewsDTO;
-import com.alkemy.ong.dto.NewsDTO;
-import com.alkemy.ong.dto.PageResultResponse;
+import com.alkemy.ong.dto.*;
 import com.alkemy.ong.entities.Category;
 import com.alkemy.ong.entities.News;
 import com.alkemy.ong.exception.*;
@@ -56,6 +53,21 @@ public class NewsServiceImpl implements NewsService {
   }
 
   @Override
+  public NewsDTO save(NewsDTORequest news) throws CloudStorageClientException, CorruptedFileException {
+    if (news.getEncoded_image() != null) {
+      news.setImage(cloudStorageService.uploadBase64File(
+              news.getEncoded_image().getEncoded_string(),
+              news.getEncoded_image().getFile_name()
+      ));
+    } else {
+      news.setImage(null);
+    }
+    News entity = this.newsMapper.newsDTO2Entity(news);
+    News newsSaved = this.newsRepository.save(entity);
+    return this.newsMapper.newsEntity2DTO(newsSaved);
+  }
+
+  @Override
   public NewsDTO findById(String id) {
     Optional<News> news = newsRepository.findById(id);
     if(!news.isPresent()){
@@ -102,6 +114,31 @@ public class NewsServiceImpl implements NewsService {
         }
       }
       updatedImageUrl = cloudStorageService.uploadFile(imageFile);
+    }
+    updatedNews.setImage(updatedImageUrl);
+    return this.newsMapper.newsEntity2DTO(newsToUpdate);
+  }
+
+  @Override
+  public NewsDTO updateNews(String id, NewsDTORequest updatedNews) throws EntityNotFoundException, IllegalArgumentException, CloudStorageClientException, CorruptedFileException {
+    News newsToUpdate = this.newsRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("News with the provided id not found."));
+    this.newsMapper.UpdateNewsInstance(newsToUpdate, updatedNews);
+    this.updateNewsCategory(newsToUpdate, updatedNews.getCategory());
+    // If the News is not going to be update with a new image, then this attribute should have the current image url.
+    String updatedImageUrl = updatedNews.getImage();
+    if (updatedNews.getEncoded_image() != null) {
+      if (updatedImageUrl != null) {
+        try {
+          this.cloudStorageService.deleteFileFromS3Bucket(updatedImageUrl);
+        } catch (FileNotFoundOnCloudException e) {
+          // If the file didn't exist, nothing needs to be done.
+        }
+      }
+      updatedImageUrl = cloudStorageService.uploadBase64File(
+              updatedNews.getEncoded_image().getEncoded_string(),
+              updatedNews.getEncoded_image().getFile_name()
+      );
     }
     updatedNews.setImage(updatedImageUrl);
     return this.newsMapper.newsEntity2DTO(newsToUpdate);

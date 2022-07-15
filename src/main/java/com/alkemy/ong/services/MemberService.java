@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface MemberService {
     MemberDTOResponse create(MultipartFile file,MemberDTORequest request) throws CloudStorageClientException, CorruptedFileException;
+    MemberDTOResponse create(MemberDTORequest request) throws CloudStorageClientException, CorruptedFileException;
     String deleteMember(String id) throws NotFoundException, CloudStorageClientException, FileNotFoundOnCloudException;
     List<MemberDTOResponse> getAllMembers();
 
@@ -28,6 +29,7 @@ public interface MemberService {
     PageResultResponse<MemberDTOResponse> getAllMembers(int pageNumber) throws PageIndexOutOfBoundsException;
 
     MemberDTOResponse edit(MultipartFile file, MemberDTORequest request, String id) throws MemberNotFoundException, Exception;
+    MemberDTOResponse edit(MemberDTORequest request, String id) throws MemberNotFoundException, Exception;
 
 }
 

@@ -1,6 +1,7 @@
 package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.dto.OrganizationDTO;
+import com.alkemy.ong.dto.OrganizationDTORequest;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
 import com.alkemy.ong.entities.Organization;
 import com.alkemy.ong.exception.CloudStorageClientException;
@@ -54,6 +55,32 @@ public class OrganizationServiceImpl implements OrganizationService {
             if(!image.isEmpty()){
                 try{
                     organizationDTO.setImage(amazonService.uploadFile(image));
+                }catch(CloudStorageClientException e){
+                    throw new CloudStorageClientException("Image could not be saved. Try again later.");
+                }
+            }
+
+            Organization organizationUpdated = updateInfo(organizationFound.get(), organizationDTO);
+
+            organizationsRepository.save(organizationUpdated);
+
+            return organizationMapper.organizationEntity2OrganizationDTO(organizationUpdated);
+        }else{
+            throw new RuntimeException("Organization with the provided ID not present");
+        }
+    }
+
+    @Override
+    public OrganizationDTO updateOrganization(OrganizationDTORequest organizationDTO) throws RuntimeException, CloudStorageClientException, CorruptedFileException {
+        Optional<Organization> organizationFound = organizationsRepository.findById(organizationDTO.getId());
+
+        if(organizationFound.isPresent()){
+            if(organizationDTO.getEncoded_image() != null){
+                try{
+                    organizationDTO.setImage(amazonService.uploadBase64File(
+                            organizationDTO.getEncoded_image().getEncoded_string(),
+                            organizationDTO.getEncoded_image().getFile_name()
+                    ));
                 }catch(CloudStorageClientException e){
                     throw new CloudStorageClientException("Image could not be saved. Try again later.");
                 }

@@ -1,6 +1,6 @@
 package com.alkemy.ong.controllers;
 
-import com.alkemy.ong.dto.ActivityDTO;
+import com.alkemy.ong.dto.ActivityDTORequest;
 import com.alkemy.ong.exception.ActivityNamePresentException;
 import com.alkemy.ong.exception.ActivityNotFoundException;
 import com.alkemy.ong.exception.CloudStorageClientException;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -24,12 +23,11 @@ public class ActivitiesController {
     private ActivitiesService activitiesService;
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestParam(value = "file", required = false) MultipartFile file,
-                                   @Valid @ModelAttribute ActivityDTO dto) throws CloudStorageClientException, CorruptedFileException {
+    public ResponseEntity<?> save(@Valid @RequestBody ActivityDTORequest dto) throws CloudStorageClientException, CorruptedFileException {
 
         try {
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(activitiesService.save(file,dto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(activitiesService.save(dto));
 
         } catch (ActivityNamePresentException e) {
 
@@ -40,12 +38,11 @@ public class ActivitiesController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> edit (@RequestParam(value = "file", required = false) MultipartFile file,
-                                   @Valid @ModelAttribute ActivityDTO dto, @PathVariable String id) throws CloudStorageClientException, CorruptedFileException {
+    public ResponseEntity<?> edit (@Valid @RequestBody ActivityDTORequest dto, @PathVariable String id) throws CloudStorageClientException, CorruptedFileException {
 
         try {
 
-            return ResponseEntity.status(HttpStatus.OK).body(activitiesService.edit(file,dto,id));
+            return ResponseEntity.status(HttpStatus.OK).body(activitiesService.edit(dto,id));
 
         } catch (ActivityNotFoundException e) {
 

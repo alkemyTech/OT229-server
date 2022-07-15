@@ -83,6 +83,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public SingupResponse createUser(SignupRequest signupRequest) throws IOException, CloudStorageClientException, CorruptedFileException {
+        Boolean userFound = userRepo.existsByEmail(signupRequest.getEmail());
+
+        if(!userFound){
+            User user = new User();
+
+            user.setFirstName(signupRequest.getFirstName());
+            user.setLastName(signupRequest.getLastName());
+            user.setEmail(signupRequest.getEmail());
+            user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+
+            if(signupRequest.getEncoded_image() != null){
+                user.setPhoto(amazonS3Service.uploadBase64File(
+                        signupRequest.getEncoded_image().getEncoded_string(),
+                        signupRequest.getEncoded_image().getFile_name()
+                ));
+            }
+
+            user.setRoleId(roleService.getRoleUser());
+
+            save(user);
+            emailService.sendEmail(user.getEmail(), GlobalConstants.TEMPLATE_WELCOME);
+
+            SingupResponse singupResponse = new SingupResponse();
+            singupResponse.setUser(mapper.userEntity2DTO(user));
+            singupResponse.setMessage("Successful registration");
+            singupResponse.setToken(jwtService.createToken(user));
+
+            return singupResponse;
+        }else{
+            throw new RegisterException("The email is already in use");
+        }
+    }
+
+    @Override
     public User save(User user) {
         return userRepo.save(user);
     }
@@ -119,6 +154,31 @@ public class UserServiceImpl implements UserService {
         if (!userDTOrequest.getPassword().isEmpty())
             user.setPassword(passwordEncoder.encode(userDTOrequest.getPassword()));
         if (!file.isEmpty()) user.setPhoto(amazonS3Service.uploadFile(file));
+
+        userRepo.save(user);
+
+        return mapper.userEntity2DTO(user);
+    }
+
+    @Override
+    public UserDTO updateUser(UserDTORequest userDTOrequest) throws Exception {
+        Boolean exists = userRepo.existsById(userDTOrequest.getId());
+        if (!exists) throw new NotFoundException("A user with id " + userDTOrequest.getId() + " was not found");
+        User user = userRepo.getById(userDTOrequest.getId());
+
+        if (!userDTOrequest.getEmail().isEmpty()){
+            Boolean emailExists= userRepo.existsByEmail(userDTOrequest.getEmail());
+            if(emailExists)throw new Exception("The email is already in use");
+            user.setEmail(userDTOrequest.getEmail());
+        }
+        if (!userDTOrequest.getFirstName().isEmpty()) user.setFirstName(userDTOrequest.getFirstName());
+        if (!userDTOrequest.getLastName().isEmpty()) user.setLastName(userDTOrequest.getLastName());
+        if (!userDTOrequest.getPassword().isEmpty())
+            user.setPassword(passwordEncoder.encode(userDTOrequest.getPassword()));
+        if (userDTOrequest.getEncoded_image() != null) user.setPhoto(amazonS3Service.uploadBase64File(
+                userDTOrequest.getEncoded_image().getEncoded_string(),
+                userDTOrequest.getEncoded_image().getFile_name()
+        ));
 
         userRepo.save(user);
 
