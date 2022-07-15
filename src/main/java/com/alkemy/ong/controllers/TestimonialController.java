@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class TestimonialController {
     @Autowired
     private TestimonialService service;
 
-    @Operation(summary = "Create a new testimonial")
+    @Operation(summary = "Create a new testimonial", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201",description = "Testimonial successfully created",
         content = {
@@ -46,7 +47,7 @@ public class TestimonialController {
         return new ResponseEntity<>(service.create(file,request), HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update an existing testimonial")
+    @Operation(summary = "Update an existing testimonial", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Testimonial successfully updated",
             content = {
@@ -69,7 +70,7 @@ public class TestimonialController {
 
     }
 
-    @Operation(summary = "Delete a testimonial")
+    @Operation(summary = "Delete a testimonial", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Testimonial successfully deleted",
             content = {
