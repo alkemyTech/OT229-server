@@ -5,6 +5,7 @@ import com.alkemy.ong.dto.TestimonialDTOResponse;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.FileNotFoundOnCloudException;
+import com.alkemy.ong.exception.PageIndexOutOfBoundsException;
 import com.alkemy.ong.services.TestimonialService;
 import com.alkemy.ong.utility.GlobalConstants;
 
@@ -89,5 +90,10 @@ public class TestimonialController {
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllTestimonies(@RequestParam (value = GlobalConstants.PAGE_INDEX_PARAM) int pageNumber) throws PageIndexOutOfBoundsException {
+        return ResponseEntity.ok(service.getAllTestimonies(pageNumber));
     }
 }
