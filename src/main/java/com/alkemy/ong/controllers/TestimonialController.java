@@ -43,9 +43,8 @@ public class TestimonialController {
             })
     })
     @PostMapping
-    public ResponseEntity<?> createTestimonial(@Valid @ModelAttribute TestimonialDTORequest request,
-                                               @RequestParam("file") MultipartFile file) throws CloudStorageClientException, CorruptedFileException {
-        return new ResponseEntity<>(service.create(file,request), HttpStatus.CREATED);
+    public ResponseEntity<?> createTestimonial(@Valid @RequestBody TestimonialDTORequest request) throws CloudStorageClientException, CorruptedFileException {
+        return new ResponseEntity<>(service.create(request), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update an existing testimonial", security = @SecurityRequirement(name = "bearerAuth"))
@@ -60,11 +59,10 @@ public class TestimonialController {
         }),
     })
     @PutMapping
-    public ResponseEntity<?> updateTestimonial(@Valid @ModelAttribute TestimonialDTORequest request,
-                                               @RequestParam(value = "file", required = false) MultipartFile file,
+    public ResponseEntity<?> updateTestimonial(@Valid @RequestBody TestimonialDTORequest request,
                                                @RequestParam("id")String id) throws CloudStorageClientException, CorruptedFileException {
        try{
-           return new ResponseEntity<>(service.update(id,file,request), HttpStatus.OK);
+           return new ResponseEntity<>(service.update(id,request), HttpStatus.OK);
        } catch (NotFoundException e) {
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
        }

@@ -2,6 +2,7 @@ package com.alkemy.ong.controllers;
 
 import com.alkemy.ong.dto.DeleteEntityResponse;
 import com.alkemy.ong.dto.NewsDTO;
+import com.alkemy.ong.dto.NewsDTORequest;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.PageIndexOutOfBoundsException;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
@@ -29,11 +29,8 @@ public class NewsController {
 
 
   @PostMapping
-  public ResponseEntity<NewsDTO> save(@RequestParam(value = "file",required = false) MultipartFile file, @ModelAttribute NewsDTO newsDTO) throws Exception{
-
-    newsDTO.setImage(cloudStorageService.uploadFile(file));
-    return ResponseEntity.status(HttpStatus.CREATED).body(this.newsService.save(file,newsDTO));
-
+  public ResponseEntity<NewsDTO> save(@Valid @RequestBody NewsDTORequest newsDTO) throws Exception{
+    return ResponseEntity.status(HttpStatus.CREATED).body(this.newsService.save(newsDTO));
   }
 
   @GetMapping("/{id}")
@@ -59,12 +56,11 @@ public class NewsController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateNews(@RequestParam(value = "file", required = false) MultipartFile file,
-                                      @Valid @ModelAttribute NewsDTO updatedNews,
+  public ResponseEntity<?> updateNews(@Valid @RequestBody NewsDTORequest updatedNews,
                                       @PathVariable String id) throws CloudStorageClientException, CorruptedFileException {
 
     try {
-      return ResponseEntity.ok(this.newsService.updateNews(id, file, updatedNews));
+      return ResponseEntity.ok(this.newsService.updateNews(id, updatedNews));
     } catch (EntityNotFoundException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     } catch (IllegalArgumentException e) {

@@ -53,4 +53,17 @@ public interface CloudStorageService {
      * @throws CloudStorageClientException if there was a problem with the Amazon S3 client.
      */
     String uploadBase64File(MultipartFile multipartFile) throws CorruptedFileException, CloudStorageClientException;
+
+    /**
+     * Uploads a file to the external Cloud Storage.
+     *
+     * The file should be encoded in Base64. It will then be decoded and uploaded to the cloud.
+     *
+     * @param encodedImage the encoded file in the resulting string format.
+     * @param fileName the original file name, extension included.
+     * @return  the absolute url to access the uploaded file.
+     * @throws CorruptedFileException if there was a problem with the received file.
+     * @throws CloudStorageClientException if there was a problem with the Amazon S3 client.
+     */
+    String uploadBase64File(String encodedImage, String fileName) throws CorruptedFileException, CloudStorageClientException;
 }

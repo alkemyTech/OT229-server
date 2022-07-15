@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import com.alkemy.ong.security.payload.SignupRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.util.HashMap;
 
@@ -32,10 +31,9 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping(GlobalConstants.Endpoints.REGISTER)
-    public ResponseEntity<?> register(@RequestParam(value="file", required = false) MultipartFile image,
-                                      @ModelAttribute @Valid SignupRequest signupRequest) {
+    public ResponseEntity<?> register(@RequestBody @Valid SignupRequest signupRequest) {
           try {
-              SingupResponse response = userService.createUser(signupRequest, image);
+              SingupResponse response = userService.createUser(signupRequest);
 
               return new ResponseEntity(response, HttpStatus.CREATED);
           } catch (RegisterException e){

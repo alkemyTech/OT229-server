@@ -1,5 +1,6 @@
 package com.alkemy.ong.security.payload;
 
+import com.alkemy.ong.dto.EncodedImageDTO;
 import lombok.Getter;
 import lombok.Setter;
 import javax.validation.constraints.Email;
@@ -20,4 +21,6 @@ public class SignupRequest {
 
     @NotBlank(message = "Password cant be blank")
     private String password;
+
+    private EncodedImageDTO encoded_image;
 }

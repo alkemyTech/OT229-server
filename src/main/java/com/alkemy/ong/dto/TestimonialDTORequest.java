@@ -22,4 +22,7 @@ public class TestimonialDTORequest {
     @NotEmpty(message = "Content not provided")
     private String content;
 
+    @Schema(description = "Associated image encoded using base64")
+    private EncodedImageDTO encoded_image;
+
 }

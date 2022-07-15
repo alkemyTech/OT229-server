@@ -25,4 +25,7 @@ public class MemberDTORequest {
     private String description;
 
     private String image;
+
+    private EncodedImageDTO encoded_image;
+
 }

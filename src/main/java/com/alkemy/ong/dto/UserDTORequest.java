@@ -21,6 +21,7 @@ public class UserDTORequest {
     private String email;
     @Size(min = 1, max = 255)
     private String password;
+    private EncodedImageDTO encoded_image;
 
 
 }

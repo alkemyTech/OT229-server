@@ -1,6 +1,7 @@
 package com.alkemy.ong.services;
 
 import com.alkemy.ong.dto.OrganizationDTO;
+import com.alkemy.ong.dto.OrganizationDTORequest;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
@@ -22,4 +23,5 @@ public interface OrganizationService {
     public ReducedOrganizationDTO getById (String id) throws RuntimeException;
 
     public OrganizationDTO updateOrganization(MultipartFile image, OrganizationDTO organizationDTO) throws RuntimeException, CloudStorageClientException, CorruptedFileException;
+    public OrganizationDTO updateOrganization(OrganizationDTORequest organizationDTO) throws RuntimeException, CloudStorageClientException, CorruptedFileException;
 }

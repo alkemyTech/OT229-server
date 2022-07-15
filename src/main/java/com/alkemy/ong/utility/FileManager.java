@@ -27,6 +27,16 @@ public abstract class FileManager {
     }
 
     /**
+     * Generates a file name with extra options provided using a builder.
+     *
+     * @param fileName the file name.
+     * @return  a gemerated name for the file.
+     */
+    public static FileNameBuilder buildFileName(String fileName) {
+        return new FileNameBuilder( fileName );
+    }
+
+    /**
      * Converts a multi-part file into an in-memory java io File.
      * @param multipartFile the multi-part file, received from an endpoint.
      * @return  an in-memory Java file.
@@ -107,6 +117,27 @@ public abstract class FileManager {
             File simpleFile = new File(multipartFile.getOriginalFilename());
             FileOutputStream fileOutputStream = new FileOutputStream(simpleFile);
             fileOutputStream.write(Base64.getDecoder().decode( multipartFile.getBytes() ));
+            fileOutputStream.close();
+            return simpleFile;
+        } catch (IOException e) {
+            throw new CorruptedFileException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Converts a base64 encoded multi-part file into an in-memory decoded java io File.
+     *
+     * @param encodedFile the encoded file in the resulting string format.
+     * @param fileName the original file name, extension included.
+     * @return  an in-memory Java file, decoded.
+     * @throws CorruptedFileException  if the original file name can't be retrieved from the multi-part file, or if
+     * the latter is corrupted.
+     */
+    public static File convertBase64StringToFile(String encodedFile, String fileName) throws CorruptedFileException {
+        try {
+            File simpleFile = new File(fileName);
+            FileOutputStream fileOutputStream = new FileOutputStream(simpleFile);
+            fileOutputStream.write(Base64.getDecoder().decode(encodedFile));
             fileOutputStream.close();
             return simpleFile;
         } catch (IOException e) {

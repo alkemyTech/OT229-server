@@ -170,5 +170,33 @@ public class AmazonS3ServiceImpl implements CloudStorageService {
         return this.s3client.getUrl(bucketName, fileName).toString();
     }
 
+    /**
+     * Uploads a file to the Amazon S3 Bucket
+     *
+     * The file should be encoded in Base64. It will then be decoded and uploaded to the cloud.
+     *
+     * @param encodedImage the encoded file in the resulting string format.
+     * @param originalFileName the original file name, extension included.
+     * @return  the absolute url to access the uploaded file
+     * @throws CorruptedFileException if there was a problem with the received file.
+     * @throws CloudStorageClientException if there was a problem with the Amazon S3 client.
+     */
+    @Override
+    public String uploadBase64File(String encodedImage, String originalFileName) throws CorruptedFileException, CloudStorageClientException {
+
+        String fileName = FileManager.buildFileName(originalFileName).withTimeStamp().withoutSpaces().build();
+        File file = FileManager.convertBase64StringToFile(encodedImage, fileName);
+        String bucketName = this.credentialsConfiguration.getBucketName();
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
+        try {
+            s3client.putObject(putObjectRequest);
+        } catch (Exception e) {
+            throw new CloudStorageClientException(e.getMessage(), e);
+        } finally {
+            file.delete();
+        }
+        return this.s3client.getUrl(bucketName, fileName).toString();
+    }
+
 
 }

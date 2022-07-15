@@ -45,12 +45,45 @@ public class TestimonialServiceImpl implements TestimonialService {
     }
 
     @Override
+    public TestimonialDTOResponse create(TestimonialDTORequest request) throws CloudStorageClientException, CorruptedFileException {
+
+        Testimonial testimonial= mapper.dtoRequest2TestimonialEntity(request);
+        if(request.getEncoded_image() != null){
+            testimonial.setImage(amazonS3Service.uploadBase64File(
+                    request.getEncoded_image().getEncoded_string(),
+                    request.getEncoded_image().getFile_name()
+            ));
+        }
+        repository.save(testimonial);
+        return mapper.testimonialEntity2DTOResponse(testimonial);
+
+    }
+
+    @Override
     public TestimonialDTOResponse update(String id, MultipartFile file, TestimonialDTORequest request) throws CloudStorageClientException, CorruptedFileException, NotFoundException {
         Boolean exists = repository.existsById(id);
         if (!exists)throw new NotFoundException("Error: Testimonial with id " + id + " was not found");
         Testimonial testimonialFound= repository.getById(id);
         if(file != null && !file.isEmpty()){
             testimonialFound.setImage(amazonS3Service.uploadFile(file));
+        }
+        if(!request.getName().isEmpty()) testimonialFound.setName(request.getName());
+        if(!request.getContent().isEmpty()) testimonialFound.setContent(request.getContent());
+
+        repository.save(testimonialFound);
+        return mapper.testimonialEntity2DTOResponse(testimonialFound);
+    }
+
+    @Override
+    public TestimonialDTOResponse update(String id, TestimonialDTORequest request) throws CloudStorageClientException, CorruptedFileException, NotFoundException {
+        Boolean exists = repository.existsById(id);
+        if (!exists)throw new NotFoundException("Error: Testimonial with id " + id + " was not found");
+        Testimonial testimonialFound= repository.getById(id);
+        if(request.getEncoded_image() != null){
+            testimonialFound.setImage(amazonS3Service.uploadBase64File(
+                    request.getEncoded_image().getEncoded_string(),
+                    request.getEncoded_image().getFile_name()
+            ));
         }
         if(!request.getName().isEmpty()) testimonialFound.setName(request.getName());
         if(!request.getContent().isEmpty()) testimonialFound.setContent(request.getContent());
