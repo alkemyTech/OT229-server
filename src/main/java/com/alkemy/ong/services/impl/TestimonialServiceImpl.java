@@ -1,18 +1,22 @@
 package com.alkemy.ong.services.impl;
 
+import com.alkemy.ong.dto.PageResultResponse;
 import com.alkemy.ong.dto.TestimonialDTORequest;
 import com.alkemy.ong.dto.TestimonialDTOResponse;
 import com.alkemy.ong.entities.Testimonial;
-import com.alkemy.ong.exception.CloudStorageClientException;
-import com.alkemy.ong.exception.CorruptedFileException;
-import com.alkemy.ong.exception.EntityImageProcessingException;
-import com.alkemy.ong.exception.FileNotFoundOnCloudException;
+import com.alkemy.ong.exception.*;
+import com.alkemy.ong.mappers.PageResultResponseBuilder;
 import com.alkemy.ong.mappers.TestimonialMapper;
 import com.alkemy.ong.repositories.TestimonialRepository;
 import com.alkemy.ong.services.CloudStorageService;
 import com.alkemy.ong.services.TestimonialService;
+import com.alkemy.ong.utility.GlobalConstants;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -97,6 +101,25 @@ public class TestimonialServiceImpl implements TestimonialService {
        repository.deleteById(id);
        return "Successfully deleted testimonial with id " + id;
     }
+
+    @Override
+    public PageResultResponse<TestimonialDTOResponse> getAllTestimonies(int pageNumber) throws PageIndexOutOfBoundsException {
+        if (pageNumber < 0) {
+            throw new PageIndexOutOfBoundsException("The Page number must be 0 or positive");
+        }
+        Pageable pageRequest = PageRequest.of(
+                pageNumber,
+                GlobalConstants.GLOBAL_PAGE_SIZE,
+                Sort.by(GlobalConstants.TESTIMONIAL_SORT_ATTRIBUTE)
+        );
+        Page<Testimonial> resultPage = repository.findAll(pageRequest);
+
+        return new PageResultResponseBuilder<Testimonial, TestimonialDTOResponse>()
+                .from(resultPage)
+                .mapWith(mapper::testimonialEntity2DTOResponse)
+                .build();
+    }
+
     private void deleteTestimonialImageFromCloudStorage(Testimonial testimonial)throws CloudStorageClientException, FileNotFoundOnCloudException {
         String urlImage = testimonial.getImage();
         if (urlImage != null && !urlImage.isEmpty()) {
