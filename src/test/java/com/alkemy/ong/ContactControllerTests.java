@@ -38,43 +38,24 @@ public class ContactControllerTests {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private ContactDTO contactDTO;
+    private ContactDTORequest contactDTORequest;
+    private ContactDTOResponse contactDTOResponse;
+
     @BeforeEach
     private void init() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
 
-    public ContactDTO createContactDTO() {
-        ContactDTO contactDTO = new ContactDTO();
-        contactDTO.setEmail("pepe@gmail.com");
-        contactDTO.setName("Pepe");
-        contactDTO.setPhone(11635478L);
-        contactDTO.setMessage("Hello");
-        return contactDTO;
-    }
-
-    public ContactDTORequest createContactDTORequest() {
-        ContactDTORequest request = new ContactDTORequest();
-        request.setName("pepe");
-        request.setEmail("pepe@gmail.com");
-        request.setPhone(11635478L);
-        request.setMessage("Hello");
-        return request;
-    }
-
-    public ContactDTOResponse createContactDTOResponse() {
-        ContactDTOResponse response = new ContactDTOResponse();
-        response.setName("pepe");
-        response.setEmail("pepe@gmail.com");
-        response.setConfirmation("ok");
-        return response;
+        contactDTO = createContactDTO();
+        contactDTORequest = createContactDTORequest();
+        contactDTOResponse = createContactDTOResponse();
     }
 
     @Test
     void testEndpointGetAllContactsReturnlistOfContacts() throws Exception {
-        ContactDTO contactDTO1 = createContactDTO();
         ContactDTO contactDTO2 = createContactDTO();
 
-        Mockito.when(service.getAll()).thenReturn(Arrays.asList(contactDTO1, contactDTO2));
+        Mockito.when(service.getAll()).thenReturn(Arrays.asList(contactDTO, contactDTO2));
 
         mockMvc.perform(MockMvcRequestBuilders.get(GlobalConstants.Endpoints.CONTACT))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -86,14 +67,11 @@ public class ContactControllerTests {
     @Test
     void testEndpointCreateContactWithCorrectAttributesReturnAContactDTOResponse() throws Exception {
 
-        ContactDTORequest request = createContactDTORequest();
-        ContactDTOResponse response = createContactDTOResponse();
-
-        Mockito.when(service.create(request)).thenReturn(response);
+        Mockito.when(service.create(contactDTORequest)).thenReturn(contactDTOResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post(GlobalConstants.Endpoints.CONTACT)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(contactDTORequest)))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
     }
@@ -101,30 +79,56 @@ public class ContactControllerTests {
 
     @Test
     void testEndpointCreateContactWithIncorrectAttributesNameAndEmailReturnABadRequest() throws Exception {
-        ContactDTORequest request = createContactDTORequest();
-        request.setEmail("");
-        request.setName("");
 
-        Mockito.when(service.create(request)).thenThrow(HttpClientErrorException.BadRequest.class);
+        contactDTORequest.setEmail("");
+        contactDTORequest.setName("");
+
+        Mockito.when(service.create(contactDTORequest)).thenThrow(HttpClientErrorException.BadRequest.class);
 
         mockMvc.perform(MockMvcRequestBuilders.post(GlobalConstants.Endpoints.CONTACT)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(contactDTORequest)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
     }
 
     @Test
     void testEndpointCreateContactWithIncorrectAttributeEmailFormatReturnABadRequest() throws Exception {
-        ContactDTORequest request = createContactDTORequest();
-        request.setEmail("pepe");
 
-        Mockito.when(service.create(request)).thenThrow(HttpClientErrorException.BadRequest.class);
+        contactDTORequest.setEmail("pepe");
+
+        Mockito.when(service.create(contactDTORequest)).thenThrow(HttpClientErrorException.BadRequest.class);
 
         mockMvc.perform(MockMvcRequestBuilders.post(GlobalConstants.Endpoints.CONTACT)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(contactDTORequest)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
+    }
+
+   private ContactDTO createContactDTO() {
+        ContactDTO contactDTO = new ContactDTO();
+        contactDTO.setEmail("pepe@gmail.com");
+        contactDTO.setName("Pepe");
+        contactDTO.setPhone(11635478L);
+        contactDTO.setMessage("Hello");
+        return contactDTO;
+    }
+
+  private ContactDTORequest createContactDTORequest() {
+        ContactDTORequest request = new ContactDTORequest();
+        request.setName("pepe");
+        request.setEmail("pepe@gmail.com");
+        request.setPhone(11635478L);
+        request.setMessage("Hello");
+        return request;
+    }
+
+   private ContactDTOResponse createContactDTOResponse() {
+        ContactDTOResponse response = new ContactDTOResponse();
+        response.setName("pepe");
+        response.setEmail("pepe@gmail.com");
+        response.setConfirmation("ok");
+        return response;
     }
 }
