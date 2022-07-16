@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     RoleService roleService;
 
     @Override
-    public SingupResponse createUser(SignupRequest signupRequest, MultipartFile image) throws IOException, CloudStorageClientException, CorruptedFileException {
+    public SingupResponse createUser(SignupRequest signupRequest, MultipartFile image) throws IOException, RegisterException, CloudStorageClientException, CorruptedFileException {
         Boolean userFound = userRepo.existsByEmail(signupRequest.getEmail());
 
         if(!userFound){

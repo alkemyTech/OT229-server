@@ -96,7 +96,7 @@ public class ValidationControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     String onCorruptedFileException(CorruptedFileException e) {
-        return "Incompatible or corrupted file.";
+        return "Incompatible or corrupted image file.";
     }
 
     @ExceptionHandler(FileNotFoundOnCloudException.class)
