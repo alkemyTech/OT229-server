@@ -5,8 +5,7 @@ import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.RegisterException;
-import com.alkemy.ong.security.payload.LoginRequest;
-import com.alkemy.ong.security.payload.SingupResponse;
+import com.alkemy.ong.security.payload.*;
 import com.alkemy.ong.security.service.AuthenticationService;
 import com.alkemy.ong.services.UserService;
 import com.alkemy.ong.utility.GlobalConstants;
@@ -21,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
-import com.alkemy.ong.security.payload.SignupRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.validation.Valid;
@@ -48,11 +46,11 @@ public class AuthController {
                     }),
             @ApiResponse(responseCode="409", description = "Conflict: email already taken.",
                     content = {
-                            @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                            @Content(mediaType = "text/plain", schema = @Schema(type = "string", example = "The email is already in use"))
                     }),
             @ApiResponse(responseCode="502", description = "Bad gateway: there was a problem with the email client.",
                     content = {
-                            @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                            @Content(mediaType = "text/plain", schema = @Schema(type = "string", example = "Email client error."))
                     })
     })
     @PostMapping(GlobalConstants.Endpoints.REGISTER)
@@ -68,6 +66,21 @@ public class AuthController {
           }
     }
 
+    @Operation(summary = "Performs user authentication via login.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully authentication.",
+                    content = {
+                            @Content(mediaType = "application/json", schema=@Schema(implementation = LoginResponse.class))
+                    }),
+            @ApiResponse(responseCode="401", description = "Unauthorized: bad credentials.",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = SimpleStatusResponse.class))
+                    }),
+            @ApiResponse(responseCode="500", description = "A user is authenticated but can't be retrieved from the database.",
+                    content = {
+                            @Content(mediaType = "text/plain", schema = @Schema(type = "string", example = "A user is authenticated but can't be retrieved from the database."))
+                    })
+    })
     @PostMapping(value = GlobalConstants.Endpoints.LOGIN, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<?> login(@Valid LoginRequest loginForm) {
 
@@ -79,7 +92,7 @@ public class AuthController {
                             .get()
             );
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body( new HashMap<String, String>().put("ok", "false") );
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body( new SimpleStatusResponse("false") );
         } catch (IllegalStateException e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
