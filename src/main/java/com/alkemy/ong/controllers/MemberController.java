@@ -39,11 +39,6 @@ public class MemberController {
         }
     }
 
-    // EL MÉTODO DE ABAJO DEBERÍA MODIFICAR A ESTE, PERO LO DEJO COMO ESTABA Y COMENTADO (PORQ GENERA CONFLICTO) PARA LA DEMO.
-//    @GetMapping
-//    public ResponseEntity<?> getAllMembers() {
-//        return ResponseEntity.ok(this.memberService.getAllMembers());
-//    }
 
     @GetMapping
     public ResponseEntity<?> getAllMembers(@RequestParam(value = GlobalConstants.PAGE_INDEX_PARAM) int pageNumber) throws PageIndexOutOfBoundsException {
