@@ -10,6 +10,8 @@ import com.alkemy.ong.security.service.AuthenticationService;
 import com.alkemy.ong.services.UserService;
 import com.alkemy.ong.utility.GlobalConstants;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -98,8 +100,21 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Retrieves the information of the currently authenticated User.", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK.",
+                    content = {
+                            @Content(mediaType = "application/json", schema=@Schema(implementation = UserDTO.class))
+                    })
+    })
     @GetMapping(GlobalConstants.Endpoints.AUTH_ME)
-    public ResponseEntity<UserDTO> getMe(@RequestHeader("authorization") String jwt) throws Exception{
+    public ResponseEntity<UserDTO> getMe(
+            @Parameter(name = "authorization",
+                    description = "A valid User's JWT access token.",
+                    in = ParameterIn.HEADER,
+                    example = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJVc2VybmFtZSI6ImVzdGViYW5xdWl0b0BnbWFpbC5jb20iLCJpc3MiOiJPTkcgLSBPVDIyOSIsIlJvbGVzIjpbIlJPTEVfVVNFUiJdLCJleHAiOjE2NTgwNzY4ODF9.fTrKT-5GGQBSy68NYFmOQCBeQZkq9k4FvR2JwfB2HB0-cOJMa-G9sMajrxKrpRGt2Y8nFWQRQDJZ_vsPBwRuOQ")
+            @RequestHeader("authorization") String jwt) throws Exception{
+
         return new ResponseEntity<>(userService.getMe(jwt), HttpStatus.OK);
     }
     
