@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class CategoriesController {
     @Autowired
     private CategoriesService categoriesService;
 
-    @Operation(summary = "Get details from a category")
+    @Operation(summary = "Get details from a category",security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200",description = "Returns details from a category",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))}),
@@ -42,7 +43,7 @@ public class CategoriesController {
         return ResponseEntity.ok().body(dto);
     }
 
-    @Operation(summary = "Create a category ")
+    @Operation(summary = "Create a category ",security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "201",description = "Create and save a category",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))}),
@@ -62,7 +63,7 @@ public class CategoriesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(modifiedDTO);
     }
 
-    @Operation(summary = "Update a category")
+    @Operation(summary = "Update a category",security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200",description = "Returns an updated category",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))}),
@@ -80,7 +81,7 @@ public class CategoriesController {
         return ResponseEntity.status(HttpStatus.OK).body(modifiedDTO);
 
     }
-    @Operation(summary = "Get a list of categories")
+    @Operation(summary = "Get a list of categories",security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200",description = "Returns a list of categories with their details",content = {@Content(mediaType = "application/json",schema = @Schema(implementation = CategoryDTO.class))})
@@ -91,7 +92,7 @@ public class CategoriesController {
         return ResponseEntity.ok(this.categoriesService.getAllCategoryNames(page));
     }
 
-    @Operation(summary = "Delete a category")
+    @Operation(summary = "Delete a category",security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200",description = "Just return an ok state"),
