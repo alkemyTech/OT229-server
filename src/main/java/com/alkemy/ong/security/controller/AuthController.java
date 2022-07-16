@@ -1,12 +1,21 @@
 package com.alkemy.ong.security.controller;
 
+import com.alkemy.ong.dto.TestimonialDTOResponse;
 import com.alkemy.ong.dto.UserDTO;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.RegisterException;
 import com.alkemy.ong.security.payload.LoginRequest;
 import com.alkemy.ong.security.payload.SingupResponse;
 import com.alkemy.ong.security.service.AuthenticationService;
 import com.alkemy.ong.services.UserService;
 import com.alkemy.ong.utility.GlobalConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +25,7 @@ import com.alkemy.ong.security.payload.SignupRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.HashMap;
 
 
@@ -30,16 +40,31 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    @Operation(summary = "Register a new user account.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Account successfully created.",
+                    content = {
+                            @Content(mediaType = "application/json", schema=@Schema(implementation = SingupResponse.class))
+                    }),
+            @ApiResponse(responseCode="409", description = "Conflict: email already taken.",
+                    content = {
+                            @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                    }),
+            @ApiResponse(responseCode="502", description = "Bad gateway: there was a problem with the email client.",
+                    content = {
+                            @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                    })
+    })
     @PostMapping(GlobalConstants.Endpoints.REGISTER)
-    public ResponseEntity<?> register(@RequestBody @Valid SignupRequest signupRequest) {
+    public ResponseEntity<?> register(@RequestBody @Valid SignupRequest signupRequest) throws CloudStorageClientException, CorruptedFileException {
           try {
               SingupResponse response = userService.createUser(signupRequest);
 
               return new ResponseEntity(response, HttpStatus.CREATED);
           } catch (RegisterException e){
               return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-          } catch (Exception e) {
-              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+          } catch (IOException e) {
+              return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
           }
     }
 
