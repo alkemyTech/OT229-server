@@ -98,7 +98,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private Organization updateInfo(Organization organization, OrganizationDTO organizationDTO){
 
-        if(!organizationDTO.getName().trim().isEmpty() && !organization.getName().equalsIgnoreCase(organizationDTO.getName())){
+        if(organizationDTO.getName() != null && !organizationDTO.getName().trim().isEmpty() && !organization.getName().equalsIgnoreCase(organizationDTO.getName())){
             organization.setName(organizationDTO.getName().trim());
         }
         if(organizationDTO.getImage() != null && !organization.getImage().equalsIgnoreCase(organizationDTO.getImage())){
@@ -107,29 +107,29 @@ public class OrganizationServiceImpl implements OrganizationService {
         if(organizationDTO.getPhone() != 0 && organization.getPhone() != organizationDTO.getPhone()){
             organization.setPhone(organizationDTO.getPhone());
         }
-        if(!organizationDTO.getAddress().trim().isEmpty() && !organization.getAddress().equalsIgnoreCase(organizationDTO.getAddress())){
+        if(organizationDTO.getAddress() != null && !organizationDTO.getAddress().trim().isEmpty() && !organization.getAddress().equalsIgnoreCase(organizationDTO.getAddress())){
             organization.setAddress(organizationDTO.getAddress().trim());
         }
-        if(!organizationDTO.getEmail().trim().isEmpty() && !organization.getEmail().equalsIgnoreCase(organizationDTO.getEmail())){
+        if(organizationDTO.getEmail() != null && !organizationDTO.getEmail().trim().isEmpty() && !organization.getEmail().equalsIgnoreCase(organizationDTO.getEmail())){
             organization.setEmail(organizationDTO.getEmail().trim());
         }
-        if(!organizationDTO.getWelcomeText().trim().isEmpty() && !organization.getWelcomeText().equalsIgnoreCase(organizationDTO.getWelcomeText())){
+        if(organizationDTO.getWelcomeText() != null && !organizationDTO.getWelcomeText().trim().isEmpty() && !organization.getWelcomeText().equalsIgnoreCase(organizationDTO.getWelcomeText())){
             organization.setWelcomeText(organizationDTO.getWelcomeText().trim());
         }
-        if(!organizationDTO.getAboutUsText().trim().isEmpty() && !organization.getAboutUsText().equalsIgnoreCase(organizationDTO.getAboutUsText())){
+        if(organizationDTO.getAboutUsText() != null && !organizationDTO.getAboutUsText().trim().isEmpty() && !organization.getAboutUsText().equalsIgnoreCase(organizationDTO.getAboutUsText())){
             organization.setAboutUsText(organizationDTO.getAboutUsText().trim());
         }
-        if (!organizationDTO.getUrlFacebook().trim().isEmpty() && !organization.getUrlFacebook().equalsIgnoreCase(organizationDTO.getUrlFacebook())){
+        if (organizationDTO.getUrlFacebook() != null && !organizationDTO.getUrlFacebook().trim().isEmpty() && !organization.getUrlFacebook().equalsIgnoreCase(organizationDTO.getUrlFacebook())){
             organization.setUrlFacebook(organizationDTO.getUrlFacebook().trim());
         }
-        if (!organizationDTO.getUrlInstagram().trim().isEmpty() && !organization.getUrlInstagram().equalsIgnoreCase(organizationDTO.getUrlInstagram())){
+        if (organizationDTO.getUrlInstagram() != null && !organizationDTO.getUrlInstagram().trim().isEmpty() && !organization.getUrlInstagram().equalsIgnoreCase(organizationDTO.getUrlInstagram())){
             organization.setUrlInstagram(organizationDTO.getUrlInstagram().trim());
         }
-        if (!organizationDTO.getUrlLinkedin().trim().isEmpty() && !organization.getUrlLinkedin().equalsIgnoreCase(organizationDTO.getUrlLinkedin())){
+        if (organizationDTO.getUrlLinkedin() != null && !organizationDTO.getUrlLinkedin().trim().isEmpty() && !organization.getUrlLinkedin().equalsIgnoreCase(organizationDTO.getUrlLinkedin())){
             organization.setUrlLinkedin(organizationDTO.getUrlLinkedin().trim());
         }
-
-
         return organization;
+
     }
+
 }
