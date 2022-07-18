@@ -50,7 +50,7 @@ public abstract class FileManager {
             fileOutputStream.write(multipartFile.getBytes());
             fileOutputStream.close();
             return simpleFile;
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CorruptedFileException(e.getMessage(), e);
         }
     }
@@ -119,7 +119,7 @@ public abstract class FileManager {
             fileOutputStream.write(Base64.getDecoder().decode( multipartFile.getBytes() ));
             fileOutputStream.close();
             return simpleFile;
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CorruptedFileException(e.getMessage(), e);
         }
     }
@@ -140,7 +140,7 @@ public abstract class FileManager {
             fileOutputStream.write(Base64.getDecoder().decode(encodedFile));
             fileOutputStream.close();
             return simpleFile;
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CorruptedFileException(e.getMessage(), e);
         }
     }
