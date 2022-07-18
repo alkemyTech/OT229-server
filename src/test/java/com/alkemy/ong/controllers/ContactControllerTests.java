@@ -235,6 +235,24 @@ public class ContactControllerTests {
         }
 
 
+        @Test
+        @DisplayName("Throw Exception")
+        @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_USER)
+        void testCreateContactThrowException() throws Exception {
+
+            ContactDTORequest request = ContactControllerTests.createMockContactDTORequest();
+            Mockito.when(service.create(Mockito.any())).thenThrow(new Exception());
+
+            mockMvc.perform(MockMvcRequestBuilders.post(GlobalConstants.Endpoints.CONTACT)
+                            .content(jsonMapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("Somos"))))
+                    .andDo(MockMvcResultHandlers.print());
+
+            Mockito.verify(service).create(Mockito.any());
+        }
     }
 
 
