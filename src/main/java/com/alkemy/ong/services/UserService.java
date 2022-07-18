@@ -19,13 +19,18 @@ import java.util.Optional;
 
 public interface UserService {
 
+<<<<<<< HEAD
   SingupResponse createUser(SignupRequest  signupRequest, MultipartFile image) throws IOException, CloudStorageClientException, CorruptedFileException;
   SingupResponse createUser(SignupRequest  signupRequest) throws IOException, RegisterException, CloudStorageClientException, CorruptedFileException;
+=======
+  //SingupResponse createUser(SignupRequest  signupRequest, MultipartFile image) throws IOException, CloudStorageClientException, CorruptedFileException;
+  SingupResponse createUser(SignupRequest  signupRequest) throws IOException, CloudStorageClientException, CorruptedFileException;
+>>>>>>> 43ddf89 (Test added and little chenges)
 
   public User save(User user);
   Optional<User> getUserByEmail(String email);
   String delete(String id) throws NotFoundException;
-  UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws Exception;
+  //UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws Exception;
   UserDTO updateUser(UserDTORequest userDTOrequest) throws Exception;
   List<UserDTO> getAll();
   UserDTO getMe(String jwt) throws Exception;

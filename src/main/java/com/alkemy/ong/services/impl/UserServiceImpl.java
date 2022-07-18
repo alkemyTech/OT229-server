@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     RoleService roleService;
 
+    /*
     @Override
     public SingupResponse createUser(SignupRequest signupRequest, MultipartFile image) throws IOException, RegisterException, CloudStorageClientException, CorruptedFileException {
         Boolean userFound = userRepo.existsByEmail(signupRequest.getEmail());
@@ -80,7 +81,7 @@ public class UserServiceImpl implements UserService {
         }else{
             throw new RegisterException("The email is already in use");
         }
-    }
+    }*/
 
     @Override
     public SingupResponse createUser(SignupRequest signupRequest) throws IOException, CloudStorageClientException, CorruptedFileException {
@@ -138,6 +139,7 @@ public class UserServiceImpl implements UserService {
         return "Successfully deleted user with id " + id;
     }
 
+    /*
     @Override
     public UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws Exception {
         Boolean exists = userRepo.existsById(userDTOrequest.getId());
@@ -158,7 +160,7 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
 
         return mapper.userEntity2DTO(user);
-    }
+    }*/
 
     @Override
     public UserDTO updateUser(UserDTORequest userDTOrequest) throws Exception {
