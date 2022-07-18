@@ -95,7 +95,6 @@ public class ContactControllerTests {
         void testGetAllContactsWithInvalidToken() throws Exception {
 
             Mockito.when(jwtService.isBearer(Mockito.any())).thenReturn(true);
-            Mockito.when(jwtService.verify(Mockito.any())).thenThrow(new Exception());
 
             List<ContactDTO> mockContactDTOList = ContactControllerTests.generateMockContactDtoList();
             Mockito.when(service.getAll()).thenReturn(mockContactDTOList);
@@ -106,6 +105,22 @@ public class ContactControllerTests {
                     .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("Somos")))) // Verify that the response body is not the valid one.
                     .andDo(MockMvcResultHandlers.print());
 
+
+            Mockito.verify(service, Mockito.never()).getAll();
+        }
+        @Test
+        @DisplayName("Valid authentication but role is NOT admin")
+        @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_USER)
+        void testAllContactsWithTokenRoleUser() throws Exception {
+            Mockito.when(jwtService.isBearer(Mockito.any())).thenReturn(true);
+
+            List<ContactDTO> mockContactDtoList =ContactControllerTests.generateMockContactDtoList();
+            Mockito.when(service.getAll()).thenReturn(mockContactDtoList);
+
+            mockMvc.perform(MockMvcRequestBuilders.get(GlobalConstants.Endpoints.CONTACT))
+                    .andExpect(MockMvcResultMatchers.status().isForbidden())
+                    .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("Somos"))))
+                    .andDo(MockMvcResultHandlers.print());
 
             Mockito.verify(service, Mockito.never()).getAll();
         }
@@ -178,10 +193,27 @@ public class ContactControllerTests {
                     .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("Somos"))))
                     .andDo(MockMvcResultHandlers.print());
 
-            // OTHER VERIFICATIONS
             Mockito.verify(service, Mockito.never()).create(Mockito.any());
         }
+        @ParameterizedTest
+        @MethodSource("com.alkemy.ong.controllers.ContactControllerTests#generateRequestsWithMissingAttributes")
+        @DisplayName("Missing attribute")
+        @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_USER)
+        void testCreateContactWithMissingAttributes(ContactDTORequest requestWithMissingAttribute) throws Exception {
 
+            ContactDTOResponse response = ContactControllerTests.createMockContactDTOResponse();
+            Mockito.when(service.create(Mockito.any())).thenReturn(response);
+
+            mockMvc.perform(MockMvcRequestBuilders.post(GlobalConstants.Endpoints.CONTACT)
+                            .content(jsonMapper.writeValueAsString(requestWithMissingAttribute))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("Somos"))))
+                    .andDo(MockMvcResultHandlers.print());
+
+            Mockito.verify(service, Mockito.never()).create(Mockito.any());
+        }
 
         @ParameterizedTest
         @MethodSource("com.alkemy.ong.controllers.ContactControllerTests#generateRequestsWithBrokenAttributes")
@@ -189,8 +221,7 @@ public class ContactControllerTests {
         @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_USER)
         void testCreateContactWithBrokenAttributes(ContactDTORequest requestWithBrokenAttribute) throws Exception {
 
-            ContactDTOResponse response = ContactControllerTests.createMockContactDTOResponse();
-            Mockito.when(service.create(Mockito.any())).thenReturn(response);
+            Mockito.when(service.create(Mockito.any())).thenThrow(new Exception());
 
             mockMvc.perform(MockMvcRequestBuilders.post(GlobalConstants.Endpoints.CONTACT)
                             .content(jsonMapper.writeValueAsString(requestWithBrokenAttribute))
@@ -202,6 +233,8 @@ public class ContactControllerTests {
 
             Mockito.verify(service, Mockito.never()).create(Mockito.any());
         }
+
+
     }
 
 
@@ -261,4 +294,18 @@ public class ContactControllerTests {
         return requestList;
     }
 
+    static List<ContactDTORequest> generateRequestsWithMissingAttributes() {
+        List<ContactDTORequest> requestList = new ArrayList<>();
+        ContactDTORequest dto;
+
+        dto = ContactControllerTests.createMockContactDTORequest();
+        dto.setName(null);
+        requestList.add(dto);
+
+        dto = ContactControllerTests.createMockContactDTORequest();
+        dto.setEmail(null);
+        requestList.add(dto);
+
+        return requestList;
+    }
 }
