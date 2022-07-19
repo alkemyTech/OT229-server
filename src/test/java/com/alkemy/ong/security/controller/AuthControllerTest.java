@@ -60,9 +60,6 @@ public class AuthControllerTest {
     @MockBean
     private AuthenticationService authenticationService;
 
-    @MockBean
-    private EmailService emailService;
-
     ObjectMapper jsonMapper = new ObjectMapper();
 
     @Nested
@@ -111,7 +108,6 @@ public class AuthControllerTest {
             SignupRequest request = generateRegisterRequest();
 
             Mockito.when(userService.createUser(Mockito.any())).thenThrow(new IOException());
-            //Mockito.when(emailService.sendEmail(Mockito.any(), Mockito.any())).thenThrow(new IOException()); // Nunca se llama este método
 
             mockMvc.perform(MockMvcRequestBuilders.post(GlobalConstants.Endpoints.REGISTER)
                             .content(jsonMapper.writeValueAsString(request))
@@ -122,7 +118,6 @@ public class AuthControllerTest {
                     .andDo(MockMvcResultHandlers.print());
 
             Mockito.verify(userService).createUser(Mockito.any());
-            //Mockito.verify(emailService).sendEmail(Mockito.any(), Mockito.any());
         }
 
         @ParameterizedTest
