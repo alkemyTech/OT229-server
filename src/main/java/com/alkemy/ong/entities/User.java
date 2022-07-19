@@ -21,6 +21,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class User {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "uuid2")
@@ -41,13 +42,17 @@ public class User {
     @Column(name = "photo")
     private String photo;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roleId = new LinkedHashSet<>();
 
     @CreationTimestamp
+    @Column(name = "time_stamps")
     private Date timeStamps;
+
+    @Column(name = "soft_delete")
     private boolean softDelete;
+
 }
