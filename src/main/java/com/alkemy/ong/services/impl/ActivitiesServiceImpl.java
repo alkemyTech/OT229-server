@@ -14,8 +14,8 @@ import com.alkemy.ong.services.CloudStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.Optional;
 
+import java.util.Optional;
 
 
 @Service
@@ -31,6 +31,7 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     private ActivityRepository activityRepository;
 
 
+    @Override
     public ActivityDTO save (MultipartFile file, ActivityDTO dto) throws CloudStorageClientException, ActivityNamePresentException, CorruptedFileException {
         Boolean entityFound = activityRepository.existsByName(dto.getName());
         if (entityFound) {
@@ -76,6 +77,7 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     }
 
 
+    @Override
     public ActivityDTO edit(MultipartFile file, ActivityDTO dto, String id) throws CloudStorageClientException, ActivityNamePresentException, ActivityNotFoundException, CorruptedFileException {
         Optional<ActivityEntity> entityFound = activityRepository.findById(id);
 
