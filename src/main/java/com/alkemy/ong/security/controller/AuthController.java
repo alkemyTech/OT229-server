@@ -1,8 +1,6 @@
 package com.alkemy.ong.security.controller;
 
 import com.alkemy.ong.dto.UserDTO;
-import com.alkemy.ong.exception.CloudStorageClientException;
-import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.RegisterException;
 import com.alkemy.ong.security.payload.*;
 import com.alkemy.ong.security.service.AuthenticationService;
@@ -54,7 +52,8 @@ public class AuthController {
                     })
     })
     @PostMapping(GlobalConstants.Endpoints.REGISTER)
-    public ResponseEntity<?> register(@RequestBody @Valid SignupRequest signupRequest) throws Exception, CloudStorageClientException, CorruptedFileException {
+
+    public ResponseEntity<?> register(@RequestBody @Valid SignupRequest signupRequest) throws Exception{
           try {
               SingupResponse response = userService.createUser(signupRequest);
 
