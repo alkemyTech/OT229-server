@@ -46,7 +46,7 @@ public class EmailServiceImp implements EmailService {
             e.printStackTrace();
             throw new IOException("Cannot send email");
         }
-        return "mail has beent sent check your inbox";
+        return "mail has been sent check your inbox";
 
     }
 
