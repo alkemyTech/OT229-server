@@ -12,6 +12,7 @@ import com.alkemy.ong.security.payload.SingupResponse;
 import com.alkemy.ong.security.service.AuthenticationService;
 import com.alkemy.ong.security.service.JwtService;
 import com.alkemy.ong.security.service.impl.UserDetailsServiceImpl;
+import com.alkemy.ong.services.EmailService;
 import com.alkemy.ong.services.UserService;
 import com.alkemy.ong.utility.GlobalConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -35,6 +37,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.io.IOException;
 import java.util.*;
 
 @WebMvcTest(AuthController.class)
@@ -55,6 +59,9 @@ public class AuthControllerTest {
 
     @MockBean
     private AuthenticationService authenticationService;
+
+    @MockBean
+    private EmailService emailService;
 
     ObjectMapper jsonMapper = new ObjectMapper();
 
@@ -98,10 +105,30 @@ public class AuthControllerTest {
             Mockito.verify(userService).createUser(Mockito.any());
         }
 
+        @Test
+        @DisplayName("Error sending mail")
+        void test3() throws Exception{
+            SignupRequest request = generateRegisterRequest();
+
+            Mockito.when(userService.createUser(Mockito.any())).thenThrow(new IOException());
+            //Mockito.when(emailService.sendEmail(Mockito.any(), Mockito.any())).thenThrow(new IOException()); // Nunca se llama este método
+
+            mockMvc.perform(MockMvcRequestBuilders.post(GlobalConstants.Endpoints.REGISTER)
+                            .content(jsonMapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isBadGateway())
+                    .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("Successful registration"))))
+                    .andDo(MockMvcResultHandlers.print());
+
+            Mockito.verify(userService).createUser(Mockito.any());
+            //Mockito.verify(emailService).sendEmail(Mockito.any(), Mockito.any());
+        }
+
         @ParameterizedTest
         @MethodSource("com.alkemy.ong.security.controller.AuthControllerTest#generateRegisterRequestMissingMandatoryAttributes")
         @DisplayName("Mandatory attributes missing")
-        void test3(SignupRequest signupRequest) throws Exception{
+        void test4(SignupRequest signupRequest) throws Exception{
             SingupResponse expectedResponse = generateRegisterResponse();
             Mockito.when(userService.createUser(Mockito.any())).thenReturn(expectedResponse);
 
@@ -119,7 +146,7 @@ public class AuthControllerTest {
         @ParameterizedTest
         @MethodSource("com.alkemy.ong.security.controller.AuthControllerTest#generateRegisterRequestWithBrokenMandatoryAttributes")
         @DisplayName("Broken attributes")
-        void test4(SignupRequest signupRequest) throws Exception{
+        void test5(SignupRequest signupRequest) throws Exception{
             SingupResponse expectedResponse = generateRegisterResponse();
             Mockito.when(userService.createUser(Mockito.any())).thenReturn(expectedResponse);
 
