@@ -56,13 +56,15 @@ public class AuthController {
     })
     @PostMapping(GlobalConstants.Endpoints.REGISTER)
 
-    public ResponseEntity<?> register(@RequestBody @Valid SignupRequest signupRequest) throws IOException, CloudStorageClientException, CorruptedFileException {
+    public ResponseEntity<?> register(@RequestBody @Valid SignupRequest signupRequest) throws CloudStorageClientException, CorruptedFileException {
           try {
               SingupResponse response = userService.createUser(signupRequest);
 
               return new ResponseEntity(response, HttpStatus.CREATED);
           } catch (RegisterException e){
               return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+          }catch (IOException e) {
+              return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
           }
     }
 
