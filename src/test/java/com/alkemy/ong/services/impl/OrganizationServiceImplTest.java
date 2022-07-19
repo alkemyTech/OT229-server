@@ -45,6 +45,7 @@ class OrganizationServiceImplTest {
     }
 
     @AfterEach
+    @Transactional
     void emptyDatabase() {
         organizationsRepository.deleteAll();
     }
