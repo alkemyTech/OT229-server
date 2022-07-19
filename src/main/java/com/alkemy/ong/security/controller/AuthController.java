@@ -1,6 +1,8 @@
 package com.alkemy.ong.security.controller;
 
 import com.alkemy.ong.dto.UserDTO;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.RegisterException;
 import com.alkemy.ong.security.payload.*;
 import com.alkemy.ong.security.service.AuthenticationService;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.validation.Valid;
+import java.io.IOException;
 
 
 @RestController
@@ -53,7 +56,7 @@ public class AuthController {
     })
     @PostMapping(GlobalConstants.Endpoints.REGISTER)
 
-    public ResponseEntity<?> register(@RequestBody @Valid SignupRequest signupRequest) throws Exception{
+    public ResponseEntity<?> register(@RequestBody @Valid SignupRequest signupRequest) throws IOException, CloudStorageClientException, CorruptedFileException {
           try {
               SingupResponse response = userService.createUser(signupRequest);
 
