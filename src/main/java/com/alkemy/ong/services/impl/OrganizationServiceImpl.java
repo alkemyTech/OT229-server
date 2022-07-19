@@ -20,14 +20,16 @@ import java.util.Optional;
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
 
-    @Autowired
-    private OrganizationMapper organizationMapper;
+    private final OrganizationMapper organizationMapper;
+    private final OrganizationsRepository organizationsRepository;
+    private final CloudStorageService amazonService;
 
     @Autowired
-    private OrganizationsRepository organizationsRepository;
-
-    @Autowired
-    private CloudStorageService amazonService;
+    public OrganizationServiceImpl(OrganizationMapper organizationMapper, OrganizationsRepository organizationsRepository, CloudStorageService amazonService) {
+        this.organizationMapper = organizationMapper;
+        this.organizationsRepository = organizationsRepository;
+        this.amazonService = amazonService;
+    }
 
     @Override
     public List<ReducedOrganizationDTO> getAll() {
