@@ -2,7 +2,7 @@ package com.alkemy.ong.exception;
 
 import java.io.IOException;
 
-public class RegisterException extends IOException {
+public class RegisterException extends RuntimeException {
 
     public RegisterException(){
         super();
