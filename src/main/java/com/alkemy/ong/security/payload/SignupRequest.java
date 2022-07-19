@@ -14,20 +14,20 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 public class SignupRequest {
 
-    @NotEmpty(message = "Parameter 'firstName' should be complete.")
+    @NotBlank(message = "Parameter 'firstName' should be complete.")
     @Schema(description = "The User's first name.", example = "John")
     private String firstName;
 
-    @NotEmpty(message = "Parameter 'lastName' should be complete.")
+    @NotBlank(message = "Parameter 'lastName' should be complete.")
     @Schema(description = "The User's last name.", example = "Doe")
     private String lastName;
 
-    @NotEmpty
+    @NotBlank
     @Email(message = "Invalid email format")
     @Schema(description = "The User's email address.", example = "john.doe@gmail.com")
     private String email;
 
-    @NotEmpty(message = "Password cant be blank")
+    @NotBlank(message = "Password cant be blank")
     @Schema(description = "The password for the account. All Unicode characters allowed.", example = "Pa55W#_r-.d")
     private String password;
 
