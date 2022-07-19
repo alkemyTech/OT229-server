@@ -32,7 +32,7 @@ class OrganizationServiceImplTest {
     private OrganizationsRepository organizationsRepository;
 
     private static String existingOrgId = "";
-    private static final int numberOfMockOrgs = 10;
+    private static final int numberOfMockOrgs = 5;
 
     @BeforeEach
     @Transactional
@@ -76,7 +76,22 @@ class OrganizationServiceImplTest {
         @Test
         @DisplayName("Empty list returned")
         void test2() {
-
+            // SETUP
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                    organizationMapper,
+                    organizationsRepository,
+                    mockCloudStorageService
+            );
+            // TEST
+            emptyDatabase();
+            assertDoesNotThrow(
+                    () -> {
+                        List<ReducedOrganizationDTO> resultList = organizationService.getAll();
+                        assertEquals(0, resultList.size(), "Zero results were returned from the repository.");
+                    }
+                    , "Service did not throw an exception when receiving and empty list from the repository."
+            );
         }
 
     }
