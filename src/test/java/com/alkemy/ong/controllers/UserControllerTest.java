@@ -481,32 +481,32 @@ public class UserControllerTest {
         List<UserDTORequest> listOfRequest = new ArrayList<>();
         UserDTORequest userDTORequest;
 
-        // Case 1: Broken id
+        // Case 1: Missing id
         userDTORequest = generateUserDTORequest();
         userDTORequest.setId(null);
         listOfRequest.add(userDTORequest);
 
-        // Case 2: Broken First name
+        // Case 2: Missing First name
         userDTORequest = generateUserDTORequest();
         userDTORequest.setFirstName(null);
         listOfRequest.add(userDTORequest);
 
-        // Case 3: Broken Last name
+        // Case 3: Missing Last name
         userDTORequest = generateUserDTORequest();
         userDTORequest.setLastName(null);
         listOfRequest.add(userDTORequest);
 
-        // Case 4: Broken email
+        // Case 4: Missing email
         userDTORequest = generateUserDTORequest();
         userDTORequest.setEmail(null);
         listOfRequest.add(userDTORequest);
 
-        // Case 5: Broken password
+        // Case 5: Missing password
         userDTORequest = generateUserDTORequest();
         userDTORequest.setPassword(null);
         listOfRequest.add(userDTORequest);
 
-        // Case 6: Broken name image
+        // Case 6: Missing name image
         userDTORequest = generateUserDTORequest();
         userDTORequest.setEncoded_image(new EncodedImageDTO(
                 "iVBORw0KGgoAAAANSUhEUgAAABAAAAAFCAIAAADDivseAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAA5SURBVBhXZctBDgAhEAJB//9pBJkQMvZhU6x6EoDRc2ZbeeSvwdpuLkdGzP6pb9To1ul+4HraTAYuqMKPcY0zc9EAAAAASUVORK5CYII=",
@@ -514,7 +514,7 @@ public class UserControllerTest {
         ));
         listOfRequest.add(userDTORequest);
 
-        // Case 7: Broken endoded image
+        // Case 7: Missing endoded image
         userDTORequest = generateUserDTORequest();
         userDTORequest.setEncoded_image(new EncodedImageDTO(
                 null,
