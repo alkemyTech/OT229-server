@@ -105,6 +105,11 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "OK.",
                     content = {
                             @Content(mediaType = "application/json", schema=@Schema(implementation = UserDTO.class))
+                    }),
+
+            @ApiResponse(responseCode = "404", description = "Not found",
+                    content = {
+                            @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
                     })
     })
     @GetMapping(GlobalConstants.Endpoints.AUTH_ME)
