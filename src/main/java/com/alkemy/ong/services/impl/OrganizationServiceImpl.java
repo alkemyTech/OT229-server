@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +55,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         Optional<Organization> organizationFound = organizationsRepository.findById(organizationDTO.getId());
 
         if(organizationFound.isPresent()){
-            if(!image.isEmpty()){
+            if(image != null && !image.isEmpty()){
                 try{
                     organizationDTO.setImage(amazonService.uploadFile(image));
                 }catch(CloudStorageClientException e){
@@ -98,40 +99,18 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
     }
 
-    private Organization updateInfo(Organization organization, OrganizationDTO organizationDTO){
-
-        if(organizationDTO.getName() != null && !organizationDTO.getName().trim().isEmpty() && !organization.getName().equalsIgnoreCase(organizationDTO.getName())){
-            organization.setName(organizationDTO.getName().trim());
-        }
-        if(organizationDTO.getImage() != null && !organization.getImage().equalsIgnoreCase(organizationDTO.getImage())){
-            organization.setImage(organizationDTO.getImage().trim());
-        }
-        if(organizationDTO.getPhone() != 0 && organization.getPhone() != organizationDTO.getPhone()){
-            organization.setPhone(organizationDTO.getPhone());
-        }
-        if(organizationDTO.getAddress() != null && !organizationDTO.getAddress().trim().isEmpty() && !organization.getAddress().equalsIgnoreCase(organizationDTO.getAddress())){
-            organization.setAddress(organizationDTO.getAddress().trim());
-        }
-        if(organizationDTO.getEmail() != null && !organizationDTO.getEmail().trim().isEmpty() && !organization.getEmail().equalsIgnoreCase(organizationDTO.getEmail())){
-            organization.setEmail(organizationDTO.getEmail().trim());
-        }
-        if(organizationDTO.getWelcomeText() != null && !organizationDTO.getWelcomeText().trim().isEmpty() && !organization.getWelcomeText().equalsIgnoreCase(organizationDTO.getWelcomeText())){
-            organization.setWelcomeText(organizationDTO.getWelcomeText().trim());
-        }
-        if(organizationDTO.getAboutUsText() != null && !organizationDTO.getAboutUsText().trim().isEmpty() && !organization.getAboutUsText().equalsIgnoreCase(organizationDTO.getAboutUsText())){
-            organization.setAboutUsText(organizationDTO.getAboutUsText().trim());
-        }
-        if (organizationDTO.getUrlFacebook() != null && !organizationDTO.getUrlFacebook().trim().isEmpty() && !organization.getUrlFacebook().equalsIgnoreCase(organizationDTO.getUrlFacebook())){
-            organization.setUrlFacebook(organizationDTO.getUrlFacebook().trim());
-        }
-        if (organizationDTO.getUrlInstagram() != null && !organizationDTO.getUrlInstagram().trim().isEmpty() && !organization.getUrlInstagram().equalsIgnoreCase(organizationDTO.getUrlInstagram())){
-            organization.setUrlInstagram(organizationDTO.getUrlInstagram().trim());
-        }
-        if (organizationDTO.getUrlLinkedin() != null && !organizationDTO.getUrlLinkedin().trim().isEmpty() && !organization.getUrlLinkedin().equalsIgnoreCase(organizationDTO.getUrlLinkedin())){
-            organization.setUrlLinkedin(organizationDTO.getUrlLinkedin().trim());
-        }
+    private Organization updateInfo(Organization organization, @Valid OrganizationDTO organizationDTO){
+        organization.setName(organizationDTO.getName());
+        organization.setImage(organizationDTO.getImage());
+        organization.setEmail(organizationDTO.getEmail());
+        organization.setWelcomeText(organizationDTO.getWelcomeText());
+        organization.setPhone(organizationDTO.getPhone());
+        organization.setAddress(organizationDTO.getAddress());
+        organization.setAboutUsText(organizationDTO.getAboutUsText());
+        organization.setUrlFacebook(organizationDTO.getUrlFacebook());
+        organization.setUrlInstagram(organizationDTO.getUrlInstagram());
+        organization.setUrlLinkedin(organizationDTO.getUrlLinkedin());
         return organization;
-
     }
 
 }
