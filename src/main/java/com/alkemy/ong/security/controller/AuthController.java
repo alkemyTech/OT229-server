@@ -1,12 +1,12 @@
 package com.alkemy.ong.security.controller;
 
-import com.alkemy.ong.dto.TestimonialDTOResponse;
 import com.alkemy.ong.dto.UserDTO;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.RegisterException;
 import com.alkemy.ong.security.payload.*;
 import com.alkemy.ong.security.service.AuthenticationService;
+import javassist.NotFoundException;
 import com.alkemy.ong.services.UserService;
 import com.alkemy.ong.utility.GlobalConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.HashMap;
 
 
 @RestController
@@ -56,6 +55,7 @@ public class AuthController {
                     })
     })
     @PostMapping(GlobalConstants.Endpoints.REGISTER)
+
     public ResponseEntity<?> register(@RequestBody @Valid SignupRequest signupRequest) throws CloudStorageClientException, CorruptedFileException {
           try {
               SingupResponse response = userService.createUser(signupRequest);
@@ -63,7 +63,7 @@ public class AuthController {
               return new ResponseEntity(response, HttpStatus.CREATED);
           } catch (RegisterException e){
               return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-          } catch (IOException e) {
+          }catch (IOException e) {
               return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
           }
     }
@@ -105,17 +105,26 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "OK.",
                     content = {
                             @Content(mediaType = "application/json", schema=@Schema(implementation = UserDTO.class))
+                    }),
+
+            @ApiResponse(responseCode = "404", description = "Not found",
+                    content = {
+                            @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
                     })
     })
     @GetMapping(GlobalConstants.Endpoints.AUTH_ME)
-    public ResponseEntity<UserDTO> getMe(
+    public ResponseEntity<?> getMe(
             @Parameter(name = "authorization",
                     description = "A valid User's JWT access token.",
                     in = ParameterIn.HEADER,
                     example = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJVc2VybmFtZSI6ImVzdGViYW5xdWl0b0BnbWFpbC5jb20iLCJpc3MiOiJPTkcgLSBPVDIyOSIsIlJvbGVzIjpbIlJPTEVfVVNFUiJdLCJleHAiOjE2NTgwNzY4ODF9.fTrKT-5GGQBSy68NYFmOQCBeQZkq9k4FvR2JwfB2HB0-cOJMa-G9sMajrxKrpRGt2Y8nFWQRQDJZ_vsPBwRuOQ")
             @RequestHeader("authorization") String jwt) throws Exception{
 
-        return new ResponseEntity<>(userService.getMe(jwt), HttpStatus.OK);
+        try{
+            return new ResponseEntity<>(userService.getMe(jwt), HttpStatus.OK);
+        }catch (NotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
     
 }

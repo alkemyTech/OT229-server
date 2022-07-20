@@ -18,9 +18,8 @@ import java.util.Optional;
 
 
 public interface UserService {
-
   SingupResponse createUser(SignupRequest  signupRequest, MultipartFile image) throws IOException, CloudStorageClientException, CorruptedFileException;
-  SingupResponse createUser(SignupRequest  signupRequest) throws IOException, RegisterException, CloudStorageClientException, CorruptedFileException;
+  SingupResponse createUser(SignupRequest  signupRequest) throws IOException, CloudStorageClientException, CorruptedFileException;
 
   public User save(User user);
   Optional<User> getUserByEmail(String email);
