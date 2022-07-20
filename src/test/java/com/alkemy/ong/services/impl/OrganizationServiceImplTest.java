@@ -13,8 +13,6 @@ import com.alkemy.ong.repositories.OrganizationsRepository;
 import com.alkemy.ong.services.CloudStorageService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
@@ -24,7 +22,6 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ContextConfiguration(classes = {H2Configuration.class}, loader = AnnotationConfigContextLoader.class)
 class OrganizationServiceImplTest {
 
-    private final OrganizationMapper organizationMapper = new OrganizationMapper();
+    private static final OrganizationMapper organizationMapper = new OrganizationMapper();
     @Autowired
     private OrganizationsRepository organizationsRepository;
 
@@ -348,7 +345,7 @@ class OrganizationServiceImplTest {
                     }
                     Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
                     EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
-                    OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestMapper(orgWithUpdatedInfo, mockEncodedImage);
+                    OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestDtoMapper(orgWithUpdatedInfo, mockEncodedImage);
                     String updatedName = "Updated Name";
                     dtoWithUpdatedInfo.setName(updatedName);
                     // TEST
@@ -388,7 +385,7 @@ class OrganizationServiceImplTest {
                     }
                     Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
                     EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
-                    OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestMapper(orgWithUpdatedInfo, mockEncodedImage);
+                    OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestDtoMapper(orgWithUpdatedInfo, mockEncodedImage);
                     String updatedName = "Updated Name";
                     dtoWithUpdatedInfo.setName(updatedName);
                     // TEST
@@ -423,7 +420,7 @@ class OrganizationServiceImplTest {
                     }
                     Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
                     EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
-                    OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestMapper(orgWithUpdatedInfo, mockEncodedImage);
+                    OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestDtoMapper(orgWithUpdatedInfo, mockEncodedImage);
                     String updatedName = "Updated Name";
                     dtoWithUpdatedInfo.setName(updatedName);
                     // TEST
@@ -452,7 +449,7 @@ class OrganizationServiceImplTest {
                 );
                 Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
                 EncodedImageDTO mockEncodedImage = null;
-                OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestMapper(orgWithUpdatedInfo, mockEncodedImage);
+                OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestDtoMapper(orgWithUpdatedInfo, mockEncodedImage);
                 String updatedName = "Updated Name";
                 dtoWithUpdatedInfo.setName(updatedName);
                 // TEST
@@ -486,50 +483,21 @@ class OrganizationServiceImplTest {
             );
             Organization orgWithNonExistingId = generateMockOrganization(666);
             orgWithNonExistingId.setId("NonExistingId");
-            OrganizationDTO dtoWithNonExistingId = organizationMapper.organizationEntity2OrganizationDTO(orgWithNonExistingId);
-            MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+            OrganizationDTORequest dtoWithNonExistingId = orgDtoToRequestDtoMapper(orgWithNonExistingId, null);
             // TEST
             assertThrows(RuntimeException.class,
                     () -> {
-                        OrganizationDTO result = organizationService.updateOrganization(mockImageFile, dtoWithNonExistingId);
+                        OrganizationDTO result = organizationService.updateOrganization(dtoWithNonExistingId);
                     }
                     , "Expected exception thrown."
             );
             try {
-                Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(Mockito.any());
+                Mockito.verify(mockCloudStorageService, Mockito.never()).uploadBase64File(Mockito.any(), Mockito.any());
             } catch (CorruptedFileException | CloudStorageClientException e) {
                 throw new RuntimeException(e);
             }
         }
 
-    }
-
-    @Nested
-    class TestUpdateOrganizationTest {
-
-        @Test
-        @DisplayName("Valid case")
-        void test1() {
-
-        }
-
-        @ParameterizedTest
-        @MethodSource("com.alkemy.ong.services.impl.OrganizationServiceImplTest#generateDtosWithMissingMandatoryAttributes")
-        @DisplayName("Mandatory attributes missing")
-        void test2(OrganizationDTO updatedOrganizationInfo) {
-
-        }
-
-        @Test
-        @DisplayName("Invalid email format")
-        void test3() {
-
-        }
-
-    }
-
-    static List<OrganizationDTO> generateDtosWithMissingMandatoryAttributes() {
-        return Collections.singletonList(new OrganizationDTO());
     }
 
     static Organization generateMockOrganization(int indexStamp) {
@@ -546,7 +514,7 @@ class OrganizationServiceImplTest {
         return org;
     }
 
-    static OrganizationDTORequest orgDtoToRequestMapper(Organization organization, EncodedImageDTO encodedImage) {
+    static OrganizationDTORequest orgDtoToRequestDtoMapper(Organization organization, EncodedImageDTO encodedImage) {
         OrganizationDTORequest organizationDTORequest = new OrganizationDTORequest();
         organizationDTORequest.setId(organization.getId());
         organizationDTORequest.setName(organization.getName());
