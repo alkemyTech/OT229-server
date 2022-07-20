@@ -317,11 +317,11 @@ public class TestimonialControllerTest {
 
         }
         @DisplayName("PageIndexOutOfBoundsException")
-        @ParameterizedTest
-        @MethodSource("com.alkemy.ong.controllers.TestimonialControllerTest#invalidRange")
         @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_USER)
-        void test2(int pageNumber) throws Exception{
+        @Test
+        void test2() throws Exception{
 
+            int pageNumber=-10;
             Mockito.when(service.getAllTestimonies(pageNumber)).thenThrow(new PageIndexOutOfBoundsException());
 
             mockMvc.perform(MockMvcRequestBuilders.get(GlobalConstants.Endpoints.TESTIMONIALS).param(page, String.valueOf(pageNumber)))
