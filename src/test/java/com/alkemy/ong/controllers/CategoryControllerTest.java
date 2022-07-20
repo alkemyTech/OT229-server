@@ -140,7 +140,7 @@ public class CategoryControllerTest {
 
         @DisplayName("Valid Case")
         @ParameterizedTest
-        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTestv1#validRange")
+        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTest#validRange")
         @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_ADMIN)
         void testGetAllCategoriesWithValidTokenAndPage(int pageNumber) throws Exception{
             //test with valid token
@@ -158,7 +158,7 @@ public class CategoryControllerTest {
         }
         @DisplayName("PageIndexOutOfBoundsException")
         @ParameterizedTest
-        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTestv1#invalidRange")
+        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTest#invalidRange")
         @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_ADMIN)
         void testGetAllCategoriesWithValidTokenAndInvalidPage(int pageNumber) throws Exception{
             //test with valid token
@@ -175,7 +175,7 @@ public class CategoryControllerTest {
         }
 
         @ParameterizedTest
-        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTestv1#validRange")
+        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTest#validRange")
         @DisplayName("No token provided")
         void testGetAllCategoriesWithoutToken(int pageNumber) throws Exception{
 
@@ -192,7 +192,7 @@ public class CategoryControllerTest {
 
         }
         @ParameterizedTest
-        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTestv1#validRange")
+        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTest#validRange")
         @DisplayName("Token not valid")
         void testGetAllCategoriesWithInvalidToken(int pageNumber) throws Exception{
 
@@ -210,7 +210,7 @@ public class CategoryControllerTest {
         }
         @DisplayName("Valid authentication but role is NOT admin")
         @ParameterizedTest
-        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTestv1#validRange")
+        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTest#validRange")
         @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_USER)
         void testAllCategoriesWithTokenRoleUser(int pageNumber) throws Exception {
             Mockito.when(jwtService.isBearer(Mockito.any())).thenReturn(true);
@@ -525,7 +525,7 @@ public class CategoryControllerTest {
         }
 
         @ParameterizedTest
-        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTestv1#generateRequestsWithMissingAttribute")
+        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTest#generateRequestsWithMissingAttributes")
         @DisplayName("Missing attribute")
         @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_ADMIN)
         void testCreateCategoryWithMissingAttributes(CategoryDTO requestWithMissingAttributes) throws Exception {
@@ -545,7 +545,7 @@ public class CategoryControllerTest {
 
         }
         @ParameterizedTest
-        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTestv1#generateRequestsWithBrokenAttribute")
+        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTest#generateRequestsWithBrokenAttribute")
         @DisplayName("Invalid attribute format")
         @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_ADMIN)
         void testCreateCategoryWithBrokenAttribute(CategoryDTO requestWithBrokenAttribute) throws Exception {
