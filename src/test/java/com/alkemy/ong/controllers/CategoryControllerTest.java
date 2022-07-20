@@ -563,8 +563,26 @@ public class CategoryControllerTest {
             Mockito.verify(categoriesService,Mockito.never()).save((Mockito.any()));
 
         }
+        @Test
+        @DisplayName("Invalid role")
+        @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_USER)
+        void testCreateCategoryWithInvalidRole() throws  Exception{
+            CategoryDTO request = createMockCategoryDTO();
 
+            Mockito.when(categoriesService.save(Mockito.any())).thenReturn(request);
+
+            mockMvc.perform(MockMvcRequestBuilders.post(GlobalConstants.Endpoints.ACTIVITIES)
+                            .content(jsonMapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isForbidden())
+                    .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("Category Test DTO"))))
+                    .andDo(MockMvcResultHandlers.print());
+
+            Mockito.verify(categoriesService, Mockito.never()).save(Mockito.any());
         }
+
+    }
 
 
     static CategoryDTO createMockCategoryDTO(){
