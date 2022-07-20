@@ -156,13 +156,12 @@ public class CategoryControllerTest {
             Mockito.verify(categoriesService).getAllCategoryNames(pageNumber);
 
         }
+        @Test
         @DisplayName("PageIndexOutOfBoundsException")
-        @ParameterizedTest
-        @MethodSource("com.alkemy.ong.controllers.CategoryControllerTest#invalidRange")
         @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_ADMIN)
-        void testGetAllCategoriesWithValidTokenAndInvalidPage(int pageNumber) throws Exception{
+        void testGetAllCategoriesWithValidTokenAndInvalidPage() throws Exception{
             //test with valid token
-
+            int pageNumber = -14;
             Mockito.when(categoriesService.getAllCategoryNames(pageNumber)).thenThrow(new PageIndexOutOfBoundsException());
 
             mockMvc.perform(MockMvcRequestBuilders.get(url).param(page, String.valueOf(pageNumber)))
