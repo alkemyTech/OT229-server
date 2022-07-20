@@ -581,6 +581,24 @@ public class CategoryControllerTest {
 
             Mockito.verify(categoriesService, Mockito.never()).save(Mockito.any());
         }
+        @Test
+        @DisplayName("Name Already Exists")
+        @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_ADMIN)
+        void testCreateCategoryWithExistingName() throws  Exception{
+            CategoryDTO request = createMockCategoryDTO();
+
+            Mockito.when(categoriesService.save(Mockito.any())).thenThrow(new RuntimeException("Category with the provided name is already present over the system"));
+
+            mockMvc.perform(MockMvcRequestBuilders.post(url)
+                            .content(jsonMapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("Category Test DTO"))))
+                    .andDo(MockMvcResultHandlers.print());
+
+            Mockito.verify(categoriesService).save(Mockito.any());
+        }
 
     }
 
