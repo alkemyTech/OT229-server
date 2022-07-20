@@ -24,7 +24,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(GlobalConstants.Endpoints.NEWS)
-public class NewsController {
+public class  NewsController {
 
   @Autowired
   private NewsService newsService;

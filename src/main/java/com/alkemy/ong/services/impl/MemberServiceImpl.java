@@ -59,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
             return memberMapper.memberEntity2DTOResponse(member);
         } else {
             //Utilice este metodo para validar el String
-            throw new RuntimeException("Formato de Nombre invalido");
+            throw new RuntimeException("Name format invalid");
         }
 
     }
@@ -84,7 +84,7 @@ public class MemberServiceImpl implements MemberService {
             return memberMapper.memberEntity2DTOResponse(member);
         } else {
             //Utilice este metodo para validar el String
-            throw new RuntimeException("Formato de Nombre invalido");
+            throw new RuntimeException("Name format invalid");
         }
     }
 
