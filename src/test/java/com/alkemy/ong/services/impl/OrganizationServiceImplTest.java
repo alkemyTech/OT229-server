@@ -1,7 +1,9 @@
 package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.configuration.H2Configuration;
+import com.alkemy.ong.dto.EncodedImageDTO;
 import com.alkemy.ong.dto.OrganizationDTO;
+import com.alkemy.ong.dto.OrganizationDTORequest;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
 import com.alkemy.ong.entities.Organization;
 import com.alkemy.ong.exception.CloudStorageClientException;
@@ -328,19 +330,112 @@ class OrganizationServiceImplTest {
                 @Test
                 @DisplayName("Valid case")
                 void test1() {
-
+                    // SETUP
+                    CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                    OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                            organizationMapper,
+                            organizationsRepository,
+                            mockCloudStorageService
+                    );
+                    String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                    String mockEncodedImageFileName = "test_file.mock";
+                    String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+                    try {
+                        Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                                .thenReturn(mockUploadedFileUrl);
+                    } catch (CorruptedFileException | CloudStorageClientException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
+                    EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+                    OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestMapper(orgWithUpdatedInfo, mockEncodedImage);
+                    String updatedName = "Updated Name";
+                    dtoWithUpdatedInfo.setName(updatedName);
+                    // TEST
+                    assertDoesNotThrow(
+                            () -> {
+                                OrganizationDTO result = organizationService.updateOrganization(dtoWithUpdatedInfo);
+                                assertNotNull(result, "Result object is not null.");
+                                assertEquals(updatedName, result.getName(), "Attribute has expected updated value.");
+                                assertEquals(mockUploadedFileUrl, result.getImage(), "The image attribute was accurately updated.");
+                            }
+                            , "The service did not throw any exception."
+                    );
+                    try {
+                        Mockito.verify(mockCloudStorageService).uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName);
+                    } catch (CorruptedFileException | CloudStorageClientException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
                 @Test
                 @DisplayName("Corrupted file")
                 void test2() {
-
+                    // SETUP
+                    CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                    OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                            organizationMapper,
+                            organizationsRepository,
+                            mockCloudStorageService
+                    );
+                    String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                    String mockEncodedImageFileName = "test_file.mock";
+                    try {
+                        Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                                .thenThrow(new CorruptedFileException());
+                    } catch (CorruptedFileException | CloudStorageClientException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
+                    EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+                    OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestMapper(orgWithUpdatedInfo, mockEncodedImage);
+                    String updatedName = "Updated Name";
+                    dtoWithUpdatedInfo.setName(updatedName);
+                    // TEST
+                    assertThrows(
+                            CorruptedFileException.class,
+                            () -> {
+                                OrganizationDTO result = organizationService.updateOrganization(dtoWithUpdatedInfo);
+                            }
+                            , "Expected exception thrown"
+                    );
+                    Organization orgEntity = organizationsRepository.findById(existingOrgId).orElseThrow();
+                    assertNotEquals(dtoWithUpdatedInfo.getName(), orgEntity.getName(), "Process was interrupted and changes were not saved.");
                 }
 
                 @Test
                 @DisplayName("S3 Service problem")
                 void test3() {
-
+                    // SETUP
+                    CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                    OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                            organizationMapper,
+                            organizationsRepository,
+                            mockCloudStorageService
+                    );
+                    String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                    String mockEncodedImageFileName = "test_file.mock";
+                    try {
+                        Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                                .thenThrow(new CloudStorageClientException());
+                    } catch (CorruptedFileException | CloudStorageClientException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
+                    EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+                    OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestMapper(orgWithUpdatedInfo, mockEncodedImage);
+                    String updatedName = "Updated Name";
+                    dtoWithUpdatedInfo.setName(updatedName);
+                    // TEST
+                    assertThrows(
+                            CloudStorageClientException.class,
+                            () -> {
+                                OrganizationDTO result = organizationService.updateOrganization(dtoWithUpdatedInfo);
+                            }
+                            , "Expected exception thrown"
+                    );
+                    Organization orgEntity = organizationsRepository.findById(existingOrgId).orElseThrow();
+                    assertNotEquals(dtoWithUpdatedInfo.getName(), orgEntity.getName(), "Process was interrupted and changes were not saved.");
                 }
 
             }
@@ -348,7 +443,33 @@ class OrganizationServiceImplTest {
             @Test
             @DisplayName("Image file null")
             void test4() {
-
+                // SETUP
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                        organizationMapper,
+                        organizationsRepository,
+                        mockCloudStorageService
+                );
+                Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
+                EncodedImageDTO mockEncodedImage = null;
+                OrganizationDTORequest dtoWithUpdatedInfo = orgDtoToRequestMapper(orgWithUpdatedInfo, mockEncodedImage);
+                String updatedName = "Updated Name";
+                dtoWithUpdatedInfo.setName(updatedName);
+                // TEST
+                assertDoesNotThrow(
+                        () -> {
+                            OrganizationDTO result = organizationService.updateOrganization(dtoWithUpdatedInfo);
+                            assertNotNull(result, "Result object is not null.");
+                            assertEquals(updatedName, result.getName(), "Attribute has expected updated value.");
+                            assertEquals(orgWithUpdatedInfo.getImage(), result.getImage(), "The image attribute was not updated.");
+                        }
+                        , "The service did not throw any exception."
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadBase64File(Mockito.any(), Mockito.any());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
         }
@@ -356,7 +477,29 @@ class OrganizationServiceImplTest {
         @Test
         @DisplayName("Organization not found")
         void test5() {
-
+            // SETUP
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                    organizationMapper,
+                    organizationsRepository,
+                    mockCloudStorageService
+            );
+            Organization orgWithNonExistingId = generateMockOrganization(666);
+            orgWithNonExistingId.setId("NonExistingId");
+            OrganizationDTO dtoWithNonExistingId = organizationMapper.organizationEntity2OrganizationDTO(orgWithNonExistingId);
+            MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+            // TEST
+            assertThrows(RuntimeException.class,
+                    () -> {
+                        OrganizationDTO result = organizationService.updateOrganization(mockImageFile, dtoWithNonExistingId);
+                    }
+                    , "Expected exception thrown."
+            );
+            try {
+                Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(Mockito.any());
+            } catch (CorruptedFileException | CloudStorageClientException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
@@ -401,6 +544,23 @@ class OrganizationServiceImplTest {
         org.setAddress("Address " + indexStamp);
         org.setAboutUsText("AboutUsText " + indexStamp);
         return org;
+    }
+
+    static OrganizationDTORequest orgDtoToRequestMapper(Organization organization, EncodedImageDTO encodedImage) {
+        OrganizationDTORequest organizationDTORequest = new OrganizationDTORequest();
+        organizationDTORequest.setId(organization.getId());
+        organizationDTORequest.setName(organization.getName());
+        organizationDTORequest.setImage(organization.getImage());
+        organizationDTORequest.setPhone(organization.getPhone());
+        organizationDTORequest.setAddress(organization.getAddress());
+        organizationDTORequest.setEmail(organization.getEmail());
+        organizationDTORequest.setWelcomeText(organization.getWelcomeText());
+        organizationDTORequest.setAboutUsText(organization.getAboutUsText());
+        organizationDTORequest.setUrlFacebook(organization.getUrlFacebook());
+        organizationDTORequest.setUrlInstagram(organization.getUrlInstagram());
+        organizationDTORequest.setUrlLinkedin(organization.getUrlLinkedin());
+        organizationDTORequest.setEncoded_image(encodedImage);
+        return organizationDTORequest;
     }
 
 }
