@@ -102,13 +102,38 @@ class OrganizationServiceImplTest {
         @Test
         @DisplayName("Organization found")
         void test1() {
-
+            // SETUP
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                    organizationMapper,
+                    organizationsRepository,
+                    mockCloudStorageService
+            );
+            // TEST
+            ReducedOrganizationDTO result = organizationService.getById(existingOrgId);
+            assertNotNull(result, "Object from result list is not null");
+            assertNotNull(result.getName(), "Name attribute from result list's object is not null");
+            assertTrue(result.getName().contains("name"), "Attribute has expected mock value." );
         }
 
         @Test
         @DisplayName("Organization not found")
         void test2() {
-
+            // SETUP
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                    organizationMapper,
+                    organizationsRepository,
+                    mockCloudStorageService
+            );
+            // TEST
+            assertThrows(
+                    RuntimeException.class,
+                    () -> {
+                        ReducedOrganizationDTO result = organizationService.getById("aNonExistingId");
+                    }
+                    , "Expected exception thrown when entity not found."
+            );
         }
 
     }
