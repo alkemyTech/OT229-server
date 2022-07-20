@@ -4,6 +4,8 @@ import com.alkemy.ong.configuration.H2Configuration;
 import com.alkemy.ong.dto.OrganizationDTO;
 import com.alkemy.ong.dto.ReducedOrganizationDTO;
 import com.alkemy.ong.entities.Organization;
+import com.alkemy.ong.exception.CloudStorageClientException;
+import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.mappers.OrganizationMapper;
 import com.alkemy.ong.repositories.OrganizationsRepository;
 import com.alkemy.ong.services.CloudStorageService;
@@ -13,9 +15,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.Collections;
@@ -68,7 +72,6 @@ class OrganizationServiceImplTest {
             assertEquals(numberOfMockOrgs, resultList.size(), "The expected number of results were returned.");
             for (int i = 0; i < numberOfMockOrgs; i++) {
                 assertNotNull(resultList.get(i), "Object from result list is not null");
-                assertNotNull(resultList.get(i).getName(), "Name attribute from result list's object is not null");
                 assertTrue(resultList.get(i).getName().contains("name"), "Attribute has expected mock value." );
             }
         }
@@ -112,7 +115,6 @@ class OrganizationServiceImplTest {
             // TEST
             ReducedOrganizationDTO result = organizationService.getById(existingOrgId);
             assertNotNull(result, "Object from result list is not null");
-            assertNotNull(result.getName(), "Name attribute from result list's object is not null");
             assertTrue(result.getName().contains("name"), "Attribute has expected mock value." );
         }
 
@@ -150,19 +152,103 @@ class OrganizationServiceImplTest {
                 @Test
                 @DisplayName("Valid case")
                 void test1() {
-
+                    // SETUP
+                    CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                    OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                            organizationMapper,
+                            organizationsRepository,
+                            mockCloudStorageService
+                    );
+                    MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+                    String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+                    try {
+                        Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenReturn(mockUploadedFileUrl);
+                    } catch (CorruptedFileException | CloudStorageClientException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
+                    OrganizationDTO dtoWithUpdatedInfo = organizationMapper.organizationEntity2OrganizationDTO(orgWithUpdatedInfo);
+                    String updatedName = "Updated Name";
+                    dtoWithUpdatedInfo.setName(updatedName);
+                    // TEST
+                    assertDoesNotThrow(
+                            () -> {
+                                OrganizationDTO result = organizationService.updateOrganization(mockImageFile, dtoWithUpdatedInfo);
+                                assertNotNull(result, "Result object is not null.");
+                                assertEquals(updatedName, result.getName(), "Attribute has expected updated value.");
+                                assertEquals(mockUploadedFileUrl, result.getImage(), "The image attribute was accurately updated.");
+                            }
+                            , "The service did not throw any exception."
+                    );
+                    try {
+                        Mockito.verify(mockCloudStorageService).uploadFile(mockImageFile);
+                    } catch (CorruptedFileException | CloudStorageClientException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
                 @Test
                 @DisplayName("Corrupted file")
                 void test2() {
-
+                    // SETUP
+                    CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                    OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                            organizationMapper,
+                            organizationsRepository,
+                            mockCloudStorageService
+                    );
+                    MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+                    try {
+                        Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenThrow(new CorruptedFileException());
+                    } catch (CorruptedFileException | CloudStorageClientException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
+                    OrganizationDTO dtoWithUpdatedInfo = organizationMapper.organizationEntity2OrganizationDTO(orgWithUpdatedInfo);
+                    String updatedName = "Updated Name";
+                    dtoWithUpdatedInfo.setName(updatedName);
+                    // TEST
+                    assertThrows(
+                            CorruptedFileException.class,
+                            () -> {
+                                OrganizationDTO result = organizationService.updateOrganization(mockImageFile, dtoWithUpdatedInfo);
+                            }
+                            , "Expected exception thrown"
+                    );
+                    Organization orgEntity = organizationsRepository.findById(existingOrgId).orElseThrow();
+                    assertNotEquals(dtoWithUpdatedInfo.getName(), orgEntity.getName(), "Process was interrupted and changes were not saved.");
                 }
 
                 @Test
                 @DisplayName("S3 Service problem")
                 void test3() {
-
+                    // SETUP
+                    CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                    OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                            organizationMapper,
+                            organizationsRepository,
+                            mockCloudStorageService
+                    );
+                    MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+                    try {
+                        Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenThrow(new CloudStorageClientException());
+                    } catch (CorruptedFileException | CloudStorageClientException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
+                    OrganizationDTO dtoWithUpdatedInfo = organizationMapper.organizationEntity2OrganizationDTO(orgWithUpdatedInfo);
+                    String updatedName = "Updated Name";
+                    dtoWithUpdatedInfo.setName(updatedName);
+                    // TEST
+                    assertThrows(
+                            CloudStorageClientException.class,
+                            () -> {
+                                OrganizationDTO result = organizationService.updateOrganization(mockImageFile, dtoWithUpdatedInfo);
+                            }
+                            , "Expected exception thrown"
+                    );
+                    Organization orgEntity = organizationsRepository.findById(existingOrgId).orElseThrow();
+                    assertNotEquals(dtoWithUpdatedInfo.getName(), orgEntity.getName(), "Process was interrupted and changes were not saved.");
                 }
 
             }
@@ -170,7 +256,32 @@ class OrganizationServiceImplTest {
             @Test
             @DisplayName("Image file null")
             void test4() {
-
+                // SETUP
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                        organizationMapper,
+                        organizationsRepository,
+                        mockCloudStorageService
+                );
+                Organization orgWithUpdatedInfo = organizationsRepository.findById(existingOrgId).orElseThrow();
+                OrganizationDTO dtoWithUpdatedInfo = organizationMapper.organizationEntity2OrganizationDTO(orgWithUpdatedInfo);
+                String updatedName = "Updated Name";
+                dtoWithUpdatedInfo.setName(updatedName);
+                // TEST
+                assertDoesNotThrow(
+                        () -> {
+                            OrganizationDTO result = organizationService.updateOrganization(null, dtoWithUpdatedInfo);
+                            assertNotNull(result, "Result object is not null.");
+                            assertEquals(updatedName, result.getName(), "Attribute has expected updated value.");
+                            assertEquals(orgWithUpdatedInfo.getImage(), result.getImage(), "The image attribute was not updated.");
+                        }
+                        , "The service did not throw any exception."
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(Mockito.any());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
         }
@@ -178,7 +289,29 @@ class OrganizationServiceImplTest {
         @Test
         @DisplayName("Organization not found")
         void test5() {
-
+            // SETUP
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            OrganizationServiceImpl organizationService = new OrganizationServiceImpl(
+                    organizationMapper,
+                    organizationsRepository,
+                    mockCloudStorageService
+            );
+            Organization orgWithNonExistingId = generateMockOrganization(666);
+            orgWithNonExistingId.setId("NonExistingId");
+            OrganizationDTO dtoWithNonExistingId = organizationMapper.organizationEntity2OrganizationDTO(orgWithNonExistingId);
+            MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+            // TEST
+            assertThrows(RuntimeException.class,
+                    () -> {
+                        OrganizationDTO result = organizationService.updateOrganization(mockImageFile, dtoWithNonExistingId);
+                    }
+                    , "Expected exception thrown."
+            );
+            try {
+                Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(Mockito.any());
+            } catch (CorruptedFileException | CloudStorageClientException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
