@@ -6,6 +6,7 @@ import com.alkemy.ong.dto.ActivityDTORequest;
 import com.alkemy.ong.dto.EncodedImageDTO;
 import com.alkemy.ong.entities.ActivityEntity;
 import com.alkemy.ong.exception.ActivityNamePresentException;
+import com.alkemy.ong.exception.ActivityNotFoundException;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.mappers.ActivityMapper;
@@ -36,6 +37,8 @@ public class ActivitiesServiceImplTest {
     private ActivityRepository activityRepository;
 
     private static String existingActivityByName = "";
+
+    private static String existingActivityById = "";
     private static final int numberOfMockOrgs = 5;
 
     @BeforeEach
@@ -46,6 +49,7 @@ public class ActivitiesServiceImplTest {
             activity = activityRepository.save(generateMockActivity(i));
         }
         existingActivityByName = activity.getName();
+        existingActivityById = activity.getId();
     }
 
     @AfterEach
@@ -55,7 +59,7 @@ public class ActivitiesServiceImplTest {
     }
 
     @Nested
-    class saveActivity{
+    class saveActivityTest{
         @Nested
         class WithMultiPartFile{
             @Test
@@ -106,8 +110,7 @@ public class ActivitiesServiceImplTest {
                     throw new RuntimeException(e);
                 }
 
-                String nameNewActivity = "Activity 2";
-                ActivityDTO activityDTO = generateANewActivityDTO(nameNewActivity);
+                ActivityDTO activityDTO = generateANewActivityDTO(existingActivityByName);
 
                 assertThrows(
                     ActivityNamePresentException.class,
@@ -199,7 +202,7 @@ public class ActivitiesServiceImplTest {
         @Nested
         class WithImageBase64Encoded{
             @Test
-            @DisplayName("Successful save")
+            @DisplayName("Successful edit")
             void test1(){
                 CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
                 ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
@@ -252,9 +255,8 @@ public class ActivitiesServiceImplTest {
                     throw new RuntimeException(e);
                 }
 
-                String nameNewActivity = "Activity 2";
                 EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
-                ActivityDTORequest activityDTORequest = generateANewActivityDTORequest(nameNewActivity, mockEncodedImage);
+                ActivityDTORequest activityDTORequest = generateANewActivityDTORequest(existingActivityByName, mockEncodedImage);
 
                 assertThrows(
                     ActivityNamePresentException.class,
@@ -350,6 +352,411 @@ public class ActivitiesServiceImplTest {
         }
     }
 
+    @Nested
+    class editActivityTest{
+        @Nested
+        class WithMultiPartFile{
+            @Test
+            @DisplayName("Successful edit")
+            void test1(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                ActivityEntity activityEntity = activityRepository.findById(existingActivityById).get();
+                ActivityDTO activityDTOUpdated = activityMapper.activityEntity2DTO(activityEntity);
+                String newName = "Name updated 0";
+                activityDTOUpdated.setName(newName);
+
+                assertDoesNotThrow(
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(mockImageFile, activityDTOUpdated, existingActivityById);
+                            assertNotNull(result, "Result object is not null.");
+                            assertEquals(newName, result.getName(), "Attribute has expected updated value.");
+                            assertEquals(mockUploadedFileUrl, result.getImage(), "The image attribute was accurately updated.");
+                        }
+                        , "The service did not throw any exception."
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService).uploadFile(mockImageFile);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Test
+            @DisplayName("Activity not found")
+            void test2(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                String nonExistingId = "NonExistingId";
+                ActivityEntity activityEntity = generateMockActivity(940);
+                activityEntity.setId(nonExistingId);
+                ActivityDTO activityDTOUpdated = activityMapper.activityEntity2DTO(activityEntity);
+                String newName = "Name updated 1";
+                activityDTOUpdated.setName(newName);
+
+                assertThrows(
+                        ActivityNotFoundException.class,
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(mockImageFile, activityDTOUpdated, nonExistingId);
+                        }
+                        , "Expected exception thrown."
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(mockImageFile);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Test
+            @DisplayName("Name should be unique")
+            void test3(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                ActivityEntity activityEntity = activityRepository.findById(existingActivityById).get();
+                ActivityDTO activityDTOUpdated = activityMapper.activityEntity2DTO(activityEntity);
+                String newName = "Activity 1";
+                activityDTOUpdated.setName(newName);
+
+                assertThrows(
+                        ActivityNamePresentException.class,
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(mockImageFile, activityDTOUpdated, existingActivityById);
+                        }
+                        , "Expected exception thrown."
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(mockImageFile);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Test
+            @DisplayName("Corrupted file")
+            void test4(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenThrow(new CorruptedFileException());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                ActivityEntity activityEntity = activityRepository.findById(existingActivityById).get();
+                ActivityDTO activityDTOUpdated = activityMapper.activityEntity2DTO(activityEntity);
+                String newName = "Name updated 2";
+                activityDTOUpdated.setName(newName);
+
+                assertThrows(
+                        CorruptedFileException.class,
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(mockImageFile, activityDTOUpdated, existingActivityById);
+                        }
+                        ,"Expected exception thrown"
+                );
+                ActivityEntity orgEntity = activityRepository.findById(existingActivityById).orElseThrow();
+                assertNotEquals(activityDTOUpdated.getName(), orgEntity.getName(), "Process was interrupted and changes were not saved.");
+            }
+
+            @Test
+            @DisplayName("Image null")
+            void test5(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                ActivityEntity activityEntity = activityRepository.findById(existingActivityById).get();
+                ActivityDTO activityDTOUpdated = activityMapper.activityEntity2DTO(activityEntity);
+                String newName = "Name updated 3";
+                activityDTOUpdated.setName(newName);
+
+                assertDoesNotThrow(
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(null, activityDTOUpdated, existingActivityById);
+                            assertNotNull(result, "Result object is not null.");
+                            assertEquals(activityDTOUpdated.getImage(), result.getImage(), "The image attribute was not updated.");
+                        }
+                        , "The service did not throw any exception."
+                );
+
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(Mockito.any());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Test
+            @DisplayName("S3 Service problem3")
+            void test6(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenThrow(new CloudStorageClientException());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                ActivityEntity activityEntity = activityRepository.findById(existingActivityById).get();
+                ActivityDTO activityDTOUpdated = activityMapper.activityEntity2DTO(activityEntity);
+                String newName = "Name updated 4";
+                activityDTOUpdated.setName(newName);
+
+                assertThrows(
+                        CloudStorageClientException.class,
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(mockImageFile, activityDTOUpdated, existingActivityById);
+                        }
+                        , "Expected exception thrown"
+                );
+                ActivityEntity orgEntity = activityRepository.findById(existingActivityById).orElseThrow();
+                assertNotEquals(activityDTOUpdated.getName(), orgEntity.getName(), "Process was interrupted and changes were not saved.");
+            }
+        }
+
+        @Nested
+        class WithImageBase64Encoded{
+            @Test
+            @DisplayName("Successful edit")
+            void test1(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                String mockEncodedImageFileName = "test_file.mock";
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                            .thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+
+                ActivityEntity activityEntity = activityRepository.findById(existingActivityById).get();
+                ActivityDTORequest activityDTORequestUpdated = entityToDTORequest(activityEntity, mockEncodedImage);
+                String newName = "Name updated 6";
+                activityDTORequestUpdated.setName(newName);
+
+                assertDoesNotThrow(
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(activityDTORequestUpdated, existingActivityById);
+                            assertNotNull(result, "Result object is not null.");
+                            assertEquals(mockUploadedFileUrl, result.getImage(), "The image attribute was accurately updated.");
+                        }
+                        , "The service did not throw any exception."
+                );
+
+                try {
+                    Mockito.verify(mockCloudStorageService).uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Test
+            @DisplayName("Activity not found")
+            void test2(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                String mockEncodedImageFileName = "test_file.mock";
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                            .thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+
+                String nonExistingId = "NonExistingId";
+                ActivityEntity activityEntity = generateMockActivity(940);
+                activityEntity.setId(nonExistingId);
+                ActivityDTORequest activityDTORequestUpdated = entityToDTORequest(activityEntity, mockEncodedImage);
+                String newName = "Name updated 7";
+                activityDTORequestUpdated.setName(newName);
+
+                assertThrows(
+                        ActivityNotFoundException.class,
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(activityDTORequestUpdated, nonExistingId);
+                        }
+                        , "Expected exception thrown."
+                );
+            }
+
+            @Test
+            @DisplayName("Name should be unique")
+            void test3(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                String mockEncodedImageFileName = "test_file.mock";
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                            .thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+
+                ActivityEntity activityEntity = activityRepository.findById(existingActivityById).get();
+                ActivityDTORequest activityDTORequestUpdated = entityToDTORequest(activityEntity, mockEncodedImage);
+                String newName = "Activity 1";
+                activityDTORequestUpdated.setName(newName);
+
+                assertThrows(
+                        ActivityNamePresentException.class,
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(activityDTORequestUpdated, existingActivityById);
+                        }
+                        , "Expected exception thrown."
+                );
+            }
+
+            @Test
+            @DisplayName("Corrupted file")
+            void test4(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                String mockEncodedImageFileName = "test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                            .thenThrow(new CorruptedFileException());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+
+                ActivityEntity activityEntity = activityRepository.findById(existingActivityById).get();
+                ActivityDTORequest activityDTORequestUpdated = entityToDTORequest(activityEntity, mockEncodedImage);
+                String newName = "Name updated 8";
+                activityDTORequestUpdated.setName(newName);
+
+                assertThrows(
+                        CorruptedFileException.class,
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(activityDTORequestUpdated, existingActivityById);
+                        }
+                        ,"Expected exception thrown"
+                );
+                ActivityEntity orgEntity = activityRepository.findById(existingActivityById).orElseThrow();
+                assertNotEquals(activityDTORequestUpdated.getName(), orgEntity.getName(), "Process was interrupted and changes were not saved.");
+            }
+
+            @Test
+            @DisplayName("Image null")
+            void test5(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                ActivityEntity activityEntity = activityRepository.findById(existingActivityById).get();
+                ActivityDTORequest activityDTORequestUpdated = entityToDTORequest(activityEntity, null);
+                String newName = "Name updated 9";
+                activityDTORequestUpdated.setName(newName);
+
+                assertDoesNotThrow(
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(activityDTORequestUpdated, existingActivityById);
+                            assertNotNull(result, "Result object is not null.");
+                            assertEquals(activityDTORequestUpdated.getImage(), result.getImage(), "The image attribute was not updated.");
+                        }
+                        , "The service did not throw any exception."
+                );
+
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(Mockito.any());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Test
+            @DisplayName("S3 Service problem3")
+            void test6(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                String mockEncodedImageFileName = "test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                            .thenThrow(new CloudStorageClientException());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+
+                ActivityEntity activityEntity = activityRepository.findById(existingActivityById).get();
+                ActivityDTORequest activityDTORequestUpdated = entityToDTORequest(activityEntity, mockEncodedImage);
+                String newName = "Name updated 10";
+                activityDTORequestUpdated.setName(newName);
+
+                assertThrows(
+                        CloudStorageClientException.class,
+                        () -> {
+                            ActivityDTO result = activitiesService.edit(activityDTORequestUpdated, existingActivityById);
+                        }
+                        , "Expected exception thrown"
+                );
+                ActivityEntity orgEntity = activityRepository.findById(existingActivityById).orElseThrow();
+                assertNotEquals(activityDTORequestUpdated.getName(), orgEntity.getName(), "Process was interrupted and changes were not saved.");
+            }
+        }
+    }
+
     private static ActivityEntity generateMockActivity(int indedxStamp){
         ActivityEntity activityEntity = new ActivityEntity();
         activityEntity.setId("Activity ID " + indedxStamp);
@@ -376,6 +783,16 @@ public class ActivitiesServiceImplTest {
         activityDTORequest.setContent("Test save content");
         activityDTORequest.setEncoded_image(encodedImage);
         activityDTORequest.setImage("testSave.jpg");
+
+        return activityDTORequest;
+    }
+
+    private static ActivityDTORequest entityToDTORequest(ActivityEntity activityEntity, EncodedImageDTO encodedImageDTO){
+        ActivityDTORequest activityDTORequest = new ActivityDTORequest();
+        activityDTORequest.setName(activityEntity.getName());
+        activityDTORequest.setContent(activityEntity.getContent());
+        activityDTORequest.setEncoded_image(encodedImageDTO);
+        activityDTORequest.setImage(activityEntity.getImage());
 
         return activityDTORequest;
     }
