@@ -57,7 +57,7 @@ public class ActivitiesServiceImplTest {
         @Nested
         class WithMultiPartFile{
             @Test
-            @DisplayName("Successful save - Multipart file")
+            @DisplayName("Successful save")
             void test1(){
                 CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
                 ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
@@ -75,12 +75,12 @@ public class ActivitiesServiceImplTest {
                 ActivityDTO activityDTO = generateANewActivityDTO(nameNewActivity);
 
                 assertDoesNotThrow(
-                        () -> {
-                            ActivityDTO result = activitiesService.save(mockImageFile, activityDTO);
-                            assertNotNull(result, "Result object is not null.");
-                            assertEquals(mockUploadedFileUrl, result.getImage(), "The image attribute was accurately updated.");
-                        }
-                        , "The service did not throw any exception."
+                    () -> {
+                        ActivityDTO result = activitiesService.save(mockImageFile, activityDTO);
+                        assertNotNull(result, "Result object is not null.");
+                        assertEquals(mockUploadedFileUrl, result.getImage(), "The image attribute was accurately updated.");
+                    }
+                    , "The service did not throw any exception."
                 );
                 try {
                     Mockito.verify(mockCloudStorageService).uploadFile(mockImageFile);
@@ -90,7 +90,7 @@ public class ActivitiesServiceImplTest {
             }
 
             @Test
-            @DisplayName("Name already exist - Multipart file")
+            @DisplayName("Name already exist")
             void test2(){
                 CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
                 ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
@@ -108,19 +108,70 @@ public class ActivitiesServiceImplTest {
                 ActivityDTO activityDTO = generateANewActivityDTO(nameNewActivity);
 
                 assertThrows(
-                        ActivityNamePresentException.class,
-                        () -> {
-                            ActivityDTO result = activitiesService.save(mockImageFile, activityDTO);
-                        }
-                            ,"Expected exception thrown"
+                    ActivityNamePresentException.class,
+                    () -> {
+                        ActivityDTO result = activitiesService.save(mockImageFile, activityDTO);
+                    }
+                        ,"Expected exception thrown"
                 );
+            }
+
+            @Test
+            @DisplayName("Corrupted file")
+            void test3(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenThrow(new CorruptedFileException());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                String nameNewActivity = "Test name";
+                ActivityDTO activityDTO = generateANewActivityDTO(nameNewActivity);
+
+                assertThrows(
+                    CorruptedFileException.class,
+                    () -> {
+                        ActivityDTO result = activitiesService.save(mockImageFile, activityDTO);
+                    }
+                    ,"Expected exception thrown"
+                );
+            }
+
+            @Test
+            @DisplayName("Image null")
+            void test4(){
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                ActivitiesServiceImpl activitiesService = new ActivitiesServiceImpl(activityMapper, activityRepository, mockCloudStorageService);
+
+                String nameNewActivity = "Test name";
+                ActivityDTO activityDTO = generateANewActivityDTO(nameNewActivity);
+
+                assertDoesNotThrow(
+                        () -> {
+                            ActivityDTO result = activitiesService.save(null, activityDTO);
+                            assertNotNull(result, "Result object is not null.");
+                            assertEquals(activityDTO.getImage(), result.getImage(), "The image attribute was not updated.");
+                        }
+                        , "The service did not throw any exception."
+                );
+
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(Mockito.any());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         @Nested
         class WithCloudStorageService{
             @Test
-            @DisplayName("Successful save - Cloud storage")
+            @DisplayName("Successful save")
             void test1(){
 
             }
