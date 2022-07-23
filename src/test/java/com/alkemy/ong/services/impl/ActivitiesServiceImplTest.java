@@ -39,13 +39,13 @@ public class ActivitiesServiceImplTest {
     private static String existingActivityByName = "";
 
     private static String existingActivityById = "";
-    private static final int numberOfMockOrgs = 5;
+    private static final int numberOfMockActivity = 5;
 
     @BeforeEach
     @Transactional
     void populateDatabase() {
         ActivityEntity activity = new ActivityEntity();
-        for (int i = 1; i <= numberOfMockOrgs; i++) {
+        for (int i = 1; i <= numberOfMockActivity; i++) {
             activity = activityRepository.save(generateMockActivity(i));
         }
         existingActivityByName = activity.getName();
