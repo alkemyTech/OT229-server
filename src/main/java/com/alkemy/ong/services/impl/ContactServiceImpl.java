@@ -30,6 +30,12 @@ public class ContactServiceImpl implements ContactService {
     @Autowired
     EmailService emailService;
 
+    @Autowired
+    public ContactServiceImpl(ContactMapper mapper, ContactRepository repository,EmailService emailService){
+        this.mapper=mapper;
+        this.repository=repository;
+        this.emailService=emailService;
+    }
     @Override
     public ContactDTOResponse create(ContactDTORequest request) throws Exception {
 
