@@ -41,7 +41,7 @@ public class Contact {
     @Column(name = "deleted_at", updatable = false)
     private Timestamp deletedAt;
 
-    @Column
+    @Column(name="soft_delete")
     private boolean softDelete;
 
     @PreRemove
