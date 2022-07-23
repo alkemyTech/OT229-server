@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {H2Configuration.class}, loader = AnnotationConfigContextLoader.class)
@@ -31,7 +32,7 @@ public class ContactServiceImplTest {
     @Autowired
     private ContactRepository contactRepository;
 
-    private EmailService emailService= Mockito.mock(EmailServiceImp.class);
+    private EmailService emailService= new EmailServiceImp() ;
     private static String existingContactId = "";
     private static final int numberOfMocksContacts = 5;
 
@@ -98,12 +99,17 @@ public class ContactServiceImplTest {
         void test1() throws Exception {
             String nameContact = "Contact test";
             ContactServiceImpl service = new ContactServiceImpl(contactMapper, contactRepository, emailService);
-            ContactDTORequest request = generateMockContactDTORequest();
+            ContactDTORequest request = new ContactDTORequest();
+            request.setName("Contact test");
+            request.setMessage("hi");
+            request.setEmail("test@test.com");
             Contact entity = contactMapper.DTORequest2ContactEntity(request);
             ContactDTOResponse response = generateMockContactDTOResponse(request);
 
             try {
+
                 Mockito.when(service.create(request)).thenReturn(response);
+
             }catch(Exception e){
                 throw new Exception(e);
             }
@@ -156,7 +162,7 @@ public class ContactServiceImplTest {
             ContactDTOResponse response = generateMockContactDTOResponse(request);
 
 
-           Mockito.when(service.create(request)).thenReturn(response);
+           Mockito.when(service.create(request)).thenThrow(new Exception("broken attributes"));
 
             assertThrows(
                    Exception.class,
