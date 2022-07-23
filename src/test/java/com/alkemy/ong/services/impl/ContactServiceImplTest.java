@@ -31,7 +31,7 @@ public class ContactServiceImplTest {
     @Autowired
     private ContactRepository contactRepository;
 
-  private static final EmailService emailService= new EmailServiceImp();
+    private EmailService emailService= Mockito.mock(EmailServiceImp.class);
     private static String existingContactId = "";
     private static final int numberOfMocksContacts = 5;
 
