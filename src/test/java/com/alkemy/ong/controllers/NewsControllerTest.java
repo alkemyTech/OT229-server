@@ -1,14 +1,12 @@
 package com.alkemy.ong.controllers;
 import com.alkemy.ong.configuration.SwaggerConfiguration;
 import com.alkemy.ong.dto.*;
-import com.alkemy.ong.exception.ActivityNamePresentException;
 import com.alkemy.ong.exception.PageIndexOutOfBoundsException;
 import com.alkemy.ong.security.configuration.SecurityConfiguration;
 import com.alkemy.ong.security.service.JwtService;
 import com.alkemy.ong.security.service.impl.UserDetailsServiceImpl;
-import com.alkemy.ong.services.ActivitiesService;
+import com.alkemy.ong.services.NewsService;
 import com.alkemy.ong.services.impl.AmazonS3ServiceImpl;
-import com.alkemy.ong.services.impl.NewsServiceImpl;
 import com.alkemy.ong.utility.GlobalConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -51,7 +49,7 @@ public class NewsControllerTest {
     @MockBean
     AmazonS3ServiceImpl amazonS3Service;
     @MockBean
-    private NewsServiceImpl newsService;
+    private NewsService newsService;
 
     String url = GlobalConstants.Endpoints.NEWS;
 
@@ -349,13 +347,13 @@ public class NewsControllerTest {
             Mockito.verify(newsService, Mockito.never()).updateNews(Mockito.any(), Mockito.any());
         }
 
-        @ParameterizedTest
+        /*@ParameterizedTest
         @MethodSource("com.alkemy.ong.controllers.NewsControllerTest#generateRequestsWithMissingAttributes")
         @DisplayName("Mandatory atributes missing")
         @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_ADMIN)
         void testUpdateNewsWithMissingAttributes(NewsDTORequest requestWithMissingAttribute) throws Exception {
             NewsDTO expectedResponse = createMockNewsDTO();
-            Mockito.when(newsService.updateNews(Mockito.any(), Mockito.any())).thenReturn(expectedResponse);
+            Mockito.when(newsService.updateNews(Mockito.any(), Mockito.any())).thenThrow(new IllegalArgumentException("category null"));
             String id = "id123";
 
             mockMvc.perform(MockMvcRequestBuilders.put(url + "/{id}", id)
@@ -367,7 +365,28 @@ public class NewsControllerTest {
                     .andDo(MockMvcResultHandlers.print());
 
             Mockito.verify(newsService, Mockito.never()).updateNews(Mockito.any(), Mockito.any());
+        }*/
+        @ParameterizedTest
+        @MethodSource("com.alkemy.ong.controllers.NewsControllerTest#generateRequestsWithMissingAttributes")
+        @DisplayName("Missing Attributes")
+        @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_ADMIN)
+        void test7(NewsDTORequest requestWithMissingAttribute) throws Exception {
+            String id= "id123";
+            NewsDTO response = createMockNewsDTO();
+            Mockito.when(newsService.updateNews(Mockito.any(),Mockito.any())).thenReturn(response);
+
+            mockMvc.perform(MockMvcRequestBuilders.put(url +"/{id}", id)
+                            .content(jsonMapper.writeValueAsString( requestWithMissingAttribute))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("News Test DTO"))))
+                    .andDo(MockMvcResultHandlers.print());
+
+            Mockito.verify(newsService, Mockito.never()).updateNews(Mockito.any(),Mockito.any());
         }
+
+
         @ParameterizedTest
         @MethodSource("com.alkemy.ong.controllers.NewsControllerTest#generateRequestsWithBrokenAttribute")
         @DisplayName("Broken Attributes")
@@ -388,7 +407,25 @@ public class NewsControllerTest {
             Mockito.verify(newsService, Mockito.never()).updateNews(Mockito.any(), Mockito.any());
         }
 
+        @Test
+        @DisplayName("Throw illegal exception")
+        @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_ADMIN)
+        void testUpdateNewsThrowException() throws Exception {
+            String id = "id123";
+            NewsDTORequest request = createMockNewsRequest();
 
+            Mockito.when(newsService.updateNews(Mockito.any(), Mockito.any())).thenThrow(new IllegalArgumentException());
+
+            mockMvc.perform(MockMvcRequestBuilders.put(url + "/{id}", id)
+                            .content(jsonMapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("News"))))
+                    .andDo(MockMvcResultHandlers.print());
+
+            Mockito.verify(newsService).updateNews(Mockito.any(), Mockito.any());
+        }
     }
 
     @Nested
@@ -482,26 +519,6 @@ public class NewsControllerTest {
 
             Mockito.verify(newsService).save(Mockito.any());
         }
-
-        /*@Test
-        @DisplayName("Name already exists")
-        @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_ADMIN)
-        void test2() throws Exception{
-            NewsDTORequest request = createMockNewsRequest();
-
-            Mockito.when(newsService.save(Mockito.any())).thenThrow(new RuntimeException());
-
-            mockMvc.perform(MockMvcRequestBuilders.post(url)
-                            .content(jsonMapper.writeValueAsString(request))
-                            .contentType(MediaType.APPLICATION_JSON)
-                    )
-                    .andExpect(MockMvcResultMatchers.status().isConflict())
-                    .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString("News Test DTO"))))
-                    .andDo(MockMvcResultHandlers.print());
-
-            Mockito.verify(newsService).save(Mockito.any());
-        }*/
-
         @Test
         @DisplayName("Invalid role")
         @WithMockUser(username = "mock.user@mockmail.mock", authorities = GlobalConstants.ROLE_USER)
@@ -615,30 +632,28 @@ public class NewsControllerTest {
         static List<NewsDTORequest> generateRequestsWithMissingAttributes() {
             List<NewsDTORequest> requestList = new ArrayList<>();
             NewsDTORequest dto;
-
+            CategoryDTO cat = new CategoryDTO();
+            cat.setName(null);
             //missing name
             dto = createMockNewsRequest();
-            dto.setName(null);
+            dto.setName("");
+            dto.setCategory(cat);
             requestList.add(dto);
 
             //missing content
             dto = createMockNewsRequest();
-            dto.setContent(null);
-            requestList.add(dto);
-
-            //missing content
-            dto = createMockNewsRequest();
-            dto.setCategory(null);
+            dto.setContent("");
+            dto.setCategory(cat);
             requestList.add(dto);
 
             return requestList;
         }
 
         static List<NewsDTORequest> generateRequestsWithBrokenAttribute() {
-            List<NewsDTORequest> requestList = new ArrayList<>();
-            CategoryDTO cat = new CategoryDTO();
-            cat.setName("21&$#");
+            List<NewsDTORequest> requestList = new LinkedList<>();
             NewsDTORequest dto;
+            CategoryDTO cat = new CategoryDTO();
+            cat.setName("");
 
             //case 1: blank name
             dto = createMockNewsRequest();
@@ -649,17 +664,15 @@ public class NewsControllerTest {
             //case 2: blank content
             dto = createMockNewsRequest();
             dto.setContent("");
-            dto.setCategory(cat);
             requestList.add(dto);
 
             //case 3: Blank encoded file
             dto = createMockNewsRequest();
-            dto.setCategory(cat);
-            dto.setEncoded_image(new EncodedImageDTO("sample.png", ""));
+            dto.setEncoded_image(new EncodedImageDTO("", ""));
             requestList.add(dto);
 
+            //case 4
             dto = createMockNewsRequest();
-            dto.setCategory(cat);
             dto.setEncoded_image(new EncodedImageDTO(
         "", "iVBORw0KGgoAAAANSUhEUgAAABAAAAAFCAIAAADDivseAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAA5SURBVBhXZctBDgAhEAJB"));;
             requestList.add(dto);
