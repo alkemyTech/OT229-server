@@ -100,10 +100,13 @@ public class ContactServiceImplTest {
             ContactServiceImpl service = new ContactServiceImpl(contactMapper, contactRepository, emailService);
             ContactDTORequest request = generateMockContactDTORequest();
             Contact entity = contactMapper.DTORequest2ContactEntity(request);
-            ContactDTOResponse response = generateMockContactDTOResponse(entity);
+            ContactDTOResponse response = generateMockContactDTOResponse(request);
 
-            Mockito.when(service.create(request)).thenReturn(response);
-
+            try {
+                Mockito.when(service.create(request)).thenReturn(response);
+            }catch(Exception e){
+                throw new Exception(e);
+            }
             assertDoesNotThrow(
                     () -> {
                         ContactDTOResponse result = service.create(request);
@@ -150,25 +153,22 @@ public class ContactServiceImplTest {
             ContactServiceImpl service = new ContactServiceImpl(contactMapper, contactRepository, emailService);
             ContactDTORequest request = generateMockContactDTORequestWithBrokenAttributes();
             Contact entity = contactMapper.DTORequest2ContactEntity(request);
+            ContactDTOResponse response = generateMockContactDTOResponse(request);
 
-            try {
-                Mockito.when(service.create(request)).thenThrow(new Exception("broken attributes"));
-            }catch(Exception e){
-                throw new Exception("Broken Attributes");
-            }
+
+           Mockito.when(service.create(request)).thenReturn(response);
+
             assertThrows(
                    Exception.class,
                     () -> {
-                        ContactDTOResponse response = service.create(request);
+                        ContactDTOResponse result = service.create(request);
                     }
                     ,"Expected exception thrown"
             );
-            try {
+
                 Mockito.verify(contactRepository, Mockito.never()).save(entity);
                 Mockito.verify(emailService,Mockito.never()).sendEmail(request.getEmail(), GlobalConstants.TEMPLATE_CONTACT);
-            } catch (Exception e) {
-                throw new Exception("Broken Attributes");
-            }
+
         }
     }
 
@@ -198,10 +198,10 @@ public class ContactServiceImplTest {
         return request;
     }
 
-    static ContactDTOResponse generateMockContactDTOResponse(Contact contact) {
+    static ContactDTOResponse generateMockContactDTOResponse(ContactDTORequest request) {
         ContactDTOResponse response = new ContactDTOResponse();
-        response.setName(contact.getName());
-        response.setEmail(contact.getEmail());
+        response.setName(request.getName());
+        response.setEmail(request.getEmail());
         response.setConfirmation("test ok");
         return response;
     }
