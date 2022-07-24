@@ -27,6 +27,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -607,6 +608,104 @@ public class UserServiceImplTest {
             );
         }
 
+    }
+
+    @Nested
+    class GetAllTest{
+        @Test
+        @DisplayName("Populated list returned")
+        void test1() {
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+            RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+            EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+            JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+            UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                    jwtService, emailService, roleService);
+
+            List<UserDTO> resultList = userService.getAll();
+            assertEquals(numberOfMockUser, resultList.size(), "The expected number of results were returned.");
+            for (int i = 0; i < numberOfMockUser; i++) {
+                assertNotNull(resultList.get(i), "Object from result list is not null");
+                assertTrue(resultList.get(i).getFirstName().contains("Firstname"), "Attribute has expected mock value." );
+            }
+        }
+
+        @Test
+        @DisplayName("Empty list returned")
+        void test2() {
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+            RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+            EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+            JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+            UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                    jwtService, emailService, roleService);
+
+            emptyDatabase();
+            assertDoesNotThrow(
+                    () -> {
+                        List<UserDTO> resultList = userService.getAll();
+                        assertEquals(0, resultList.size(), "Zero results were returned from the repository.");
+                    }
+                    , "Service did not throw an exception when receiving and empty list from the repository."
+            );
+        }
+    }
+
+    @Nested
+    class GetMeTest{
+        @Test
+        @DisplayName("Valid case")
+        void test1() throws Exception{
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+            RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+            EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+            JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+            UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                    jwtService, emailService, roleService);
+
+            String email = "userMock3@mockito.mock";
+
+            Mockito.when(jwtService.getUsername(Mockito.any())).thenReturn(email);
+
+            assertDoesNotThrow(
+                    () -> {
+                        UserDTO result = userService.getMe(email);
+                        assertNotNull(result, "Result object is not null.");
+                    }
+                    , "The service did not throw any exception."
+            );
+        }
+
+        @Test
+        @DisplayName("Not found")
+        void test2() throws Exception{
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+            RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+            EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+            JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+            UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                    jwtService, emailService, roleService);
+
+            String email = "userNotFound@mockito.mock";
+
+            Mockito.when(jwtService.getUsername(Mockito.any())).thenReturn(email);
+
+            assertThrows(
+                    NotFoundException.class,
+                    () -> {
+                        UserDTO result = userService.getMe(email);
+                    }
+                    , "Expected exception thrown"
+            );
+        }
     }
 
     private static User generateMockUser(int indexStamp) {
