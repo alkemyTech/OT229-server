@@ -32,7 +32,6 @@ public class ContactServiceImplTest {
     @Autowired
     private ContactRepository contactRepository;
 
-    private EmailService emailService= new EmailServiceImp() ;
     private static String existingContactId = "";
     private static final int numberOfMocksContacts = 5;
 
@@ -58,6 +57,7 @@ public class ContactServiceImplTest {
         @Test
         @DisplayName("Populated list returned")
         void test1() {
+            EmailService emailService = Mockito.mock(EmailService.class);
             // SETUP
             ContactServiceImpl contactService = new ContactServiceImpl(
                     contactMapper, contactRepository, emailService
@@ -74,6 +74,7 @@ public class ContactServiceImplTest {
         @Test
         @DisplayName("Empty list returned")
         void test2() {
+            EmailService emailService = Mockito.mock(EmailService.class);
             // SETUP
             ContactServiceImpl contactService = new ContactServiceImpl(
                     contactMapper, contactRepository, emailService
@@ -97,33 +98,20 @@ public class ContactServiceImplTest {
         @Test
         @DisplayName("Successful save")
         void test1() throws Exception {
-            String nameContact = "Contact test";
-            ContactServiceImpl service = new ContactServiceImpl(contactMapper, contactRepository, emailService);
-            ContactDTORequest request = new ContactDTORequest();
-            request.setName("Contact test");
-            request.setMessage("hi");
-            request.setEmail("test@test.com");
-            Contact entity = contactMapper.DTORequest2ContactEntity(request);
-            ContactDTOResponse response = generateMockContactDTOResponse(request);
+            EmailService emailService = Mockito.mock(EmailService.class);
+            ContactServiceImpl contactService = new ContactServiceImpl(contactMapper, contactRepository, emailService);
+            ContactDTORequest request = generateMockContactDTORequest();
 
-            try {
-
-                Mockito.when(service.create(request)).thenReturn(response);
-
-            }catch(Exception e){
-                throw new Exception(e);
-            }
             assertDoesNotThrow(
                     () -> {
-                        ContactDTOResponse result = service.create(request);
+                        ContactDTOResponse result = contactService.create(request);
                         assertNotNull(result, "The object is not null");
-                        assertEquals(nameContact, response.getName());
+                        assertEquals(request.getName(), result.getName());
 
                     }
-                    , "The service did not throw any exception."
+                    , "The contactService did not throw any exception."
             );
             try {
-                Mockito.verify(contactRepository.save(entity));
                 Mockito.verify(emailService).sendEmail(request.getEmail(), GlobalConstants.TEMPLATE_CONTACT);
             } catch (Exception e) {
                 throw new Exception(e);
@@ -132,21 +120,19 @@ public class ContactServiceImplTest {
         @Test
         @DisplayName("emailService throw Exception")
         void test2() throws Exception {
-
+            EmailService emailService = Mockito.mock(EmailService.class);
             ContactServiceImpl service = new ContactServiceImpl(contactMapper, contactRepository, emailService);
             ContactDTORequest request = generateMockContactDTORequest();
-            Contact entity = contactMapper.DTORequest2ContactEntity(request);
 
-            Mockito.when(service.create(request)).thenThrow(new Exception ("send email failed"));
+            Mockito.when(service.create(request)).thenThrow(new IOException ("send email failed"));
             assertThrows(
-                   Exception.class,
+                   IOException.class,
                     () -> {
                         ContactDTOResponse response = service.create(request);
                     }
                     ,"Expected exception thrown"
             );
             try {
-                Mockito.verify(contactRepository, Mockito.never()).save(entity);
                 Mockito.verify(emailService).sendEmail(request.getEmail(), GlobalConstants.TEMPLATE_CONTACT);
             } catch (Exception e) {
                 throw new Exception(e);
@@ -155,14 +141,9 @@ public class ContactServiceImplTest {
         @Test
         @DisplayName("Broken attributes")
         void test3() throws Exception {
-
+            EmailService emailService = Mockito.mock(EmailService.class);
             ContactServiceImpl service = new ContactServiceImpl(contactMapper, contactRepository, emailService);
             ContactDTORequest request = generateMockContactDTORequestWithBrokenAttributes();
-            Contact entity = contactMapper.DTORequest2ContactEntity(request);
-            ContactDTOResponse response = generateMockContactDTOResponse(request);
-
-
-           Mockito.when(service.create(request)).thenThrow(new Exception("broken attributes"));
 
             assertThrows(
                    Exception.class,
@@ -172,7 +153,6 @@ public class ContactServiceImplTest {
                     ,"Expected exception thrown"
             );
 
-                Mockito.verify(contactRepository, Mockito.never()).save(entity);
                 Mockito.verify(emailService,Mockito.never()).sendEmail(request.getEmail(), GlobalConstants.TEMPLATE_CONTACT);
 
         }
@@ -204,13 +184,6 @@ public class ContactServiceImplTest {
         return request;
     }
 
-    static ContactDTOResponse generateMockContactDTOResponse(ContactDTORequest request) {
-        ContactDTOResponse response = new ContactDTOResponse();
-        response.setName(request.getName());
-        response.setEmail(request.getEmail());
-        response.setConfirmation("test ok");
-        return response;
-    }
 }
 
 
