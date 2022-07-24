@@ -43,5 +43,6 @@ public class Member {
 
     @CreationTimestamp
     private Date timeStamp;
+    @Column(name = "soft_delete")
     private boolean softDelete;
 }

@@ -42,6 +42,13 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     private CloudStorageService cloudStorageService;
 
+    @Autowired
+    public MemberServiceImpl(MemberMapper memberMapper, MembersRepository membersRepository, CloudStorageService cloudStorageService) {
+        this.memberMapper = memberMapper;
+        this.membersRepository = membersRepository;
+        this.cloudStorageService = cloudStorageService;
+    }
+
     @Override
     public MemberDTOResponse create(MultipartFile file, MemberDTORequest request) throws CloudStorageClientException, CorruptedFileException {
         Member member;
