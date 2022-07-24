@@ -32,13 +32,16 @@ public class Contact {
     @Column(nullable=false)
     private String email;
 
+    @Column
     private Long phone;
 
+    @Column
     private String message;
 
     @Column(name = "deleted_at", updatable = false)
     private Timestamp deletedAt;
 
+    @Column(name="soft_delete")
     private boolean softDelete;
 
     @PreRemove

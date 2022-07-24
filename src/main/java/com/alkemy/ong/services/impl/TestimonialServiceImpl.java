@@ -32,6 +32,13 @@ public class TestimonialServiceImpl implements TestimonialService {
     @Autowired
     private CloudStorageService amazonS3Service;
 
+    @Autowired
+    public TestimonialServiceImpl (TestimonialRepository repo, TestimonialMapper mapper,CloudStorageService cloudStorageService){
+        this.repository=repo;
+        this.mapper= mapper;
+        this.amazonS3Service= cloudStorageService;
+    }
+
     @Override
     public TestimonialDTOResponse create(MultipartFile file, TestimonialDTORequest request) throws CloudStorageClientException, CorruptedFileException {
 
