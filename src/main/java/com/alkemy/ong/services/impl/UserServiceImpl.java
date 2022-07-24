@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws Exception {
-        Boolean exists = userRepo.existsById(userDTOrequest.getId());
+        Boolean exists = existsById(userDTOrequest.getId());
         if (!exists) throw new NotFoundException("A user with id " + userDTOrequest.getId() + " was not found");
         User user = userRepo.getById(userDTOrequest.getId());
 
@@ -172,7 +172,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTORequest userDTOrequest) throws Exception {
-        Boolean exists = userRepo.existsById(userDTOrequest.getId());
+        Boolean exists = existsById(userDTOrequest.getId());
         if (!exists) throw new NotFoundException("A user with id " + userDTOrequest.getId() + " was not found");
         User user = userRepo.getById(userDTOrequest.getId());
 

@@ -58,7 +58,7 @@ public class UserServiceImplTest {
     }
 
     @Nested
-    class createUserTest {
+    class CreateUserTest {
         @Nested
         class WithMultiPartFile {
             @Test
@@ -231,6 +231,15 @@ public class UserServiceImplTest {
                     throw new RuntimeException(e);
                 }
             }
+        }
+    }
+
+    @Nested
+    class UpdateUserTest{
+        @Test
+        @DisplayName("Valid case")
+        void test1() throws Exception{
+
         }
     }
 
