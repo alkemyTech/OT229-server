@@ -165,7 +165,7 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(userDTOrequest.getPassword()));
         if (!file.isEmpty()) user.setPhoto(amazonS3Service.uploadFile(file));
 
-        userRepo.save(user);
+        save(user);
 
         return mapper.userEntity2DTO(user);
     }
@@ -190,7 +190,7 @@ public class UserServiceImpl implements UserService {
                 userDTOrequest.getEncoded_image().getFile_name()
         ));
 
-        userRepo.save(user);
+        save(user);
 
         return mapper.userEntity2DTO(user);
     }

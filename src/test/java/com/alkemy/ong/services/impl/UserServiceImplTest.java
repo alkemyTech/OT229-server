@@ -2,6 +2,8 @@ package com.alkemy.ong.services.impl;
 
 import com.alkemy.ong.configuration.H2Configuration;
 import com.alkemy.ong.dto.EncodedImageDTO;
+import com.alkemy.ong.dto.UserDTO;
+import com.alkemy.ong.dto.UserDTORequest;
 import com.alkemy.ong.entities.User;
 import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
@@ -12,7 +14,7 @@ import com.alkemy.ong.security.payload.SignupRequest;
 import com.alkemy.ong.security.payload.SingupResponse;
 import com.alkemy.ong.security.service.impl.JwtServiceImpl;
 import com.alkemy.ong.services.CloudStorageService;
-import com.alkemy.ong.utility.GlobalConstants;
+import javassist.NotFoundException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -24,6 +26,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,6 +43,8 @@ public class UserServiceImplTest {
 
     private static String existUserById;
 
+    private static String existUserByEmail;
+
     @BeforeEach
     @Transactional
     void populateDatabase() {
@@ -49,6 +55,7 @@ public class UserServiceImplTest {
         }
 
         existUserById = user.getId();
+        existUserByEmail = user.getEmail();
     }
 
     @AfterEach
@@ -236,22 +243,379 @@ public class UserServiceImplTest {
 
     @Nested
     class UpdateUserTest{
+        @Nested
+        class WithMultiPartFile {
+            @Test
+            @DisplayName("Valid case")
+            @Transactional // Sin esta anotación no anda
+            void test1() throws Exception {
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+                RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+                EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+                JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+                UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                        jwtService, emailService, roleService);
+
+                MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                UserDTORequest request = generateUserDTORequest();
+                request.setId(existUserById);
+
+                Mockito.when(passwordEncoder.encode(request.getPassword())).thenReturn("$2a$10$naDtwtvaKpX0h.fzMvYJfe4jW8EkewCG7qUoISue6EtJ1GdCVoOHe");
+
+                assertDoesNotThrow(
+                        () -> {
+                            UserDTO result = userService.updateUser(mockImageFile, request);
+                            assertNotNull(result, "Result object is not null.");
+                        }
+                        , "The service did not throw any exception."
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService).uploadFile(mockImageFile);
+                    Mockito.verify(passwordEncoder).encode(request.getPassword());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Test
+            @DisplayName("User not found")
+            @Transactional // Sin esta anotación no anda
+            void test2() throws Exception {
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+                RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+                EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+                JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+                UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                        jwtService, emailService, roleService);
+
+                MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                UserDTORequest request = generateUserDTORequest();
+                request.setId("NotFoundID");
+
+                assertThrows(
+                        NotFoundException.class,
+                        () -> {
+                            UserDTO result = userService.updateUser(mockImageFile, request);
+                        }
+                        , "Expected exception thrown"
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(mockImageFile);
+                    Mockito.verify(passwordEncoder, Mockito.never()).encode(request.getPassword());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Test
+            @DisplayName("Email is already in use")
+            @Transactional // Sin esta anotación no anda
+            void test3() throws Exception {
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+                RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+                EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+                JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+                UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                        jwtService, emailService, roleService);
+
+                MultipartFile mockImageFile = new MockMultipartFile("test_file.mock", "MockContent".getBytes());
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadFile(mockImageFile)).thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                UserDTORequest request = generateUserDTORequest();
+                request.setId(existUserById);
+                request.setEmail("userMock1@mockito.mock");
+
+                assertThrows(
+                        Exception.class,
+                        () -> {
+                            UserDTO result = userService.updateUser(mockImageFile, request);
+                        }
+                        , "Expected exception thrown"
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadFile(mockImageFile);
+                    Mockito.verify(passwordEncoder, Mockito.never()).encode(request.getPassword());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        @Nested
+        class WithImageBase64Encoded{
+            @Test
+            @DisplayName("Valid case")
+            @Transactional // Sin esta anotación no anda
+            void test1() throws Exception {
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+                RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+                EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+                JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+                UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                        jwtService, emailService, roleService);
+
+                String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                String mockEncodedImageFileName = "test_file.mock";
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                            .thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+                UserDTORequest request = generateUserDTORequest();
+                request.setId(existUserById);
+                request.setEncoded_image(mockEncodedImage);
+
+                Mockito.when(passwordEncoder.encode(request.getPassword())).thenReturn("$2a$10$naDtwtvaKpX0h.fzMvYJfe4jW8EkewCG7qUoISue6EtJ1GdCVoOHe");
+
+                assertDoesNotThrow(
+                        () -> {
+                            UserDTO result = userService.updateUser(request);
+                            assertNotNull(result, "Result object is not null.");
+                        }
+                        , "The service did not throw any exception."
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService).uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName);
+                    Mockito.verify(passwordEncoder).encode(request.getPassword());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Test
+            @DisplayName("User not found")
+            @Transactional // Sin esta anotación no anda
+            void test2() throws Exception {
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+                RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+                EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+                JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+                UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                        jwtService, emailService, roleService);
+
+                String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                String mockEncodedImageFileName = "test_file.mock";
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                            .thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+                UserDTORequest request = generateUserDTORequest();
+                request.setId("NotFoundID");
+                request.setEncoded_image(mockEncodedImage);
+
+                assertThrows(
+                        NotFoundException.class,
+                        () -> {
+                            UserDTO result = userService.updateUser(request);
+                        }
+                        ,"Expected exception thrown"
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName);
+                    Mockito.verify(passwordEncoder, Mockito.never()).encode(request.getPassword());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Test
+            @DisplayName("Email is already in use")
+            @Transactional // Sin esta anotación no anda
+            void test3() throws Exception {
+                CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+                PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+                RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+                EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+                JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+                UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                        jwtService, emailService, roleService);
+
+                String mockEncodedImageFileContent = "MockEncodedImageFileContent";
+                String mockEncodedImageFileName = "test_file.mock";
+                String mockUploadedFileUrl = "www.mockurl.mock/test_file.mock";
+
+                try {
+                    Mockito.when(mockCloudStorageService.uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName))
+                            .thenReturn(mockUploadedFileUrl);
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+
+                EncodedImageDTO mockEncodedImage = new EncodedImageDTO(mockEncodedImageFileContent, mockEncodedImageFileName);
+                UserDTORequest request = generateUserDTORequest();
+                request.setId(existUserById);
+                request.setEmail("userMock1@mockito.mock");
+                request.setEncoded_image(mockEncodedImage);
+
+                assertThrows(
+                        Exception.class,
+                        () -> {
+                            UserDTO result = userService.updateUser(request);
+                        }
+                        ,"Expected exception thrown"
+                );
+                try {
+                    Mockito.verify(mockCloudStorageService, Mockito.never()).uploadBase64File(mockEncodedImageFileContent, mockEncodedImageFileName);
+                    Mockito.verify(passwordEncoder, Mockito.never()).encode(request.getPassword());
+                } catch (CorruptedFileException | CloudStorageClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    @Nested
+    class DeleteUserTest{
         @Test
         @DisplayName("Valid case")
         void test1() throws Exception{
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+            RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+            EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+            JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
 
+            UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                    jwtService, emailService, roleService);
+
+
+            String id = existUserById;
+            String response = "Successfully deleted user with id " + id;
+
+            assertDoesNotThrow(
+                    () -> {
+                        String result = userService.delete(id);
+                        assertEquals(result, response, "Test successful");
+                    }
+                    , "The service did not throw any exception."
+            );
         }
+
+        @Test
+        @DisplayName("Not found user")
+        void test2() throws Exception{
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+            RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+            EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+            JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+            UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                    jwtService, emailService, roleService);
+
+
+            String id = "notFoundUser";
+
+            assertThrows(
+                    NotFoundException.class,
+                    () -> {
+                        String result = userService.delete(id);
+                    }
+                    , "Expected exception thrown"
+            );
+        }
+    }
+
+    @Nested
+    class GetUserByEmailTest{
+        @Test
+        @DisplayName("Valid case")
+        void test1() throws Exception{
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+            RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+            EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+            JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+            UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                    jwtService, emailService, roleService);
+
+            String email = existUserByEmail;
+
+            assertDoesNotThrow(
+                    () -> {
+                        Optional<User> result = userService.getUserByEmail(email);
+                        assertNotNull(result, "Test successful");
+                    }
+                    , "The service did not throw any exception."
+            );
+        }
+        @Test
+        @DisplayName("User not found by email")
+        void test2() throws Exception {
+            CloudStorageService mockCloudStorageService = Mockito.mock(CloudStorageService.class);
+            PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+            RoleServiceImpl roleService = Mockito.mock(RoleServiceImpl.class);
+            EmailServiceImp emailService = Mockito.mock(EmailServiceImp.class);
+            JwtServiceImpl jwtService = Mockito.mock(JwtServiceImpl.class);
+
+            UserServiceImpl userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, mockCloudStorageService,
+                    jwtService, emailService, roleService);
+
+            String email = "userNotFoundByEmail@mockito.mock";
+
+            assertDoesNotThrow(
+                    () -> {
+                        Optional<User> result = userService.getUserByEmail(email);
+                        assertTrue(result.isEmpty(), "Test successful");
+                    }
+                    , "The service did not throw any exception."
+            );
+        }
+
     }
 
     private static User generateMockUser(int indexStamp) {
         User user = new User();
-        user.setId("");
         user.setFirstName("User Firstname " + indexStamp);
         user.setLastName("User Lastname " + indexStamp);
         user.setPassword("1234");
         user.setEmail("userMock" + indexStamp + "@mockito.mock");
         user.setPhoto("image.jpg " + indexStamp);
-
         return user;
     }
 
@@ -264,5 +628,17 @@ public class UserServiceImplTest {
         request.setEncoded_image(null);
 
         return request;
+    }
+
+    private static UserDTORequest generateUserDTORequest(){
+        UserDTORequest userDTO = new UserDTORequest();
+        userDTO.setId("id");
+        userDTO.setFirstName("Jhon");
+        userDTO.setLastName("Doe");
+        userDTO.setEmail("jhondoe@mockito.mock");
+        userDTO.setPassword("1234");
+        userDTO.setEncoded_image(null);
+
+        return userDTO;
     }
 }
