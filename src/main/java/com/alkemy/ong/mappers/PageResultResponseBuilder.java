@@ -46,7 +46,7 @@ public class PageResultResponseBuilder<T, R> {
      *          or the index of the last page if an index beyond the last page was provided.
      */
     public static String buildPreviousPageUrl(boolean hasPrevious, long currentPageIndex, long lastPageIndex) {
-        if (!hasPrevious) {
+        if (!hasPrevious || lastPageIndex < 0) {
             return null;
         }
         long previousPageIndex;

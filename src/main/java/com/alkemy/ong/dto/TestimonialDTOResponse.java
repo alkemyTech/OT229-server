@@ -11,10 +11,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TestimonialDTOResponse {
-    @Schema(description = "The name of the testimonial", example = "Juan testimonial", required = true)
+
+    @Schema(description = "The name/title of the testimonial", example = "Testimonial from Juan, Director of the local high school.")
     private String name;
-    @Schema(description = "Image that represents the testimonial", example = "com.image.jpg")
+    @Schema(description = "Image that accompanies the testimonial", example = "com.image.jpg")
     private String image;
-    @Schema(description = "Complete description of the testimonial", example = "This ong experience...")
+    @Schema(description = "Body of the testimonial", example = "The mentorship program has been very successful, the numbers are...")
     private String content;
+
 }
