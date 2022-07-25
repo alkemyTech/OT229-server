@@ -5,6 +5,7 @@ import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.exception.FileNotFoundOnCloudException;
 import com.alkemy.ong.exception.PageIndexOutOfBoundsException;
 import com.alkemy.ong.security.payload.ValidationErrorResponse;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
  * This class catches and processes the exceptions thrown during a annotation-based validation process and generates
  * a default response.
  */
+@Hidden
 @ControllerAdvice
 public class ValidationControllerAdvice {
 
