@@ -28,27 +28,37 @@ import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private UserRepository userRepo;
+
+
+    private UserMapper mapper;
+
+
+    private PasswordEncoder passwordEncoder;
+
+
+    private CloudStorageService amazonS3Service;
+
+
+    private JwtService jwtService;
+
+
+    private EmailService emailService;
+
+
+    private RoleService roleService;
 
     @Autowired
-    UserRepository userRepo;
-
-    @Autowired
-    UserMapper mapper;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    CloudStorageService amazonS3Service;
-
-    @Autowired
-    JwtService jwtService;
-
-    @Autowired
-    EmailService emailService;
-
-    @Autowired
-    RoleService roleService;
+    public UserServiceImpl(UserRepository userRepo, UserMapper mapper, PasswordEncoder passwordEncoder, CloudStorageService amazonS3Service,
+                           JwtService jwtService, EmailService emailService, RoleService roleService){
+        this.userRepo = userRepo;
+        this.mapper = mapper;
+        this.passwordEncoder = passwordEncoder;
+        this.amazonS3Service = amazonS3Service;
+        this.jwtService = jwtService;
+        this.emailService = emailService;
+        this.roleService = roleService;
+    }
 
     @Override
     public SingupResponse createUser(SignupRequest signupRequest, MultipartFile image) throws IOException, RegisterException, CloudStorageClientException, CorruptedFileException {
@@ -140,7 +150,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(MultipartFile file, UserDTORequest userDTOrequest) throws Exception {
-        Boolean exists = userRepo.existsById(userDTOrequest.getId());
+        Boolean exists = existsById(userDTOrequest.getId());
         if (!exists) throw new NotFoundException("A user with id " + userDTOrequest.getId() + " was not found");
         User user = userRepo.getById(userDTOrequest.getId());
 
@@ -155,14 +165,14 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(userDTOrequest.getPassword()));
         if (!file.isEmpty()) user.setPhoto(amazonS3Service.uploadFile(file));
 
-        userRepo.save(user);
+        save(user);
 
         return mapper.userEntity2DTO(user);
     }
 
     @Override
     public UserDTO updateUser(UserDTORequest userDTOrequest) throws Exception {
-        Boolean exists = userRepo.existsById(userDTOrequest.getId());
+        Boolean exists = existsById(userDTOrequest.getId());
         if (!exists) throw new NotFoundException("A user with id " + userDTOrequest.getId() + " was not found");
         User user = userRepo.getById(userDTOrequest.getId());
 
@@ -180,7 +190,7 @@ public class UserServiceImpl implements UserService {
                 userDTOrequest.getEncoded_image().getFile_name()
         ));
 
-        userRepo.save(user);
+        save(user);
 
         return mapper.userEntity2DTO(user);
     }
