@@ -21,15 +21,18 @@ import java.util.Optional;
 @Service
 public class ActivitiesServiceImpl implements ActivitiesService {
 
-    @Autowired
     private CloudStorageService amazonS3Service;
 
-    @Autowired
     private ActivityMapper activityMapper;
 
-    @Autowired
     private ActivityRepository activityRepository;
 
+    @Autowired
+    public ActivitiesServiceImpl(ActivityMapper activityMapper, ActivityRepository activityRepository, CloudStorageService amazonS3Service){
+        this.activityMapper = activityMapper;
+        this.activityRepository = activityRepository;
+        this.amazonS3Service = amazonS3Service;
+    }
 
     @Override
     public ActivityDTO save (MultipartFile file, ActivityDTO dto) throws CloudStorageClientException, ActivityNamePresentException, CorruptedFileException {
