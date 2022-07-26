@@ -62,7 +62,7 @@ public class TestimonialController {
 
     @Operation(summary = "Update an existing testimonial", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Testimonial successfully updated",
+            @ApiResponse(responseCode = "200", description = "Testimonial successfully updated",
                     content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = TestimonialDTOResponse.class))
                     }),
