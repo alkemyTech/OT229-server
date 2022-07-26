@@ -97,9 +97,9 @@ public class TestimonialController {
 
     @Operation(summary = "Delete a testimonial", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Testimonial successfully deleted",
+            @ApiResponse(responseCode = "200", description = "Testimonial successfully deleted",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = TestimonialDTOResponse.class))
+                            @Content(mediaType = "text/plain", schema = @Schema(type = "string", example = "Successfully deleted testimonial with id 3b6f64ed-ecaa-4ae1-9e97-091464bc8dc1"))
                     }),
             @ApiResponse(responseCode = "400", description = "Id param missing",
                     content = {
@@ -124,7 +124,7 @@ public class TestimonialController {
             @RequestParam("id") String id) throws CloudStorageClientException, FileNotFoundOnCloudException {
 
         try {
-            return new ResponseEntity<>(service.delete(id), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(service.delete(id), HttpStatus.OK);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
