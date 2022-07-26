@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
         }
         public TestimonialDTOResponse testimonialEntity2DTOResponse(Testimonial testimonial){
             TestimonialDTOResponse response = new TestimonialDTOResponse();
+            response.setId(testimonial.getId());
             response.setName(testimonial.getName());
             response.setImage(testimonial.getImage());
             response.setContent(testimonial.getContent());

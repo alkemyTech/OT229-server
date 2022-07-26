@@ -12,6 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TestimonialDTOResponse {
 
+    @Schema(description = "Entity id", example = "3b6f64ed-ecaa-4ae1-9e97-091464bc8dc1")
+    private String id;
     @Schema(description = "The name/title of the testimonial", example = "Testimonial from Juan, Director of the local high school.")
     private String name;
     @Schema(description = "Image that accompanies the testimonial", example = "com.image.jpg")
