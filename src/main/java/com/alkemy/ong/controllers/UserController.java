@@ -6,6 +6,8 @@ import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.services.UserService;
 import com.alkemy.ong.utility.GlobalConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping
     public String deleteUser(@RequestParam("id") String id, HttpServletResponse httpServletResponse) {
         try {
@@ -37,6 +40,7 @@ public class UserController {
         }
     }
 
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAll(){
 
@@ -44,8 +48,8 @@ public class UserController {
 
     }
 
-
- @PutMapping
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    @PutMapping
     public ResponseEntity<?> updateUser(@Valid @RequestBody UserDTORequest userDTORequest) throws CloudStorageClientException, CorruptedFileException {
         try {
             return new ResponseEntity<>(userService.updateUser(userDTORequest), HttpStatus.OK);

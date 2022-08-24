@@ -24,7 +24,7 @@ public class NewsDTO {
   private String image;
 
   @NotNull(message = "category must be provided")
-  @Schema(description = "Category to which the news belongs", example = "Weather")
+  @Schema(description = "Category to which the news belongs")
   private CategoryDTO category;
 
 }

@@ -7,6 +7,8 @@ import com.alkemy.ong.exception.CloudStorageClientException;
 import com.alkemy.ong.exception.CorruptedFileException;
 import com.alkemy.ong.services.ActivitiesService;
 import com.alkemy.ong.utility.GlobalConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ public class ActivitiesController {
     @Autowired
     private ActivitiesService activitiesService;
 
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
     public ResponseEntity<?> save(@Valid @RequestBody ActivityDTORequest dto) throws CloudStorageClientException, CorruptedFileException {
 
@@ -37,6 +40,7 @@ public class ActivitiesController {
 
     }
 
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/{id}")
     public ResponseEntity<?> edit (@Valid @RequestBody ActivityDTORequest dto, @PathVariable String id) throws CloudStorageClientException, CorruptedFileException {
 

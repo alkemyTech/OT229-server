@@ -4,6 +4,8 @@ import com.alkemy.ong.dto.ContactDTO;
 import com.alkemy.ong.dto.ContactDTORequest;
 import com.alkemy.ong.services.ContactService;
 import com.alkemy.ong.utility.GlobalConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ public class ContactController {
     @Autowired
     private ContactService service;
 
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
     public ResponseEntity<?> createContact(@Valid @RequestBody ContactDTORequest request) {
         try {
@@ -31,6 +34,7 @@ public class ContactController {
         }
     }
 
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
     public ResponseEntity<List<ContactDTO>> getAll(){
 
