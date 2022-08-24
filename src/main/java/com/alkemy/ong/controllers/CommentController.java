@@ -3,8 +3,6 @@ package com.alkemy.ong.controllers;
 import com.alkemy.ong.dto.CommentDTO;
 import com.alkemy.ong.services.CommentService;
 import com.alkemy.ong.utility.GlobalConstants;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,6 @@ public class CommentController {
     @Autowired
     CommentService commentService;
 
-    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(GlobalConstants.Endpoints.COMMENTS)
     public ResponseEntity<?> save (@Valid @RequestBody CommentDTO commentDTO) {
         try {
@@ -31,8 +28,7 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
-
-    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    
     @GetMapping("/post/{id}/" + GlobalConstants.Endpoints.COMMENTS)
     public ResponseEntity<?> commentListOfAPost(@PathVariable String id) throws Exception {
         try{
@@ -42,7 +38,6 @@ public class CommentController {
         }
     }
 
-    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping(GlobalConstants.Endpoints.COMMENTS + "/{id}")
     public ResponseEntity<?> updateComment(@PathVariable String id, @RequestParam(value = "commentBody", required = true) String commentBody) throws Exception{
         try{
@@ -53,8 +48,7 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
-
-    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    
     @DeleteMapping(GlobalConstants.Endpoints.COMMENTS + "/{id}")
     public ResponseEntity<?> deleteComment(@PathVariable String id) throws Exception {
         try{
@@ -66,7 +60,6 @@ public class CommentController {
         }
     }
 
-    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(GlobalConstants.Endpoints.COMMENTS)
     public ResponseEntity<?> getAllComments(){
         return new ResponseEntity<>(commentService.getAll(),HttpStatus.OK);
